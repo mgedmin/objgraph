@@ -19,6 +19,13 @@ Released under the MIT licence.
 Changes
 =======
 
+1.2 (2009-04-25)
+----------------
+
+Project website, public source repository, uploaded to PyPI.
+
+No code changes.
+
 1.1dev (2008-09-05)
 -------------------
 
@@ -49,10 +56,10 @@ Spawns xdot if it is available.
 # DEALINGS IN THE SOFTWARE.
 
 __author__ = "Marius Gedminas (marius@gedmin.as)"
-__copyright__ = "Copyright (c) 2008 Marius Gedminas"
+__copyright__ = "Copyright (c) 2008, 2009 Marius Gedminas"
 __license__ = "MIT"
-__version__ = "1.1dev"
-__date__ = "2008-09-05"
+__version__ = "1.2"
+__date__ = "2009-04-25"
 
 
 import gc
