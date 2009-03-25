@@ -19,12 +19,19 @@ Released under the MIT licence.
 Changes
 =======
 
-1.2 (2009-04-25)
+(unreleased)
+------------
+
+Highlight objects with a __del__ method.
+
+
+1.2 (2009-03-25)
 ----------------
 
 Project website, public source repository, uploaded to PyPI.
 
 No code changes.
+
 
 1.1dev (2008-09-05)
 -------------------
@@ -58,8 +65,8 @@ Spawns xdot if it is available.
 __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008, 2009 Marius Gedminas"
 __license__ = "MIT"
-__version__ = "1.2"
-__date__ = "2009-04-25"
+__version__ = "1.2+bzr"
+__date__ = "2009-03-25"
 
 
 import gc
@@ -307,6 +314,9 @@ def show_graph(objs, edge_func, swap_source_target,
         print >> f, '  %s[fillcolor="%g,%g,%g"];' % (obj_node_id(target), h, s, v)
         if v < 0.5:
             print >> f, '  %s[fontcolor=white];' % (obj_node_id(target))
+        if hasattr(target, '__del__'):
+            print >> f, "  %s->%s_has_a_del[color=red,style=dotted,len=0.25,weight=10];" % (obj_node_id(target), obj_node_id(target))
+            print >> f, '  %s_has_a_del[label="__del__",shape=doublecircle,height=0.25,color=red,fillcolor="0,.5,1",fontsize=6];' % (obj_node_id(target))
         if inspect.ismodule(target) or tdepth >= max_depth:
             continue
         neighbours = edge_func(target)

@@ -1,4 +1,4 @@
-import os, sys
+import os, sys, itertools
 
 try:
     from setuptools import setup
@@ -19,7 +19,8 @@ def get_version():
 
 def build_script_to_build_images():
     yield 'import os'
-    for line in open(relative('README.txt')):
+    for line in itertools.chain(open(relative('README.txt')),
+                                open(relative('examples.txt'))):
         if line.startswith('    >>>') or line.startswith('    ...'):
             yield line[8:].rstrip()
         if line.startswith('.. image:: '):
