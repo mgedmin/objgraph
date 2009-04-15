@@ -75,6 +75,7 @@ import types
 import weakref
 import operator
 import os
+import sys
 
 
 def count(typename):
@@ -292,6 +293,7 @@ def show_graph(objs, edge_func, swap_source_target,
     ignore.add(id(queue))
     ignore.add(id(depth))
     ignore.add(id(ignore))
+    ignore.add(id(sys._getframe()))
     for obj in objs:
         print >> f, '  %s[fontcolor=red];' % (obj_node_id(obj))
         depth[id(obj)] = 0
@@ -323,7 +325,7 @@ def show_graph(objs, edge_func, swap_source_target,
         ignore.add(id(neighbours))
         n = 0
         for source in neighbours:
-            if inspect.isframe(source) or id(source) in ignore:
+            if id(source) in ignore:
                 continue
             if filter and not filter(source):
                 continue
