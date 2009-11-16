@@ -210,7 +210,8 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     The graph will show you what objects refer to ``objs``, directly and
     indirectly.
 
-    ``objs`` can be a single object, or it can be a list of objects.
+    ``objs`` can be a single object, or it can be a list of objects.  If
+    unsure, wrap the single object in a new list.
 
     Produces a Graphviz .dot file and spawns a viewer (xdot) if one is
     installed, otherwise converts the graph to a .png image.
@@ -245,7 +246,8 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     The graph will show you what objects are reachable from ``objs``, directly
     and indirectly.
 
-    ``objs`` can be a single object, or it can be a list of objects.
+    ``objs`` can be a single object, or it can be a list of objects.  If
+    unsure, wrap the single object in a new list.
 
     Produces a Graphviz .dot file and spawns a viewer (xdot) if one is
     installed, otherwise converts the graph to a .png image.
