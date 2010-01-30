@@ -24,7 +24,7 @@ Try this in a Python shell:
     >>> x = []
     >>> y = [x, [x], dict(x=x)]
     >>> import objgraph
-    >>> objgraph.show_refs([y])
+    >>> objgraph.show_refs([y], filename='sample-graph')
 
 You should see a graph like this:
 
@@ -33,7 +33,7 @@ You should see a graph like this:
 
 Now try
 
-    >>> objgraph.show_backrefs([x])
+    >>> objgraph.show_backrefs([x], filename='sample-backref-graph')
 
 and you'll see
 
