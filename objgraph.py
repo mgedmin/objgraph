@@ -75,6 +75,8 @@ import types
 import weakref
 import operator
 import os
+import os.path
+import subprocess
 
 
 def count(typename):
@@ -204,7 +206,7 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
 
 
 def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
-                  highlight=None):
+                  highlight=None, filename='backrefs'):
     """Generate an object reference graph ending at ``objs``
 
     The graph will show you what objects refer to ``objs``, directly and
@@ -236,11 +238,12 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     """
     show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
                filter=filter, too_many=too_many, highlight=highlight,
-               edge_func=gc.get_referrers, swap_source_target=False)
+               edge_func=gc.get_referrers, swap_source_target=False,
+               filename=filename)
 
 
 def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
-              highlight=None):
+              highlight=None, filename='refs'):
     """Generate an object reference graph starting at ``objs``
 
     The graph will show you what objects are reachable from ``objs``, directly
@@ -272,7 +275,8 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     """
     show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
                filter=filter, too_many=too_many, highlight=highlight,
-               edge_func=gc.get_referents, swap_source_target=True)
+               edge_func=gc.get_referents, swap_source_target=True,
+               filename=filename)
 
 #
 # Internal helpers
@@ -280,10 +284,10 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
 
 def show_graph(objs, edge_func, swap_source_target,
                max_depth=3, extra_ignore=(), filter=None, too_many=10,
-               highlight=None):
+               highlight=None, filename='objects'):
     if not isinstance(objs, (list, tuple)):
         objs = [objs]
-    f = file('objects.dot', 'w')
+    f = file(filename + '.dot', 'w')
     print >> f, 'digraph ObjectGraph {'
     print >> f, '  node[shape=box, style=filled, fillcolor=white];'
     queue = []
@@ -344,13 +348,17 @@ def show_graph(objs, edge_func, swap_source_target,
                 break
     print >> f, "}"
     f.close()
-    print "Graph written to objects.dot (%d nodes)" % nodes
-    if os.system('which xdot >/dev/null') == 0:
+    print "Graph written to %s.dot (%d nodes)" % (filename, nodes)
+    if program_in_path('xdot'):
         print "Spawning graph viewer (xdot)"
-        os.system("xdot objects.dot &")
+        subprocess.Popen(['xdot', filename + '.dot'])
     else:
-        os.system("dot -Tpng objects.dot > objects.png")
-        print "Image generated as objects.png"
+        pngfile = file(filename + '.png', 'wb')
+        dot = subprocess.Popen(['dot', '-Tpng', filename + '.dot'],
+                               stdout=pngfile)
+        dot.wait()
+        pngfile.close()
+        print "Image generated as %s.png" % filename
 
 
 def obj_node_id(obj):
@@ -416,3 +424,9 @@ def edge_label(source, target):
                     return ' [label="%s"]' % quote(safe_repr(k))
     return ''
 
+
+def program_in_path(program):
+    path = os.environ.get("PATH", os.defpath).split(os.pathsep)
+    path = [os.path.join(dir, program) for dir in path]
+    path = [True for file in path if os.path.isfile(file)]
+    return bool(path)
