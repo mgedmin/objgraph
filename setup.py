@@ -17,23 +17,20 @@ def get_version():
     return d['__version__']
 
 
-def build_script_to_build_images():
-    yield 'import os'
+def build_images():
+    env = {}
+    block = []
     for line in itertools.chain(open(relative('README.txt')),
                                 open(relative('examples.txt'))):
-        if line.startswith('    >>>') or line.startswith('    ...'):
-            yield line[8:].rstrip()
-        if line.startswith('.. image:: '):
-            filename = line.split()[2]
-            yield 'os.system("dot -Tpng objects.dot > %s")' % filename
-
-
-def script_to_build_images():
-    return '\n'.join(build_script_to_build_images())
-
-
-def build_images():
-    os.popen(sys.executable, 'w').write(script_to_build_images())
+        if line.startswith('    ...'):
+            block.append(line[8:].rstrip())
+        if line.startswith('    >>>'):
+            if block:
+                exec('\n'.join(block), env)
+                block = []
+            block.append(line[8:].rstrip())
+    if block:
+        exec('\n'.join(block), env)
 
 
 if len(sys.argv) > 1 and sys.argv[1] == '--show-image-script':
