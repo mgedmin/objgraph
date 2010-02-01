@@ -16,6 +16,9 @@ Objects that have a __del__ method
     >>> del x, y, z
 
     >>> import objgraph
-    >>> objgraph.show_backrefs(objgraph.by_type('Nondestructible'), filename='finalizers')
+    >>> objgraph.show_backrefs(objgraph.by_type('Nondestructible'),
+    ...                        filename='finalizers.png')
+    Graph written to ....dot (3 nodes)
+    Image generated as finalizers.png
 
 .. image:: finalizers.png

@@ -1,4 +1,5 @@
-import os, sys, itertools
+#!/usr/bin/python
+import os, sys, doctest
 
 try:
     from setuptools import setup
@@ -17,20 +18,9 @@ def get_version():
     return d['__version__']
 
 
-def build_images():
-    env = {}
-    block = []
-    for line in itertools.chain(open(relative('README.txt')),
-                                open(relative('examples.txt'))):
-        if line.startswith('    ...'):
-            block.append(line[8:].rstrip())
-        if line.startswith('    >>>'):
-            if block:
-                exec('\n'.join(block), env)
-                block = []
-            block.append(line[8:].rstrip())
-    if block:
-        exec('\n'.join(block), env)
+def build_images(sources=['README.txt', 'examples.txt']):
+    for fn in sources:
+        doctest.testfile(fn, optionflags=doctest.ELLIPSIS)
 
 
 if len(sys.argv) > 1 and sys.argv[1] == '--build-images':

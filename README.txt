@@ -24,7 +24,9 @@ Try this in a Python shell:
     >>> x = []
     >>> y = [x, [x], dict(x=x)]
     >>> import objgraph
-    >>> objgraph.show_refs([y], filename='sample-graph')
+    >>> objgraph.show_refs([y], filename='sample-graph.png')
+    Graph written to ....dot (5 nodes)
+    Image generated as sample-graph.png
 
 You should see a graph like this:
 
@@ -33,7 +35,9 @@ You should see a graph like this:
 
 Now try
 
-    >>> objgraph.show_backrefs([x], filename='sample-backref-graph')
+    >>> objgraph.show_backrefs([x], filename='sample-backref-graph.png')
+    Graph written to ....dot (7 nodes)
+    Image generated as sample-backref-graph.png
 
 and you'll see
 

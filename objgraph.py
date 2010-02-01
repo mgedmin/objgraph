@@ -24,6 +24,11 @@ Changes
 
 Highlight objects with a __del__ method.
 
+show_refs, show_backrefs don't create files in the current working
+directory any more.  Instead they accept a filename argument.  It can be a
+.dot file or a .png file.  If None or not specified, those functions will try
+to spawn xdot as before.
+
 
 1.2 (2009-03-25)
 ----------------
@@ -66,7 +71,7 @@ __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008, 2009 Marius Gedminas"
 __license__ = "MIT"
 __version__ = "1.2+bzr"
-__date__ = "2009-03-25"
+__date__ = "2010-02-01"
 
 
 import gc
@@ -75,8 +80,8 @@ import types
 import weakref
 import operator
 import os
-import os.path
 import subprocess
+from tempfile import NamedTemporaryFile
 
 
 def count(typename):
@@ -206,7 +211,7 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
 
 
 def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
-                  highlight=None, filename='backrefs'):
+                  highlight=None, filename=None):
     """Generate an object reference graph ending at ``objs``
 
     The graph will show you what objects refer to ``objs``, directly and
@@ -243,7 +248,7 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
 
 
 def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
-              highlight=None, filename='refs'):
+              highlight=None, filename=None):
     """Generate an object reference graph starting at ``objs``
 
     The graph will show you what objects are reachable from ``objs``, directly
@@ -284,10 +289,15 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
 
 def show_graph(objs, edge_func, swap_source_target,
                max_depth=3, extra_ignore=(), filter=None, too_many=10,
-               highlight=None, filename='objects'):
+               highlight=None, filename=None):
     if not isinstance(objs, (list, tuple)):
         objs = [objs]
-    f = file(filename + '.dot', 'w')
+    if filename and filename.endswith('.dot'):
+        f = file(filename, 'w')
+        dot_filename = filename
+    else:
+        f = NamedTemporaryFile('w', suffix='.dot', delete=False)
+        dot_filename = f.name
     print >> f, 'digraph ObjectGraph {'
     print >> f, '  node[shape=box, style=filled, fillcolor=white];'
     queue = []
@@ -348,17 +358,31 @@ def show_graph(objs, edge_func, swap_source_target,
                 break
     print >> f, "}"
     f.close()
-    print "Graph written to %s.dot (%d nodes)" % (filename, nodes)
-    if program_in_path('xdot'):
+    print "Graph written to %s (%d nodes)" % (dot_filename, nodes)
+    if filename is None and program_in_path('xdot'):
         print "Spawning graph viewer (xdot)"
-        subprocess.Popen(['xdot', filename + '.dot'])
-    else:
-        pngfile = file(filename + '.png', 'wb')
-        dot = subprocess.Popen(['dot', '-Tpng', filename + '.dot'],
-                               stdout=pngfile)
+        subprocess.Popen(['xdot', dot_filename])
+    elif program_in_path('dot'):
+        if filename is None:
+            print "Graph viewer (xdot) not found, generating a png instead"
+        if filename and filename.endswith('.png'):
+            f = file(filename, 'wb')
+            png_filename = filename
+        else:
+            if filename is not None:
+                print "Unrecognized file type (%s)" % filename
+            f = NamedTemporaryFile('wb', suffix='.png', delete=False)
+            png_filename = f.name
+        dot = subprocess.Popen(['dot', '-Tpng', dot_filename],
+                               stdout=f)
         dot.wait()
-        pngfile.close()
-        print "Image generated as %s.png" % filename
+        f.close()
+        print "Image generated as %s" % png_filename
+    else:
+        if filename is None:
+            print "Graph viewer (xdot) and image renderer (dot) not found, not doing anything else"
+        else:
+            print "Unrecognized file type (%s), not doing anything else" % filename
 
 
 def obj_node_id(obj):
