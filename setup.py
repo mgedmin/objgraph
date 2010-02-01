@@ -33,17 +33,10 @@ def build_images():
         exec('\n'.join(block), env)
 
 
-if len(sys.argv) > 1 and sys.argv[1] == '--show-image-script':
-    print script_to_build_images()
-    sys.exit(0)
-
 if len(sys.argv) > 1 and sys.argv[1] == '--build-images':
     build_images()
     sys.exit(0)
 
-if len(sys.argv) > 1 and sys.argv[1] == '--objgraph-version':
-    print get_version()
-    sys.exit(0)
 
 setup(name='objgraph',
       version=get_version(),
