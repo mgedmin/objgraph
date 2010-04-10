@@ -211,7 +211,7 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
 
 
 def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
-                  highlight=None, filename=None):
+                  highlight=None, filename=None, extra_info=(lambda _: '')):
     """Generate an object reference graph ending at ``objs``
 
     The graph will show you what objects refer to ``objs``, directly and
@@ -231,6 +231,9 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
 
     Use ``highlight`` (a predicate) to highlight certain graph nodes in blue.
 
+    Use ``extra_info`` (a function returning a string) to report extra
+    information for objects.
+
     Examples:
 
         >>> show_backrefs(obj)
@@ -244,11 +247,11 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
                filter=filter, too_many=too_many, highlight=highlight,
                edge_func=gc.get_referrers, swap_source_target=False,
-               filename=filename)
+               filename=filename, extra_info=extra_info)
 
 
 def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
-              highlight=None, filename=None):
+              highlight=None, filename=None, extra_info=(lambda _: '')):
     """Generate an object reference graph starting at ``objs``
 
     The graph will show you what objects are reachable from ``objs``, directly
@@ -268,6 +271,9 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
 
     Use ``highlight`` (a predicate) to highlight certain graph nodes in blue.
 
+    Use ``extra_info`` (a function returning a string) to report extra
+    information for objects.
+
     Examples:
 
         >>> show_refs(obj)
@@ -281,7 +287,7 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
                filter=filter, too_many=too_many, highlight=highlight,
                edge_func=gc.get_referents, swap_source_target=True,
-               filename=filename)
+               filename=filename, extra_info=extra_info)
 
 #
 # Internal helpers
@@ -289,7 +295,7 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
 
 def show_graph(objs, edge_func, swap_source_target,
                max_depth=3, extra_ignore=(), filter=None, too_many=10,
-               highlight=None, filename=None):
+               highlight=None, filename=None, extra_info=(lambda _: '')):
     if not isinstance(objs, (list, tuple)):
         objs = [objs]
     if filename and filename.endswith('.dot'):
@@ -318,7 +324,7 @@ def show_graph(objs, edge_func, swap_source_target,
         nodes += 1
         target = queue.pop(0)
         tdepth = depth[id(target)]
-        print >> f, '  %s[label="%s"];' % (obj_node_id(target), obj_label(target, tdepth))
+        print >> f, '  %s[label="%s"];' % (obj_node_id(target), obj_label(target, tdepth, extra_info))
         h, s, v = gradient((0, 0, 1), (0, 0, .3), tdepth, max_depth)
         if inspect.ismodule(target):
             h = .3
@@ -391,9 +397,10 @@ def obj_node_id(obj):
     return ('o%d' % id(obj)).replace('-', '_')
 
 
-def obj_label(obj, depth):
+def obj_label(obj, depth, extra_info):
     return quote(type(obj).__name__ + ':\n' +
-                 safe_repr(obj))
+                 safe_repr(obj) + '\n' +
+                 extra_info(obj))
 
 
 def quote(s):
