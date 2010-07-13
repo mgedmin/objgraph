@@ -75,10 +75,10 @@ Spawns xdot if it is available.
 # DEALINGS IN THE SOFTWARE.
 
 __author__ = "Marius Gedminas (marius@gedmin.as)"
-__copyright__ = "Copyright (c) 2008, 2009 Marius Gedminas"
+__copyright__ = "Copyright (c) 2008-2010 Marius Gedminas"
 __license__ = "MIT"
-__version__ = "1.2+bzr"
-__date__ = "2010-02-01"
+__version__ = "1.3"
+__date__ = "2010-07-13"
 
 
 import gc
