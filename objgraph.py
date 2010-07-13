@@ -11,7 +11,7 @@ as a finished product.  For documentation and background, read
 in that order.  Then use pydoc to read the docstrings, as there were
 improvements made since those blog posts.
 
-Copyright (c) 2008 Marius Gedminas <marius@pov.lt>
+Copyright (c) 2008-2010 Marius Gedminas <marius@pov.lt>
 
 Released under the MIT licence.
 
@@ -19,15 +19,22 @@ Released under the MIT licence.
 Changes
 =======
 
-(unreleased)
-------------
+1.3 (2010-07-13)
+----------------
 
 Highlight objects with a __del__ method.
+
+Fixes LP#483411, LP#514422, 
 
 show_refs, show_backrefs don't create files in the current working
 directory any more.  Instead they accept a filename argument.  It can be a
 .dot file or a .png file.  If None or not specified, those functions will try
-to spawn xdot as before.
+to spawn xdot as before.  Fixes LP#514422.
+
+New extra_info argument to graph-generating functions (patch by Thouis Jones,
+LP#558914).
+
+setup.py should work with distutils now (LP#604430, thanks to Randy Heydon).
 
 
 1.2 (2009-03-25)
