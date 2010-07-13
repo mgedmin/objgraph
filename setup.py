@@ -4,7 +4,7 @@ import os, sys, doctest
 try:
     from setuptools import setup
 except ImportError:
-    from distutils import setup
+    from distutils.core import setup
 
 
 def relative(filename):
