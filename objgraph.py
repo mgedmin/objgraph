@@ -19,8 +19,10 @@ Released under the MIT licence.
 Changes
 =======
 
-(unreleased)
-------------
+1.3.1 (2010-07-17)
+------------------
+
+Rebuild an sdist with no missing files (fixes LP#606604)
 
 Added MANIFEST.in and a Makefile to check that setup.py sdist generates
 source distributions with no files missing.
@@ -84,8 +86,8 @@ Spawns xdot if it is available.
 __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008-2010 Marius Gedminas"
 __license__ = "MIT"
-__version__ = "1.3.1dev"
-__date__ = "2010-07-13"
+__version__ = "1.3.1"
+__date__ = "2010-07-17"
 
 
 import gc
