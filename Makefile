@@ -5,6 +5,10 @@ PYTHON = python
 default:
 	@echo "Nothing to build here"
 
+.PHONY: check
+check:
+	@echo "There's no test suite (yet)."
+
 .PHONY: dist
 dist:
 	$(PYTHON) setup.py sdist
