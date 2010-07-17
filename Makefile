@@ -43,7 +43,7 @@ distcheck:
 .PHONY: releasechecklist
 releasechecklist:
 	@$(PYTHON) setup.py --version | grep -qv dev || { \
-	    echo "Please remove the 'dev' suffix from the version number in src/gtimelog/__init__.py"; exit 1; }
+	    echo "Please remove the 'dev' suffix from the version number in objgraph.py"; exit 1; }
 	@$(PYTHON) setup.py --long-description | rst2html --exit-status=2 > /dev/null
 	@ver_and_date="`$(PYTHON) setup.py --version` (released `date +%Y-%m-%d`)" && \
 	    grep -q "^Changes in version $$ver_and_date$$" NEWS.txt || { \
