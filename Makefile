@@ -1,4 +1,6 @@
 PYTHON = python
+FILE_WITH_VERSION = objgraph.py
+FILE_WITH_CHANGELOG = objgraph.py
 
 
 .PHONY: default
@@ -43,11 +45,11 @@ distcheck:
 .PHONY: releasechecklist
 releasechecklist:
 	@$(PYTHON) setup.py --version | grep -qv dev || { \
-	    echo "Please remove the 'dev' suffix from the version number in objgraph.py"; exit 1; }
+	    echo "Please remove the 'dev' suffix from the version number in $(FILE_WITH_VERSION)"; exit 1; }
 	@$(PYTHON) setup.py --long-description | rst2html --exit-status=2 > /dev/null
-	@ver_and_date="`$(PYTHON) setup.py --version` (released `date +%Y-%m-%d`)" && \
-	    grep -q "^Changes in version $$ver_and_date$$" NEWS.txt || { \
-	        echo "NEWS.txt has no entry for $$ver_and_date"; exit 1; }
+	@ver_and_date="`$(PYTHON) setup.py --version` (`date +%Y-%m-%d`)" && \
+	    grep -q "^$$ver_and_date$$" $(FILE_WITH_CHANGELOG) || { \
+	        echo "$(FILE_WITH_CHANGELOG) has no entry for $$ver_and_date"; exit 1; }
 	make distcheck
 
 .PHONY: release
@@ -57,8 +59,8 @@ release: releasechecklist
 	@echo
 	@echo "  $(PYTHON) setup.py sdist register upload && bzr tag `$(PYTHON) setup.py --version`"
 	@echo
-	@echo "Please increment the version number in objgraph.py"
-	@echo "and add a new empty entry at the top of the changelog, then"
+	@echo "Please increment the version number in $(FILE_WITH_VERSION)"
+	@echo "and add a new empty entry at the top of the changelog in $(FILE_WITH_CHANGELOG), then"
 	@echo
 	@echo '  bzr ci -m "Post-release version bump" && bzr push'
 	@echo
