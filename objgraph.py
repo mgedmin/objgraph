@@ -19,6 +19,12 @@ Released under the MIT licence.
 Changes
 =======
 
+1.3.2 (unreleased)
+------------------
+
+(no changes yet)
+
+
 1.3.1 (2010-07-17)
 ------------------
 
@@ -86,7 +92,7 @@ Spawns xdot if it is available.
 __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008-2010 Marius Gedminas"
 __license__ = "MIT"
-__version__ = "1.3.1"
+__version__ = "1.3.2dev"
 __date__ = "2010-07-17"
 
 
