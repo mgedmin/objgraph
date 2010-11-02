@@ -7,9 +7,9 @@ FILE_WITH_CHANGELOG = objgraph.py
 default:
 	@echo "Nothing to build here"
 
-.PHONY: check
-check:
-	@echo "There's no test suite (yet)."
+.PHONY: test check
+test check:
+	$(PYTHON) tests.py
 
 .PHONY: dist
 dist:
