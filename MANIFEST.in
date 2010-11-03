@@ -1,3 +1,4 @@
 include Makefile
 include examples.txt
 include *.png
+include tests.py
