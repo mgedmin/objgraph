@@ -23,13 +23,13 @@ Changes
 ------------------
 
 Compatibility with Python 2.4 and 2.5 (tempfile.NamedTemporaryFile has no
-delete argument)
+delete argument).
 
 
 1.3.1 (2010-07-17)
 ------------------
 
-Rebuild an sdist with no missing files (fixes LP#606604)
+Rebuild an sdist with no missing files (fixes LP#606604).
 
 Added MANIFEST.in and a Makefile to check that setup.py sdist generates
 source distributions with no files missing.
@@ -40,12 +40,13 @@ source distributions with no files missing.
 
 Highlight objects with a __del__ method.
 
-Fixes LP#483411, LP#514422, 
+Fixes LP#483411: suggest always passing [obj] to show_refs, show_backrefs,
+since obj might be a list/tuple.
 
-show_refs, show_backrefs don't create files in the current working
-directory any more.  Instead they accept a filename argument.  It can be a
-.dot file or a .png file.  If None or not specified, those functions will try
-to spawn xdot as before.  Fixes LP#514422.
+Fixes LP#514422: show_refs, show_backrefs don't create files in the current
+working directory any more.  Instead they accept a filename argument, which
+can be a .dot file or a .png file.  If None or not specified, those functions
+will try to spawn xdot as before.
 
 New extra_info argument to graph-generating functions (patch by Thouis Jones,
 LP#558914).
@@ -169,7 +170,7 @@ def by_type(typename):
 
 def at(addr):
     """Return an object at a given memory address.
-    
+
     The reverse of id(obj):
 
         >>> at(id(obj)) is obj
