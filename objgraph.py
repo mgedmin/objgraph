@@ -25,6 +25,8 @@ Changes
 Compatibility with Python 2.4 and 2.5 (tempfile.NamedTemporaryFile has no
 delete argument).
 
+New function: most_common_types().
+
 
 1.3.1 (2010-07-17)
 ------------------
@@ -138,20 +140,34 @@ def typestats():
     return stats
 
 
-def show_most_common_types(limit=10):
+def most_common_types(limit=10):
     """Count the names of types with the most instances.
 
     Note that the GC does not track simple objects like int or str.
 
     Note that classes with the same name but defined in different modules
     will be lumped together.
+
+    Returns a list of (type_name, count), sorted most-frequent-first.
     """
     stats = sorted(typestats().items(), key=operator.itemgetter(1),
                    reverse=True)
     if limit:
         stats = stats[:limit]
+    return stats
+
+
+def show_most_common_types(limit=10):
+    """Print the table of types of most common instances
+
+    Note that the GC does not track simple objects like int or str.
+
+    Note that classes with the same name but defined in different modules
+    will be lumped together.
+    """
+    stats = most_common_types(limit)
     width = max(len(name) for name, count in stats)
-    for name, count in stats[:limit]:
+    for name, count in stats:
         print name.ljust(width), count
 
 
