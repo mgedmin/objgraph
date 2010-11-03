@@ -19,7 +19,7 @@ Released under the MIT licence.
 Changes
 =======
 
-1.3.2 (unreleased)
+1.4.0 (2010-11-03)
 ------------------
 
 Compatibility with Python 2.4 and 2.5 (tempfile.NamedTemporaryFile has no
@@ -96,8 +96,8 @@ Spawns xdot if it is available.
 __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008-2010 Marius Gedminas"
 __license__ = "MIT"
-__version__ = "1.3.2dev"
-__date__ = "2010-11-02"
+__version__ = "1.4.0"
+__date__ = "2010-11-03"
 
 
 import gc
