@@ -12,6 +12,9 @@ described by this series of blog posts:
 You'll need `graphviz <http://www.graphviz.org/>`_ if you want to draw
 pretty graphs.
 
+I recommend `xdot <http://pypi.python.org/pypi/xdot>`_ as well, it is a nice
+interactive graph viewer.
+
 .. This is a reStructuredText file.  I recommend http://mg.pov.lt/restview
    for viewing it.
 
@@ -36,7 +39,7 @@ You should see a graph like this:
 Now try
 
     >>> objgraph.show_backrefs([x], filename='sample-backref-graph.png')
-    Graph written to ....dot (7 nodes)
+    Graph written to ....dot (8 nodes)
     Image generated as sample-backref-graph.png
 
 and you'll see

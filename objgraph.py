@@ -22,6 +22,8 @@ Changes
 1.4.1 (unreleased)
 ------------------
 
+Show frame objects as well (fixes LP#361704).
+
 
 1.4.0 (2010-11-03)
 ------------------
@@ -112,6 +114,7 @@ import operator
 import os
 import subprocess
 import tempfile
+import sys
 
 
 def count(typename):
@@ -358,6 +361,8 @@ def show_graph(objs, edge_func, swap_source_target,
     ignore.add(id(queue))
     ignore.add(id(depth))
     ignore.add(id(ignore))
+    ignore.add(id(sys._getframe()))  # this function
+    ignore.add(id(sys._getframe(1))) # show_refs/show_backrefs, most likely
     for obj in objs:
         print >> f, '  %s[fontcolor=red];' % (obj_node_id(obj))
         depth[id(obj)] = 0
@@ -389,7 +394,7 @@ def show_graph(objs, edge_func, swap_source_target,
         ignore.add(id(neighbours))
         n = 0
         for source in neighbours:
-            if inspect.isframe(source) or id(source) in ignore:
+            if id(source) in ignore:
                 continue
             if filter and not filter(source):
                 continue
@@ -467,6 +472,8 @@ def short_repr(obj):
             return obj.im_func.__name__ + ' (bound)'
         else:
             return obj.im_func.__name__
+    if isinstance(obj, types.FrameType):
+        return '%s:%s' % (obj.f_code.co_filename, obj.f_lineno)
     if isinstance(obj, (tuple, list, dict, set)):
         return '%d items' % len(obj)
     if isinstance(obj, weakref.ref):
@@ -490,6 +497,8 @@ def gradient(start_color, end_color, depth, max_depth):
 def edge_label(source, target):
     if isinstance(target, dict) and target is getattr(source, '__dict__', None):
         return ' [label="__dict__",weight=10]'
+    elif isinstance(source, types.FrameType) and target is source.f_locals:
+        return ' [label="f_locals",weight=10]'
     elif isinstance(source, dict):
         for k, v in source.iteritems():
             if v is target:
