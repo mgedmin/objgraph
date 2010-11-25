@@ -178,6 +178,27 @@ def show_most_common_types(limit=10):
         print name.ljust(width), count
 
 
+lastTypes = {}
+
+def showIncreasingTypes():
+    """
+    Shows any Types that are increasing in number
+    """
+    gc.collect()
+    stats = sorted(typestats().items(), key=operator.itemgetter(1),
+                   reverse=True)
+    
+    for name, count in stats:
+        count = count
+        oldStat = lastTypes.get(str(name))
+        if oldStat:
+            if count > oldStat:
+                print name, count, (count - oldStat)
+                lastTypes[str(name)] = count
+        else:
+            lastTypes[str(name)] = count
+
+
 def by_type(typename):
     """Return objects tracked by the garbage collector with a given class name.
 
