@@ -7,6 +7,10 @@ FILE_WITH_CHANGELOG = objgraph.py
 default:
 	@echo "Nothing to build here"
 
+.PHONY: images
+images:
+	$(PYTHON) setup.py --build-images
+
 .PHONY: test check
 test check:
 	$(PYTHON) tests.py
