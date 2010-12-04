@@ -253,7 +253,7 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
         >>> find_backref_chain(obj, inspect.ismodule)
         [<module ...>, ..., obj]
 
-    Returns None if such a chain could not be found.
+    Returns [obj] if such a chain could not be found.
     """
     queue = [obj]
     depth = {id(obj): 0}
@@ -284,7 +284,7 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
                     depth[id(source)] = tdepth + 1
                     parent[id(source)] = target
                     queue.append(source)
-    return None # not found
+    return [obj] # not found
 
 
 def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
