@@ -367,19 +367,21 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
                filename=filename, extra_info=extra_info)
 
 
-def show_chain(*chains):
+def show_chain(*chains, **kw):
     """Show a chain (or several chains) of object references.
 
     Useful in combination with ``find_backref_chain``, e.g.
 
         >>> show_chain(find_backref_chain(obj, inspect.ismodule))
 
+    You can specify ``highlight``, ``extra_info`` or ``filename`` arguments
+    like for ``show_backrefs``.
     """
     chains = [chain for chain in chains if chain] # remove empty ones
     def in_chains(x, ids=set(map(id, itertools.chain(*chains)))):
         return id(x) in ids
     show_backrefs([chain[-1] for chain in chains], max(map(len, chains)) - 1,
-                  filter=in_chains)
+                  filter=in_chains, **kw)
 
 #
 # Internal helpers
