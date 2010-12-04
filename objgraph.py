@@ -19,12 +19,16 @@ Released under the MIT licence.
 Changes
 =======
 
-1.4.1 (unreleased)
+1.5.0 (unreleased)
 ------------------
 
 Show frame objects as well (fixes LP#361704).
 
 New functions: show_growth(), show_chain().
+
+find_backref_chain(obj, ...) returns [obj] instead of None when a chain
+could not be found.  This makes show_chain(find_backref_chain(...), ...)
+not break.
 
 
 1.4.0 (2010-11-03)
