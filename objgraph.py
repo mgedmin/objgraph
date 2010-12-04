@@ -24,6 +24,8 @@ Changes
 
 Show frame objects as well (fixes LP#361704).
 
+New function: show_growth().
+
 
 1.4.0 (2010-11-03)
 ------------------
@@ -102,8 +104,8 @@ Spawns xdot if it is available.
 __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008-2010 Marius Gedminas"
 __license__ = "MIT"
-__version__ = "1.4.1dev"
-__date__ = "2010-11-03"
+__version__ = "1.5.0dev"
+__date__ = "2010-12-04"
 
 
 import gc
@@ -150,12 +152,12 @@ def typestats():
 def most_common_types(limit=10):
     """Count the names of types with the most instances.
 
-    Note that the GC does not track simple objects like int or str.
-
-    Note that classes with the same name but defined in different modules
-    will be lumped together.
-
     Returns a list of (type_name, count), sorted most-frequent-first.
+
+    Limits the return value to at most ``limit`` items.  You may set ``limit``
+    to None to avoid that.
+
+    The caveats documented in ``typestats`` apply.
     """
     stats = sorted(typestats().items(), key=operator.itemgetter(1),
                    reverse=True)
@@ -167,15 +169,42 @@ def most_common_types(limit=10):
 def show_most_common_types(limit=10):
     """Print the table of types of most common instances
 
-    Note that the GC does not track simple objects like int or str.
-
-    Note that classes with the same name but defined in different modules
-    will be lumped together.
+    The caveats documented in ``typestats`` apply.
     """
     stats = most_common_types(limit)
     width = max(len(name) for name, count in stats)
     for name, count in stats:
         print name.ljust(width), count
+
+
+def show_growth(limit=10, peak_stats={}):
+    """Show the increase in peak object counts since last call.
+
+    Limits the output to ``limit`` largest deltas.  You may set ``limit`` to
+    None to see all of them.
+
+    Uses and updates ``peak_stats``, a dictionary from type names to previously
+    seen peak object counts.  Usually you don't need to pay attention to this
+    argument.
+
+    The caveats documented in ``typestats`` apply.
+    """
+    gc.collect()
+    stats = typestats()
+    deltas = {}
+    for name, count in stats.iteritems():
+        old_count = peak_stats.get(name, 0)
+        if count > old_count:
+            deltas[name] = count - old_count
+            peak_stats[name] = count
+    deltas = sorted(deltas.items(), key=operator.itemgetter(1),
+                    reverse=True)
+    if limit:
+        deltas = deltas[:limit]
+    if deltas:
+        width = max(len(name) for name, count in deltas)
+        for name, delta in deltas:
+            print name.ljust(width), "%9d %+9d" % (stats[name], delta)
 
 
 def by_type(typename):
