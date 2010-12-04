@@ -24,7 +24,7 @@ Changes
 
 Show frame objects as well (fixes LP#361704).
 
-New function: show_growth().
+New functions: show_growth(), show_chain().
 
 
 1.4.0 (2010-11-03)
@@ -117,6 +117,7 @@ import os
 import subprocess
 import tempfile
 import sys
+import itertools
 
 
 def count(typename):
@@ -364,6 +365,21 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
                filter=filter, too_many=too_many, highlight=highlight,
                edge_func=gc.get_referents, swap_source_target=True,
                filename=filename, extra_info=extra_info)
+
+
+def show_chain(*chains):
+    """Show a chain (or several chains) of object references.
+
+    Useful in combination with ``find_backref_chain``, e.g.
+
+        >>> show_chain(find_backref_chain(obj, inspect.ismodule))
+
+    """
+    chains = [chain for chain in chains if chain] # remove empty ones
+    def in_chains(x, ids=set(map(id, itertools.chain(*chains)))):
+        return id(x) in ids
+    show_backrefs([chain[-1] for chain in chains], max(map(len, chains)) - 1,
+                  filter=in_chains)
 
 #
 # Internal helpers
