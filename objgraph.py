@@ -268,6 +268,7 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
     ignore.add(id(depth))
     ignore.add(id(parent))
     ignore.add(id(ignore))
+    ignore.add(id(sys._getframe()))  # this function
     gc.collect()
     while queue:
         target = queue.pop(0)
@@ -282,7 +283,7 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
             referrers = gc.get_referrers(target)
             ignore.add(id(referrers))
             for source in referrers:
-                if inspect.isframe(source) or id(source) in ignore:
+                if id(source) in ignore:
                     continue
                 if id(source) not in depth:
                     depth[id(source)] = tdepth + 1
