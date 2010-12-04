@@ -1,0 +1,53 @@
+Stack frames and generators
+===========================
+
+Let's define a custom class
+
+    >>> class Canary(object):
+    ...     pass
+
+Suppose we've a generator that uses it
+
+    >>> def count_to_three():
+    ...     tweety = Canary()
+    ...     yield 1
+    ...     yield 2
+    ...     yield 3
+
+and we make it active
+
+    >>> it = count_to_three()
+    >>> it.next()
+    1
+
+Now we can see that our Canary object is alive in memory
+
+    >>> import objgraph
+    >>> objgraph.count('Canary')
+    1
+
+and we can see what holds it in memory
+
+    >>> objgraph.show_backrefs(objgraph.by_type('Canary'),
+    ...                        filename='canary.png')
+    Graph written to ....dot (4 nodes)
+    Image generated as canary.png
+
+.. image:: canary.png
+    :alt: [graph of objects from which the canary is reachable]
+
+or just one chain straight back to a module.
+
+    >>> import inspect
+    >>> objgraph.show_chain(
+    ...     objgraph.find_backref_chain(objgraph.by_type('Canary')[0],
+    ...                                 inspect.ismodule),
+    ...     filename='canary-chain.png')
+    Graph written to ....dot (11 nodes)
+    Image generated as canary-chain.png
+
+.. image:: canary-chain.png
+    :alt: [chain of objects from a module to the canary]
+
+To a first approximation, modules are garbage-collection roots, which makes
+the latter technique most useful.

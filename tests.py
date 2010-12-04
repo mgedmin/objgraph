@@ -19,6 +19,7 @@ def tearDown(test):
 
 def test_suite():
     return doctest.DocFileSuite('README.txt', 'examples.txt',
+                                'generator-sample.txt',
                                 setUp=setUp, tearDown=tearDown,
                                 optionflags=doctest.ELLIPSIS)
 

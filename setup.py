@@ -18,7 +18,8 @@ def get_version():
     return d['__version__']
 
 
-def build_images(sources=['README.txt', 'examples.txt']):
+def build_images(sources=['README.txt', 'examples.txt',
+                          'generator-sample.txt']):
     for fn in sources:
         doctest.testfile(fn, optionflags=doctest.ELLIPSIS)
 
