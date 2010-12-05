@@ -468,8 +468,7 @@ def show_graph(objs, edge_func, swap_source_target,
                 queue.append(source)
             n += 1
         if skipped > 0:
-            h = 0
-            s = 1
+            h, s, v = gradient((0, 1, 1), (0, 1, .3), tdepth + 1, max_depth)
             if swap_source_target:
                 label = "%d more references" % skipped
                 edge = "%s->too_many_%s" % (obj_node_id(target), obj_node_id(target))
@@ -478,8 +477,7 @@ def show_graph(objs, edge_func, swap_source_target,
                 edge = "too_many_%s->%s" % (obj_node_id(target), obj_node_id(target))
             print >> f, '  %s[color=red,style=dotted,len=0.25,weight=10];' % edge
             print >> f, '  too_many_%s[label="%s",shape=box,height=0.25,color=red,fillcolor="%g,%g,%g",fontsize=6];' % (obj_node_id(target), label, h, s, v)
-            if v < 0.5:
-                print >> f, '  too_many_%s[fontcolor=white];' % (obj_node_id(target))
+            print >> f, '  too_many_%s[fontcolor=white];' % (obj_node_id(target))
     print >> f, "}"
     f.close()
     print "Graph written to %s (%d nodes)" % (dot_filename, nodes)
