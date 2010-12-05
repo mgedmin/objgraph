@@ -1,0 +1,41 @@
+:mod:`objgraph`
+===============
+
+.. automodule:: objgraph
+
+.. currentmodule:: objgraph
+
+
+Statistics
+----------
+
+.. autofunction:: count
+
+.. autofunction:: typestats
+
+.. autofunction:: most_common_types
+
+.. autofunction:: show_most_common_types
+
+.. autofunction:: show_growth
+
+
+Locating and Filtering Objects
+------------------------------
+
+.. autofunction:: by_type
+
+.. autofunction:: at
+
+
+Traversing and Displaying Object Graphs
+---------------------------------------
+
+.. autofunction:: find_backref_chain
+
+.. autofunction:: show_chain
+
+.. autofunction:: show_backrefs
+
+.. autofunction:: show_refs
+

@@ -111,6 +111,15 @@ More examples
    generator-sample
 
 
+Reference Documentation
+-----------------------
+
+.. toctree::
+   :maxdepth: 2
+
+   objgraph
+
+
 .. include:: README.txt
    :start-after: .. _history:
    :end-before: .. _devel:
