@@ -2,3 +2,4 @@ include Makefile
 include *.txt
 include *.png
 include tests.py
+include conf.py
