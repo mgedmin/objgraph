@@ -31,7 +31,7 @@ and we can see what holds it in memory
     >>> objgraph.show_backrefs(objgraph.by_type('Canary'),
     ...                        max_depth=10,
     ...                        filename='canary.png')
-    Graph written to ....dot (24 nodes)
+    Graph written to ....dot (38 nodes)
     Image generated as canary.png
 
 .. figure:: canary.png
