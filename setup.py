@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import os, sys, doctest, glob
+import os, sys, unittest, doctest, glob
 
 try:
     from setuptools import setup
@@ -39,9 +39,11 @@ def get_description():
 
 
 def build_images():
-    sources = glob.glob('*.txt')
-    for fn in sources:
-        doctest.testfile(fn, optionflags=doctest.ELLIPSIS)
+    import tests
+    suite = doctest.DocFileSuite(optionflags=doctest.ELLIPSIS,
+                                 checker=tests.MyChecker(),
+                                 *glob.glob('*.txt'))
+    unittest.TextTestRunner().run(suite)
 
 
 if len(sys.argv) > 1 and sys.argv[1] == '--build-images':

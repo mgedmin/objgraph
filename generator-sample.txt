@@ -29,14 +29,14 @@ Now we can see that our Canary object is alive in memory
 and we can see what holds it in memory
 
     >>> objgraph.show_backrefs(objgraph.by_type('Canary'),
-    ...                        max_depth=10,
+    ...                        max_depth=7,
     ...                        filename='canary.png')
-    Graph written to ....dot (38 nodes)
+    Graph written to ....dot (15 nodes)
     Image generated as canary.png
 
 .. figure:: canary.png
    :alt: [graph of objects from which the canary is reachable]
-   :scale: 25%
+   :scale: 50%
 
 Or we can examine just one of the reference chains leading straight a module.
 
