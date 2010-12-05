@@ -1,0 +1,24 @@
+Highlighting
+------------
+
+You can highlight some graph nodes.
+
+    >>> class Node(object):
+    ...     def __init__(self, *neighbours):
+    ...         self.neighbours = list(neighbours)
+    >>> a = Node()
+    >>> b = Node(a)
+    >>> c = Node(b)
+    >>> d = Node(c)
+    >>> a.neighbours.append(d)
+
+    >>> import objgraph
+    >>> objgraph.show_backrefs(a, max_depth=15,
+    ...     extra_ignore=[id(locals())],
+    ...     highlight=lambda x: isinstance(x, Node),
+    ...     filename='highlight.png')
+    Graph written to ....dot (12 nodes)
+    Image generated as highlight.png
+
+.. image:: highlight.png
+
