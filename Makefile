@@ -1,6 +1,6 @@
 PYTHON = python
 FILE_WITH_VERSION = objgraph.py
-FILE_WITH_CHANGELOG = objgraph.py
+FILE_WITH_CHANGELOG = CHANGES.txt
 
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
@@ -86,7 +86,12 @@ releasechecklist:
 .PHONY: release
 release: releasechecklist
 	# I'm chicken so I won't actually do these things yet
-	@echo "Please run"
+	@echo "It is a good idea to run"
+	@echo
+	@echo "  make test-all-pythons"
+	@echo "  make clean images docs"
+	@echo
+	@echo "about now.  Then commit the new images and run"
 	@echo
 	@echo "  $(PYTHON) setup.py sdist register upload && bzr tag `$(PYTHON) setup.py --version`"
 	@echo
@@ -95,4 +100,5 @@ release: releasechecklist
 	@echo
 	@echo '  bzr ci -m "Post-release version bump" && bzr push'
 	@echo
+	@echo "and don't forget to publish the docs from _build/html"
 

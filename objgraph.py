@@ -36,8 +36,8 @@ Released under the MIT licence.
 __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008-2010 Marius Gedminas"
 __license__ = "MIT"
-__version__ = "1.5.0dev"
-__date__ = "2010-12-04"
+__version__ = "1.5.0"
+__date__ = "2010-12-05"
 
 
 import gc
@@ -80,6 +80,7 @@ def typestats():
         >>> typestats()
         {'list': 12041, 'tuple': 10245, ...}
 
+    .. versionadded:: 1.1
     """
     stats = {}
     for o in gc.get_objects():
@@ -103,6 +104,7 @@ def most_common_types(limit=10):
         >>> most_common_types(limit=2)
         [('list', 12041), ('tuple', 10245)]
 
+    .. versionadded:: 1.4
     """
     stats = sorted(typestats().items(), key=operator.itemgetter(1),
                    reverse=True)
@@ -125,6 +127,7 @@ def show_most_common_types(limit=10):
         dict                       953
         builtin_function_or_method 800
 
+    .. versionadded:: 1.1
     """
     stats = most_common_types(limit)
     width = max(len(name) for name, count in stats)
@@ -152,6 +155,7 @@ def show_growth(limit=10, peak_stats={}):
         dict                    1922        +7
         ...
 
+    .. versionadded:: 1.5
     """
     gc.collect()
     stats = typestats()
@@ -219,6 +223,10 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
         [<module ...>, ..., obj]
 
     Returns ``[obj]`` if such a chain could not be found.
+
+    .. versionchanged:: 1.5
+       Returns ``obj`` instead of ``None`` when a chain could not be found.
+
     """
     queue = [obj]
     depth = {id(obj): 0}
@@ -294,6 +302,12 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
         >>> show_backrefs(obj, highlight=inspect.isclass)
         >>> show_backrefs(obj, extra_ignore=[id(locals())])
 
+    .. versionchanged:: 1.3
+       New parameters: ``filename``, ``extra_info``.
+
+    .. versionchanged:: 1.5
+       New parameter: ``refcounts``.
+
     """
     show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
                filter=filter, too_many=too_many, highlight=highlight,
@@ -340,6 +354,15 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
         >>> show_refs(obj, highlight=inspect.isclass)
         >>> show_refs(obj, extra_ignore=[id(locals())])
 
+    .. versionadded:: 1.1
+
+    .. versionchanged:: 1.3
+       New parameters: ``filename``, ``extra_info``.
+
+    .. versionchanged:: 1.5
+       New parameter: ``refcounts``.
+       Follows references from module objects instead of stopping.
+
     """
     show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
                filter=filter, too_many=too_many, highlight=highlight,
@@ -356,6 +379,8 @@ def show_chain(*chains, **kw):
 
     You can specify ``highlight``, ``extra_info`` or ``filename`` arguments
     like for :func:`show_backrefs`.
+
+    .. versionadded:: 1.5
     """
     chains = [chain for chain in chains if chain] # remove empty ones
     def in_chains(x, ids=set(map(id, itertools.chain(*chains)))):
