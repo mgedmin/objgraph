@@ -15,6 +15,13 @@ images:
 test check:
 	$(PYTHON) tests.py
 
+.PHONY: test-all-pythons
+test-all-pythons:
+	make test PYTHON=python2.4
+	make test PYTHON=python2.5
+	make test PYTHON=python2.6
+	make test PYTHON=python2.7
+
 .PHONY: coverage
 coverage:
 	PYTHONPATH=.:$$PYTHONPATH coverage run tests.py
