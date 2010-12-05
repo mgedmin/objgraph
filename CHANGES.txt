@@ -22,6 +22,8 @@ those classes.
 
 Option to show reference counts in show_refs/show_backrefs.
 
+Add Sphinx documentation and a PyPI long description.
+
 
 1.4.0 (2010-11-03)
 ------------------
