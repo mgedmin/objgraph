@@ -1,5 +1,5 @@
-More examples
--------------
+Uncollectable garbage
+---------------------
 
 Objects that have a __del__ method
 
@@ -22,6 +22,15 @@ Objects that have a __del__ method
     Image generated as finalizers.png
 
 .. image:: finalizers.png
+
+Note that classes that *define* a __del__ method do not have this indicator
+
+    >>> objgraph.show_refs(Nondestructible, max_depth=1,
+    ...                    filename='class-with-finalizers.png')
+    Graph written to ....dot (5 nodes)
+    Image generated as class-with-finalizers.png
+
+.. image:: class-with-finalizers.png
 
 
 Too many references

@@ -35,6 +35,9 @@ show_refs/show_backrefs by specifying ``too_many``.
 
 Make show_refs() descend into modules.
 
+Do not highlight classes that define a __del__, highlight only instances of
+those classes.
+
 
 1.4.0 (2010-11-03)
 ------------------
@@ -442,7 +445,7 @@ def show_graph(objs, edge_func, swap_source_target,
         print >> f, '  %s[fillcolor="%g,%g,%g"];' % (obj_node_id(target), h, s, v)
         if v < 0.5:
             print >> f, '  %s[fontcolor=white];' % (obj_node_id(target))
-        if hasattr(target, '__del__'):
+        if hasattr(getattr(target, '__class__', None), '__del__'):
             print >> f, "  %s->%s_has_a_del[color=red,style=dotted,len=0.25,weight=10];" % (obj_node_id(target), obj_node_id(target))
             print >> f, '  %s_has_a_del[label="__del__",shape=doublecircle,height=0.25,color=red,fillcolor="0,.5,1",fontsize=6];' % (obj_node_id(target))
         if tdepth >= max_depth:
