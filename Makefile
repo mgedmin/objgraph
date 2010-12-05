@@ -20,7 +20,7 @@ images:
 docs:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
-	@echo "Now look at $(BUILDDIR)/html/README.html"
+	@echo "Now look at $(BUILDDIR)/html/index.html"
 
 .PHONY: clean
 clean:
