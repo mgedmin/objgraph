@@ -1,4 +1,4 @@
 include Makefile
-include examples.txt
+include *.txt
 include *.png
 include tests.py
