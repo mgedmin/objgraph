@@ -27,11 +27,9 @@ def get_version():
 
 
 def get_description():
-    readme = read('README.txt').split('\n\n\n')
+    readme = read('README.txt')
     changelog = read('CHANGES.txt')
-    # This counting of blank lines is fragile!  I want the first bit
-    # and the History bit, but not the rest of README.
-    return readme[0] + '\n\n\n' + changelog + '\n\n\n' + readme[-2]
+    return readme + '\n\n\n' + changelog
 
 
 def build_images():

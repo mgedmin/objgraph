@@ -11,114 +11,16 @@ I recommend `xdot <http://pypi.python.org/pypi/xdot>`_ for interactive use.
 in your ``PATH``.
 
 
-Quick start
------------
+Installation and Documentation
+------------------------------
 
-Try this in a Python shell:
+``pip install objgraph`` or `download it from PyPI
+<http://pypi.python.org/pypi/objgraph>`_.
 
-    >>> x = []
-    >>> y = [x, [x], dict(x=x)]
-    >>> import objgraph
-    >>> objgraph.show_refs([y], filename='sample-graph.png')
-    Graph written to ....dot (5 nodes)
-    Image generated as sample-graph.png
-
-(If you've installed ``xdot``, omit the filename argument to get the
-interactive viewer.)
-
-You should see a graph like this:
-
-.. image:: sample-graph.png
-    :alt: [graph of objects reachable from y]
+Documentation lives at http://mg.pov.lt/objgraph.
 
 
-Backreferences
---------------
-
-Now try
-
-    >>> objgraph.show_backrefs([x], filename='sample-backref-graph.png')
-    Graph written to ....dot (8 nodes)
-    Image generated as sample-backref-graph.png
-
-and you'll see
-
-.. image:: sample-backref-graph.png
-    :alt: [graph of objects from which y is reachable]
-
-
-Memory leak example
--------------------
-
-The original purpose of ``objgraph`` was to help me find memory leaks.
-The idea was to pick an object in memory that shouldn't be there and then
-see what references are keeping it alive.
-
-    >>> class MyBigFatObject(object):
-    ...     pass
-
-    >>> def computate_something(_cache={}):
-    ...     _cache[42] = dict(foo=MyBigFatObject(),
-    ...                       bar=MyBigFatObject())
-    ...     # a very explicit and easy-to-find "leak" but oh well
-
-Let's take a look at object counts before we call our function
-
-    >>> objgraph.show_growth() # doctest: +SKIP
-    tuple                          12272    +12272
-    function                        3308     +3308
-    dict                            1915     +1915
-    ...
-
-    >>> computate_something()
-
-and after
-
-    >>> objgraph.show_growth() # doctest: +SKIP
-    wrapper_descriptor       970       +14
-    tuple                  12282       +10
-    dict                    1922        +7
-    member_descriptor        170        +4
-    getset_descriptor        191        +3
-    list                     491        +2
-    MyBigFatObject             2        +2
-    method_descriptor        343        +1
-
-Now suppose I notice in the list above that there are MyBigFatObject
-instances in memory where there should be none.  I can pick one of them and
-trace the reference chain back to one of the garbage collector's roots.
-
-For simplicity's sake let's assume all of the roots are modules; if you've
-any examples where that isn't true, I'd love to hear about them.
-
-    >>> import inspect, random
-    >>> objgraph.show_chain(
-    ...     objgraph.find_backref_chain(
-    ...         random.choice(objgraph.by_type('MyBigFatObject')),
-    ...         inspect.ismodule),
-    ...     filename='chain.png')
-    Graph written to ...dot (13 nodes)
-    Image generated as chain.png
-
-.. image:: chain.png
-    :alt: [chain of references from a module to a MyBigFatObject instance]
-
-There are other tools, perhaps better suited for memory leak hunting:
-`heapy <http://pypi.python.org/pypi/guppy>`_,
-`Dozer <http://pypi.python.org/pypi/Dozer>`_.
-
-
-More examples
--------------
-
-.. toctree::
-   :maxdepth: 2
-
-   references
-   highlighting
-   uncollectable
-   generator-sample
-
+.. _history:
 
 History
 -------
@@ -135,9 +37,15 @@ illustrated examples -- is in this series of blog posts:
   <http://mg.pov.lt/blog/object-graphs-with-graphviz.html>`_
 
 
-And here's the change log
+.. _devel:
 
-.. toctree::
-   :maxdepth: 2
+Support and Development
+-----------------------
 
-   CHANGES
+The source code can be found in this Bazaar repository:
+https://code.launchpad.net/~mgedmin/objgraph/trunk.
+
+To check it out, use ``bzr branch lp:objgraph``.
+
+Report bugs at https://bugs.launchpad.net/objgraph.
+

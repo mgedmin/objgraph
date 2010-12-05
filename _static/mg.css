@@ -1,0 +1,16 @@
+@import url("default.css");
+
+pre {
+    border: 1px dotted #869abf;
+    overflow: hidden;
+}
+
+div.body h1,
+div.body h2,
+div.body h3,
+div.body h4,
+div.body h5,
+div.body h6 {
+    border: none;
+    font-weight: bold;
+}
