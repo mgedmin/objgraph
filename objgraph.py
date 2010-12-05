@@ -566,9 +566,17 @@ def gradient(start_color, end_color, depth, max_depth):
 def edge_label(source, target):
     if isinstance(target, dict) and target is getattr(source, '__dict__', None):
         return ' [label="__dict__",weight=10]'
-    elif isinstance(source, types.FrameType) and target is source.f_locals:
-        return ' [label="f_locals",weight=10]'
-    elif isinstance(source, dict):
+    if isinstance(source, types.FrameType):
+        if target is source.f_locals:
+            return ' [label="f_locals",weight=10]'
+        if target is source.f_globals:
+            return ' [label="f_globals",weight=10]'
+    if isinstance(source, types.MethodType):
+        if target is source.im_self:
+            return ' [label="im_self",weight=10]'
+        if target is source.im_func:
+            return ' [label="im_func",weight=10]'
+    if isinstance(source, dict):
         for k, v in source.iteritems():
             if v is target:
                 if isinstance(k, basestring) and k:
