@@ -36,7 +36,7 @@ and we can see what holds it in memory
 .. image:: canary.png
     :alt: [graph of objects from which the canary is reachable]
 
-or just one chain straight back to a module.
+Or we can examine just one of the reference chains leading straight a module.
 
     >>> import inspect
     >>> objgraph.show_chain(

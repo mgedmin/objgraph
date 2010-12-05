@@ -1,7 +1,8 @@
 Uncollectable garbage
 ---------------------
 
-Objects that have a __del__ method
+Objects that have a __del__ method cannot be collected by the garbage
+collector if they participate in a cycle.
 
     >>> class Nondestructible(list):
     ...     def __del__(self):
@@ -14,6 +15,8 @@ Objects that have a __del__ method
     >>> y.append(z)
     >>> z.append(x)
     >>> del x, y, z
+
+We highlight these objects by showing the existence of a __del__.
 
     >>> import objgraph
     >>> objgraph.show_backrefs(objgraph.by_type('Nondestructible'),

@@ -2,6 +2,11 @@ PYTHON = python
 FILE_WITH_VERSION = objgraph.py
 FILE_WITH_CHANGELOG = objgraph.py
 
+SPHINXOPTS    =
+SPHINXBUILD   = sphinx-build
+BUILDDIR      = _build
+ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(SPHINXOPTS) .
+
 
 .PHONY: default
 default:
@@ -10,6 +15,16 @@ default:
 .PHONY: images
 images:
 	$(PYTHON) setup.py --build-images
+
+.PHONY: docs
+docs:
+	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	@echo
+	@echo "Now look at $(BUILDDIR)/html/README.html"
+
+.PHONY: clean
+clean:
+	-rm -rf $(BUILDDIR)/*
 
 .PHONY: test check
 test check:
