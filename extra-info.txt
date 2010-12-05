@@ -1,0 +1,14 @@
+Extra information
+-----------------
+
+You can add extra information to object graphs, if you desire.
+
+    >>> x = []
+    >>> y = [x, [x], dict(x=x)]
+    >>> import objgraph
+    >>> objgraph.show_refs([y], extra_info=lambda x: hex(id(x)),
+    ...                    filename='extra-info.png')
+    Graph written to ....dot (5 nodes)
+    Image generated as extra-info.png
+
+.. image:: extra-info.png

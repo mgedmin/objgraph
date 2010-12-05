@@ -506,7 +506,7 @@ def obj_label(obj, extra_info=None, refcounts=False):
         #   something else that doesn't show up in gc.get_referrers()
     label.append(safe_repr(obj))
     if extra_info:
-        label.append(extra_info(obj))
+        label.append(str(extra_info(obj)))
     return quote('\n'.join(label))
 
 

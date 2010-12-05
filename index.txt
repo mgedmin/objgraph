@@ -106,6 +106,7 @@ More examples
    :maxdepth: 2
 
    references
+   extra-info
    highlighting
    uncollectable
    generator-sample
