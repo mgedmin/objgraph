@@ -74,6 +74,12 @@ def typestats():
 
     Note that classes with the same name but defined in different modules
     will be lumped together.
+
+    Example:
+
+        >>> typestats()
+        {'list': 12041, 'tuple': 10245, ...}
+
     """
     stats = {}
     for o in gc.get_objects():
@@ -90,7 +96,13 @@ def most_common_types(limit=10):
     Limits the return value to at most ``limit`` items.  You may set ``limit``
     to None to avoid that.
 
-    The caveats documented in ``typestats`` apply.
+    The caveats documented in :func:`typestats` apply.
+
+    Example:
+
+        >>> most_common_types(limit=2)
+        [('list', 12041), ('tuple', 10245)]
+
     """
     stats = sorted(typestats().items(), key=operator.itemgetter(1),
                    reverse=True)
@@ -102,7 +114,17 @@ def most_common_types(limit=10):
 def show_most_common_types(limit=10):
     """Print the table of types of most common instances
 
-    The caveats documented in ``typestats`` apply.
+    The caveats documented in :func:`typestats` apply.
+
+    Example:
+
+        >>> show_most_common_types(limit=5)
+        tuple                      8959
+        function                   2442
+        wrapper_descriptor         1048
+        dict                       953
+        builtin_function_or_method 800
+
     """
     stats = most_common_types(limit)
     width = max(len(name) for name, count in stats)
@@ -120,7 +142,16 @@ def show_growth(limit=10, peak_stats={}):
     seen peak object counts.  Usually you don't need to pay attention to this
     argument.
 
-    The caveats documented in ``typestats`` apply.
+    The caveats documented in :func:`typestats` apply.
+
+    Example:
+
+        >>> objgraph.show_growth()
+        wrapper_descriptor       970       +14
+        tuple                  12282       +10
+        dict                    1922        +7
+        ...
+
     """
     gc.collect()
     stats = typestats()
@@ -175,6 +206,8 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
 
     The start of the chain will be some object that matches your predicate.
 
+    ``predicate`` is a function taking one argument and returning a boolean.
+
     ``max_depth`` limits the search depth.
 
     ``extra_ignore`` can be a list of object IDs to exclude those objects from
@@ -185,7 +218,7 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
         >>> find_backref_chain(obj, inspect.ismodule)
         [<module ...>, ..., obj]
 
-    Returns [obj] if such a chain could not be found.
+    Returns ``[obj]`` if such a chain could not be found.
     """
     queue = [obj]
     depth = {id(obj): 0}
@@ -221,7 +254,7 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
 
 
 def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
-                  highlight=None, filename=None, extra_info=(lambda _: ''),
+                  highlight=None, filename=None, extra_info=None,
                   refcounts=False):
     """Generate an object reference graph ending at ``objs``
 
@@ -231,8 +264,11 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     ``objs`` can be a single object, or it can be a list of objects.  If
     unsure, wrap the single object in a new list.
 
-    Produces a Graphviz .dot file and spawns a viewer (xdot) if one is
-    installed, otherwise converts the graph to a .png image.
+    ``filename`` if specified, can be the name of a .dot or a .png file,
+    indicating the desired output format.  If not specified, ``show_backrefs``
+    will try to produce a .dot file and spawn a viewer (xdot).  If xdot is
+    not available, ``show_backrefs`` will convert the .dot file to a .png
+    and print its name.
 
     Use ``max_depth`` and ``too_many`` to limit the depth and breadth of the
     graph.
@@ -242,8 +278,8 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
 
     Use ``highlight`` (a predicate) to highlight certain graph nodes in blue.
 
-    Use ``extra_info`` (a function returning a string) to report extra
-    information for objects.
+    Use ``extra_info`` (a function taking one argument and returning a
+    string) to report extra information for objects.
 
     Specify ``refcounts=True`` if you want to see reference counts.
     These will mostly match the number of arrows pointing to an object,
@@ -266,7 +302,7 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
 
 
 def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
-              highlight=None, filename=None, extra_info=(lambda _: ''),
+              highlight=None, filename=None, extra_info=None,
               refcounts=False):
     """Generate an object reference graph starting at ``objs``
 
@@ -276,8 +312,11 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     ``objs`` can be a single object, or it can be a list of objects.  If
     unsure, wrap the single object in a new list.
 
-    Produces a Graphviz .dot file and spawns a viewer (xdot) if one is
-    installed, otherwise converts the graph to a .png image.
+    ``filename`` if specified, can be the name of a .dot or a .png file,
+    indicating the desired output format.  If not specified, ``show_refs``
+    will try to produce a .dot file and spawn a viewer (xdot).  If xdot is
+    not available, ``show_refs`` will convert the .dot file to a .png
+    and print its name.
 
     Use ``max_depth`` and ``too_many`` to limit the depth and breadth of the
     graph.
@@ -311,12 +350,12 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
 def show_chain(*chains, **kw):
     """Show a chain (or several chains) of object references.
 
-    Useful in combination with ``find_backref_chain``, e.g.
+    Useful in combination with :func:`find_backref_chain`, e.g.
 
         >>> show_chain(find_backref_chain(obj, inspect.ismodule))
 
     You can specify ``highlight``, ``extra_info`` or ``filename`` arguments
-    like for ``show_backrefs``.
+    like for :func:`show_backrefs`.
     """
     chains = [chain for chain in chains if chain] # remove empty ones
     def in_chains(x, ids=set(map(id, itertools.chain(*chains)))):
@@ -330,7 +369,7 @@ def show_chain(*chains, **kw):
 
 def show_graph(objs, edge_func, swap_source_target,
                max_depth=3, extra_ignore=(), filter=None, too_many=10,
-               highlight=None, filename=None, extra_info=(lambda _: ''),
+               highlight=None, filename=None, extra_info=None,
                refcounts=False):
     if not isinstance(objs, (list, tuple)):
         objs = [objs]
@@ -456,19 +495,19 @@ def obj_node_id(obj):
     return ('o%d' % id(obj)).replace('-', '_')
 
 
-def obj_label(obj, extra_info=(lambda _: ''), refcounts=False):
+def obj_label(obj, extra_info=None, refcounts=False):
+    label = [type(obj).__name__]
     if refcounts:
-        s = ' [%d]\n' % (sys.getrefcount(obj) - 4)
+        label[0] += ' [%d]' % (sys.getrefcount(obj) - 4)
         # Why -4?  To ignore the references coming from
         #   obj_label's frame (obj)
         #   show_graph's frame (target variable)
         #   sys.getrefcount()'s argument
         #   something else that doesn't show up in gc.get_referrers()
-    else:
-        s = '\n'
-    return quote(type(obj).__name__ + s +
-                 safe_repr(obj) + '\n' +
-                 extra_info(obj)).rstrip()
+    label.append(safe_repr(obj))
+    if extra_info:
+        label.append(extra_info(obj))
+    return quote('\n'.join(label))
 
 
 def quote(s):
