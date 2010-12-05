@@ -20,3 +20,26 @@ The same sort of thing applies to backreferences
 
 .. image:: 42.png
 
+
+Reference counts
+----------------
+
+You can enable reference counts.  The number of arrows pointing to an object
+should match the number in square brackets, usually, but there can be
+exceptions.  E.g. objects internal to objgraph's implementation may inflate
+the reference count somewhat.
+
+    >>> import sys
+    >>> one_reference = object()
+    >>> objgraph.show_backrefs([one_reference], refcounts=True,
+    ...     filename='refcounts.png')
+    Graph written to ....dot (5 nodes)
+    Image generated as refcounts.png
+
+.. image:: refcounts.png
+
+We see two references to the ``one_reference`` object: the one not shown
+comes from the list passed to show_backrefs.
+
+I think the extra references to the frame object and locals dict come from the
+interpreter internals.

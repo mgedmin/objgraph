@@ -38,6 +38,8 @@ Make show_refs() descend into modules.
 Do not highlight classes that define a __del__, highlight only instances of
 those classes.
 
+Option to show reference counts in show_refs/show_backrefs.
+
 
 1.4.0 (2010-11-03)
 ------------------
@@ -301,7 +303,8 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
 
 
 def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
-                  highlight=None, filename=None, extra_info=(lambda _: '')):
+                  highlight=None, filename=None, extra_info=(lambda _: ''),
+                  refcounts=False):
     """Generate an object reference graph ending at ``objs``
 
     The graph will show you what objects refer to ``objs``, directly and
@@ -324,6 +327,10 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     Use ``extra_info`` (a function returning a string) to report extra
     information for objects.
 
+    Specify ``refcounts=True`` if you want to see reference counts.
+    These will mostly match the number of arrows pointing to an object,
+    but can be different for various reasons.
+
     Examples:
 
         >>> show_backrefs(obj)
@@ -337,11 +344,12 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
                filter=filter, too_many=too_many, highlight=highlight,
                edge_func=gc.get_referrers, swap_source_target=False,
-               filename=filename, extra_info=extra_info)
+               filename=filename, extra_info=extra_info, refcounts=refcounts)
 
 
 def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
-              highlight=None, filename=None, extra_info=(lambda _: '')):
+              highlight=None, filename=None, extra_info=(lambda _: ''),
+              refcounts=False):
     """Generate an object reference graph starting at ``objs``
 
     The graph will show you what objects are reachable from ``objs``, directly
@@ -364,6 +372,8 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     Use ``extra_info`` (a function returning a string) to report extra
     information for objects.
 
+    Specify ``refcounts=True`` if you want to see reference counts.
+
     Examples:
 
         >>> show_refs(obj)
@@ -377,7 +387,7 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
                filter=filter, too_many=too_many, highlight=highlight,
                edge_func=gc.get_referents, swap_source_target=True,
-               filename=filename, extra_info=extra_info)
+               filename=filename, extra_info=extra_info, refcounts=refcounts)
 
 
 def show_chain(*chains, **kw):
@@ -402,7 +412,8 @@ def show_chain(*chains, **kw):
 
 def show_graph(objs, edge_func, swap_source_target,
                max_depth=3, extra_ignore=(), filter=None, too_many=10,
-               highlight=None, filename=None, extra_info=(lambda _: '')):
+               highlight=None, filename=None, extra_info=(lambda _: ''),
+               refcounts=False):
     if not isinstance(objs, (list, tuple)):
         objs = [objs]
     if filename and filename.endswith('.dot'):
@@ -427,13 +438,14 @@ def show_graph(objs, edge_func, swap_source_target,
         print >> f, '  %s[fontcolor=red];' % (obj_node_id(obj))
         depth[id(obj)] = 0
         queue.append(obj)
+        del obj
     gc.collect()
     nodes = 0
     while queue:
         nodes += 1
         target = queue.pop(0)
         tdepth = depth[id(target)]
-        print >> f, '  %s[label="%s"];' % (obj_node_id(target), obj_label(target, tdepth, extra_info))
+        print >> f, '  %s[label="%s"];' % (obj_node_id(target), obj_label(target, extra_info, refcounts))
         h, s, v = gradient((0, 0, 1), (0, 0, .3), tdepth, max_depth)
         if inspect.ismodule(target):
             h = .3
@@ -478,6 +490,8 @@ def show_graph(objs, edge_func, swap_source_target,
                 depth[id(source)] = tdepth + 1
                 queue.append(source)
             n += 1
+            del source
+        del neighbours
         if skipped > 0:
             h, s, v = gradient((0, 1, 1), (0, 1, .3), tdepth + 1, max_depth)
             if swap_source_target:
@@ -524,10 +538,19 @@ def obj_node_id(obj):
     return ('o%d' % id(obj)).replace('-', '_')
 
 
-def obj_label(obj, depth, extra_info):
-    return quote(type(obj).__name__ + ':\n' +
+def obj_label(obj, extra_info=(lambda _: ''), refcounts=False):
+    if refcounts:
+        s = ' [%d]\n' % (sys.getrefcount(obj) - 4)
+        # Why -4?  To ignore the references coming from
+        #   obj_label's frame (obj)
+        #   show_graph's frame (target variable)
+        #   sys.getrefcount()'s argument
+        #   something else that doesn't show up in gc.get_referrers()
+    else:
+        s = ':\n'
+    return quote(type(obj).__name__ + s +
                  safe_repr(obj) + '\n' +
-                 extra_info(obj))
+                 extra_info(obj)).rstrip()
 
 
 def quote(s):
