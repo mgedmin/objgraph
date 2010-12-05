@@ -547,7 +547,7 @@ def obj_label(obj, extra_info=(lambda _: ''), refcounts=False):
         #   sys.getrefcount()'s argument
         #   something else that doesn't show up in gc.get_referrers()
     else:
-        s = ':\n'
+        s = '\n'
     return quote(type(obj).__name__ + s +
                  safe_repr(obj) + '\n' +
                  extra_info(obj)).rstrip()
