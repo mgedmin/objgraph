@@ -56,7 +56,7 @@ see what references are keeping it alive.
 
 Let's take a look at object counts before we call our function
 
-    >>> objgraph.show_growth() # doctest: +SKIP
+    >>> objgraph.show_growth() # doctest: +RANDOM_OUTPUT
     tuple                          12272    +12272
     function                        3308     +3308
     dict                            1915     +1915
@@ -66,7 +66,7 @@ Let's take a look at object counts before we call our function
 
 and after
 
-    >>> objgraph.show_growth() # doctest: +SKIP
+    >>> objgraph.show_growth() # doctest: +RANDOM_OUTPUT
     wrapper_descriptor       970       +14
     tuple                  12282       +10
     dict                    1922        +7
