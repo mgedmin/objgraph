@@ -4,6 +4,7 @@ import doctest
 import tempfile
 import os
 import shutil
+import glob
 
 
 def setUp(test):
@@ -18,10 +19,9 @@ def tearDown(test):
 
 
 def test_suite():
-    return doctest.DocFileSuite('README.txt', 'examples.txt',
-                                'generator-sample.txt',
-                                setUp=setUp, tearDown=tearDown,
-                                optionflags=doctest.ELLIPSIS)
+    return doctest.DocFileSuite(setUp=setUp, tearDown=tearDown,
+                                optionflags=doctest.ELLIPSIS,
+                                *glob.glob('*.txt'))
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')

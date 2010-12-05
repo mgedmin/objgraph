@@ -32,25 +32,3 @@ Note that classes that *define* a __del__ method do not have this indicator
 
 .. image:: class-with-finalizers.png
 
-
-Too many references
--------------------
-
-Objects that have too many references are truncated
-
-    >>> objgraph.show_refs([range(12)], too_many=10, filename='too-many.png')
-    Graph written to ....dot (11 nodes)
-    Image generated as too-many.png
-
-.. image:: too-many.png
-
-The same sort of thing applies to backreferences
-
-    >>> moo = 'moo'
-    >>> refs_to_moo = [[moo] for n in range(42)]
-    >>> objgraph.show_backrefs([moo], too_many=5, max_depth=1, filename='42.png')
-    Graph written to ....dot (6 nodes)
-    Image generated as 42.png
-
-.. image:: 42.png
-

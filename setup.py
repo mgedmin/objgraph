@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import os, sys, doctest
+import os, sys, doctest, glob
 
 try:
     from setuptools import setup
@@ -18,8 +18,8 @@ def get_version():
     return d['__version__']
 
 
-def build_images(sources=['README.txt', 'examples.txt',
-                          'generator-sample.txt']):
+def build_images():
+    sources = glob.glob('*.txt')
     for fn in sources:
         doctest.testfile(fn, optionflags=doctest.ELLIPSIS)
 
