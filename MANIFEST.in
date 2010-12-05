@@ -3,3 +3,4 @@ include *.txt
 include *.png
 include tests.py
 include conf.py
+include _static/*.css
