@@ -2,3 +2,4 @@ dist
 objects.dot
 objgraph.egg-info
 tmp
+.coverage

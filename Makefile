@@ -15,6 +15,11 @@ images:
 test check:
 	$(PYTHON) tests.py
 
+.PHONY: coverage
+coverage:
+	PYTHONPATH=.:$$PYTHONPATH coverage run tests.py
+	coverage report
+
 .PHONY: dist
 dist:
 	$(PYTHON) setup.py sdist
