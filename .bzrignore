@@ -4,3 +4,4 @@ objgraph.egg-info
 tmp
 .coverage
 _build
+tags
