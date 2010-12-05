@@ -68,8 +68,8 @@ Project website, public source repository, uploaded to PyPI.
 No code changes.
 
 
-1.1dev (2008-09-05)
--------------------
+1.1 (2008-09-10)
+----------------
 
 New function: show_refs() for showing forward references.
 
