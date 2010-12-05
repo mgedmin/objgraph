@@ -33,6 +33,8 @@ not break.
 Show how many references were skipped from the output of
 show_refs/show_backrefs by specifying ``too_many``.
 
+Make show_refs() descend into modules.
+
 
 1.4.0 (2010-11-03)
 ------------------
@@ -443,7 +445,13 @@ def show_graph(objs, edge_func, swap_source_target,
         if hasattr(target, '__del__'):
             print >> f, "  %s->%s_has_a_del[color=red,style=dotted,len=0.25,weight=10];" % (obj_node_id(target), obj_node_id(target))
             print >> f, '  %s_has_a_del[label="__del__",shape=doublecircle,height=0.25,color=red,fillcolor="0,.5,1",fontsize=6];' % (obj_node_id(target))
-        if inspect.ismodule(target) or tdepth >= max_depth:
+        if tdepth >= max_depth:
+            continue
+        if inspect.ismodule(target) and not swap_source_target:
+            # For show_backrefs(), it makes sense to stop when reaching a
+            # module because you'll end up in sys.modules and explode the
+            # graph with useless clutter.  For show_refs(), it makes sense
+            # to continue.
             continue
         neighbours = edge_func(target)
         ignore.add(id(neighbours))
