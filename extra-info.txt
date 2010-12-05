@@ -11,4 +11,4 @@ You can add extra information to object graphs, if you desire.
     Graph written to ....dot (5 nodes)
     Image generated as extra-info.png
 
-.. image:: extra-info.png
+.. figure:: extra-info.png

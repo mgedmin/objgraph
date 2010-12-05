@@ -8,7 +8,7 @@ Objects that have too many references are truncated
     Graph written to ....dot (6 nodes)
     Image generated as too-many.png
 
-.. image:: too-many.png
+.. figure:: too-many.png
 
 The same sort of thing applies to backreferences
 
@@ -18,7 +18,7 @@ The same sort of thing applies to backreferences
     Graph written to ....dot (6 nodes)
     Image generated as 42.png
 
-.. image:: 42.png
+.. figure:: 42.png
 
 
 Reference counts
@@ -36,7 +36,7 @@ the reference count somewhat.
     Graph written to ....dot (5 nodes)
     Image generated as refcounts.png
 
-.. image:: refcounts.png
+.. figure:: refcounts.png
 
 We see two references to the ``one_reference`` object: the one not shown
 comes from the list passed to show_backrefs.

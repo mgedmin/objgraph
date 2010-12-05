@@ -19,7 +19,7 @@ interactive viewer.)
 
 You should see a graph like this:
 
-.. image:: sample-graph.png
+.. figure:: sample-graph.png
    :alt: [graph of objects reachable from y]
 
 
@@ -34,8 +34,9 @@ Now try
 
 and you'll see
 
-.. image:: sample-backref-graph.png
+.. figure:: sample-backref-graph.png
    :alt: [graph of objects from which y is reachable]
+   :scale: 50%
 
 
 Memory leak example
@@ -91,8 +92,9 @@ any examples where that isn't true, I'd love to hear about them.
     Graph written to ...dot (13 nodes)
     Image generated as chain.png
 
-.. image:: chain.png
+.. figure:: chain.png
    :alt: [chain of references from a module to a MyBigFatObject instance]
+   :scale: 50%
 
 There are other tools, perhaps better suited for memory leak hunting:
 `heapy <http://pypi.python.org/pypi/guppy>`_,

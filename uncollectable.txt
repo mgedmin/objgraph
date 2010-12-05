@@ -24,7 +24,7 @@ We highlight these objects by showing the existence of a ``__del__``.
     Graph written to ....dot (3 nodes)
     Image generated as finalizers.png
 
-.. image:: finalizers.png
+.. figure:: finalizers.png
 
 Note that classes that *define* a ``__del__`` method do not have this
 indicator
@@ -34,5 +34,5 @@ indicator
     Graph written to ....dot (5 nodes)
     Image generated as class-with-finalizers.png
 
-.. image:: class-with-finalizers.png
+.. figure:: class-with-finalizers.png
 

@@ -29,12 +29,14 @@ Now we can see that our Canary object is alive in memory
 and we can see what holds it in memory
 
     >>> objgraph.show_backrefs(objgraph.by_type('Canary'),
+    ...                        max_depth=10,
     ...                        filename='canary.png')
-    Graph written to ....dot (4 nodes)
+    Graph written to ....dot (24 nodes)
     Image generated as canary.png
 
-.. image:: canary.png
-    :alt: [graph of objects from which the canary is reachable]
+.. figure:: canary.png
+   :alt: [graph of objects from which the canary is reachable]
+   :scale: 25%
 
 Or we can examine just one of the reference chains leading straight a module.
 
@@ -46,8 +48,9 @@ Or we can examine just one of the reference chains leading straight a module.
     Graph written to ....dot (11 nodes)
     Image generated as canary-chain.png
 
-.. image:: canary-chain.png
-    :alt: [chain of objects from a module to the canary]
+.. figure:: canary-chain.png
+   :alt: [chain of objects from a module to the canary]
+   :scale: 50%
 
 To a first approximation, modules are garbage-collection roots, which makes
 the latter technique most useful.

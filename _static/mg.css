@@ -14,3 +14,7 @@ div.body h6 {
     border: none;
     font-weight: bold;
 }
+
+div.figure {
+    text-align: center;
+}

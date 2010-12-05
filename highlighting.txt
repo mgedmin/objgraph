@@ -20,5 +20,6 @@ You can highlight some graph nodes.
     Graph written to ....dot (12 nodes)
     Image generated as highlight.png
 
-.. image:: highlight.png
+.. figure:: highlight.png
+   :scale: 50%
 
