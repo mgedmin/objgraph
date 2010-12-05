@@ -30,6 +30,9 @@ find_backref_chain(obj, ...) returns [obj] instead of None when a chain
 could not be found.  This makes show_chain(find_backref_chain(...), ...)
 not break.
 
+Show how many references were skipped from the output of
+show_refs/show_backrefs by specifying ``too_many``.
+
 
 1.4.0 (2010-11-03)
 ------------------
@@ -445,10 +448,14 @@ def show_graph(objs, edge_func, swap_source_target,
         neighbours = edge_func(target)
         ignore.add(id(neighbours))
         n = 0
+        skipped = 0
         for source in neighbours:
             if id(source) in ignore:
                 continue
             if filter and not filter(source):
+                continue
+            if n >= too_many:
+                skipped += 1
                 continue
             if swap_source_target:
                 srcnode, tgtnode = target, source
@@ -460,9 +467,19 @@ def show_graph(objs, edge_func, swap_source_target,
                 depth[id(source)] = tdepth + 1
                 queue.append(source)
             n += 1
-            if n >= too_many:
-                print >> f, '  %s[color=red];' % obj_node_id(target)
-                break
+        if skipped > 0:
+            h = 0
+            s = 1
+            if swap_source_target:
+                label = "%d more references" % skipped
+                edge = "%s->too_many_%s" % (obj_node_id(target), obj_node_id(target))
+            else:
+                label = "%d more backreferences" % skipped
+                edge = "too_many_%s->%s" % (obj_node_id(target), obj_node_id(target))
+            print >> f, '  %s[color=red,style=dotted,len=0.25,weight=10];' % edge
+            print >> f, '  too_many_%s[label="%s",shape=box,height=0.25,color=red,fillcolor="%g,%g,%g",fontsize=6];' % (obj_node_id(target), label, h, s, v)
+            if v < 0.5:
+                print >> f, '  too_many_%s[fontcolor=white];' % (obj_node_id(target))
     print >> f, "}"
     f.close()
     print "Graph written to %s (%d nodes)" % (dot_filename, nodes)
