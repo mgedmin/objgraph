@@ -1,43 +1,48 @@
 Changes
 =======
 
+.. currentmodule:: objgraph
+
 1.5.0 (unreleased)
 ------------------
 
-Show frame objects as well (fixes LP#361704).
+Show frame objects as well (fixes `LP#361704
+<http://launchpad.net/bugs/361704>`_).
 
-New functions: show_growth(), show_chain().
+New functions: :func:`show_growth`, :func:`show_chain`.
 
-find_backref_chain(obj, ...) returns [obj] instead of None when a chain
-could not be found.  This makes show_chain(find_backref_chain(...), ...)
+:func:`find_backref_chain` returns ``[obj]`` instead of ``None`` when a chain
+could not be found.  This makes ``show_chain(find_backref_chain(...), ...)``
 not break.
 
 Show how many references were skipped from the output of
-show_refs/show_backrefs by specifying ``too_many``.
+:func:`show_refs`/:func:`show_backrefs` by specifying ``too_many``.
 
-Make show_refs() descend into modules.
+Make :func:`show_refs` descend into modules.
 
-Do not highlight classes that define a __del__, highlight only instances of
+Do not highlight classes that define a ``__del__``, highlight only instances of
 those classes.
 
-Option to show reference counts in show_refs/show_backrefs.
+Option to show reference counts in :func:`show_refs`/:func:`show_backrefs`.
 
-Add Sphinx documentation and a PyPI long description.
+Add `Sphinx <http://pypi.python.org/pypi/Sphinx>`_ documentation and a PyPI
+long description.
 
 
 1.4.0 (2010-11-03)
 ------------------
 
-Compatibility with Python 2.4 and 2.5 (tempfile.NamedTemporaryFile has no
-delete argument).
+Compatibility with Python 2.4 and 2.5 (``tempfile.NamedTemporaryFile`` has no
+``delete`` argument).
 
-New function: most_common_types().
+New function: :func:`most_common_types`.
 
 
 1.3.1 (2010-07-17)
 ------------------
 
-Rebuild an sdist with no missing files (fixes LP#606604).
+Rebuild an sdist with no missing files (fixes `LP#606604
+<http://launchpad.net/bugs/606604>`_).
 
 Added MANIFEST.in and a Makefile to check that setup.py sdist generates
 source distributions with no files missing.
@@ -46,20 +51,23 @@ source distributions with no files missing.
 1.3 (2010-07-13)
 ----------------
 
-Highlight objects with a __del__ method.
+Highlight objects with a ``__del__`` method.
 
-Fixes LP#483411: suggest always passing [obj] to show_refs, show_backrefs,
-since obj might be a list/tuple.
+Fixes `LP#483411 <http://launchpad.net/bugs/483411>`_: suggest always passing
+``[obj]`` to :func:`show_refs`, :func:`show_backrefs`, since obj might be a
+list/tuple.
 
-Fixes LP#514422: show_refs, show_backrefs don't create files in the current
-working directory any more.  Instead they accept a filename argument, which
-can be a .dot file or a .png file.  If None or not specified, those functions
-will try to spawn xdot as before.
+Fixes `LP#514422 <http://launchpad.net/bugs/514422>`_: :func:`show_refs`,
+:func:`show_backrefs` don't create files in the current working directory any
+more.  Instead they accept a filename argument, which can be a .dot file or a
+.png file.  If None or not specified, those functions will try to spawn xdot
+as before.
 
 New extra_info argument to graph-generating functions (patch by Thouis Jones,
-LP#558914).
+`LP#558914 <http://launchpad.net/bugs/558914>`_).
 
-setup.py should work with distutils now (LP#604430, thanks to Randy Heydon).
+setup.py should work with distutils now (`LP#604430
+<http://launchpad.net/bugs/604430>`_, thanks to Randy Heydon).
 
 
 1.2 (2009-03-25)
@@ -73,13 +81,13 @@ No code changes.
 1.1 (2008-09-10)
 ----------------
 
-New function: show_refs() for showing forward references.
+New function: :func:`show_refs` for showing forward references.
 
-New functions: typestats() and show_most_common_types().
+New functions: :func:`typestats` and :func:`show_most_common_types`.
 
 Object boxes are less crammed with useless information (such as IDs).
 
-Spawns xdot if it is available.
+Spawns `xdot <http://pypi.python.org/pypi/xdot>`_ if it is available.
 
 
 1.0 (2008-06-14)

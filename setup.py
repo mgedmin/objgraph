@@ -20,6 +20,12 @@ def read(filename):
         f.close()
 
 
+def unsphinx(text):
+    # remove Sphinx extensions used in CHANGES.txt from reStructuredText
+    # so that it can be handled by plain docutils
+    return text.replace(':func:', '').replace('.. currentmodule:: objgraph', '')
+
+
 def get_version():
     d = {}
     exec read('objgraph.py') in d
@@ -29,7 +35,7 @@ def get_version():
 def get_description():
     readme = read('README.txt')
     changelog = read('CHANGES.txt')
-    return readme + '\n\n\n' + changelog
+    return unsphinx(readme + '\n\n\n' + changelog)
 
 
 def build_images():
