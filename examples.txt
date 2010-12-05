@@ -41,3 +41,5 @@ The same sort of thing applies to backreferences
     Graph written to ....dot (6 nodes)
     Image generated as 42.png
 
+.. image:: 42.png
+
