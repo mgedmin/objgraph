@@ -134,3 +134,10 @@ illustrated examples -- is in this series of blog posts:
 * `Object graphs with graphviz
   <http://mg.pov.lt/blog/object-graphs-with-graphviz.html>`_
 
+
+And here's the change log
+
+.. toctree::
+   :maxdepth: 2
+
+   CHANGES

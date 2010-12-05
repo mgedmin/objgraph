@@ -12,10 +12,26 @@ def relative(filename):
     return os.path.join(here, filename)
 
 
+def read(filename):
+    f = open(relative(filename))
+    try:
+        return f.read()
+    finally:
+        f.close()
+
+
 def get_version():
     d = {}
-    exec open(relative('objgraph.py')).read() in d
+    exec read('objgraph.py') in d
     return d['__version__']
+
+
+def get_description():
+    readme = read('README.txt').split('\n\n\n')
+    changelog = read('CHANGES.txt')
+    # This counting of blank lines is fragile!  I want the first bit
+    # and the History bit, but not the rest of README.
+    return readme[0] + '\n\n\n' + changelog + '\n\n\n' + readme[-2]
 
 
 def build_images():
@@ -36,4 +52,5 @@ setup(name='objgraph',
       url='http://mg.pov.lt/objgraph/',
       license='MIT',
       description='Draws Python object reference graphs with graphviz',
+      long_description=get_description(),
       py_modules=['objgraph'])
