@@ -14,14 +14,21 @@ collector if they participate in a cycle.
     >>> x.append(y)
     >>> y.append(z)
     >>> z.append(x)
+
+When you remove all other references to these, they end up in ``gc.garbage``.
+
+    >>> import objgraph
     >>> del x, y, z
+    >>> import gc
+    >>> _ = gc.collect()
+    >>> len(gc.garbage)
+    1
 
 We highlight these objects by showing the existence of a ``__del__``.
 
-    >>> import objgraph
     >>> objgraph.show_backrefs(objgraph.by_type('Nondestructible'),
     ...                        filename='finalizers.png')
-    Graph written to ....dot (3 nodes)
+    Graph written to ....dot (8 nodes)
     Image generated as finalizers.png
 
 .. figure:: finalizers.png
