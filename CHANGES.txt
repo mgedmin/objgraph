@@ -3,7 +3,8 @@ Changes
 
 .. currentmodule:: objgraph
 
-1.5.1 (unreleased)
+
+1.5.1 (2010-12-09)
 ------------------
 
 - Avoid test failures in uncollectable-garbage.txt (fixes `LP#686731
