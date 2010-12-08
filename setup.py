@@ -38,18 +38,20 @@ def get_description():
     return unsphinx(readme + '\n\n\n' + changelog)
 
 
-def build_images():
+def build_images(doctests=()):
     import tests
+    if not doctests:
+        doctests = glob.glob('*.txt')
     suite = doctest.DocFileSuite(optionflags=doctest.ELLIPSIS,
                                  checker=tests.MyChecker(),
-                                 *glob.glob('*.txt'))
+                                 *doctests)
     result = unittest.TextTestRunner().run(suite)
     if not result.wasSuccessful():
         sys.exit(1)
 
 
 if len(sys.argv) > 1 and sys.argv[1] == '--build-images':
-    build_images()
+    build_images(sys.argv[2:])
     sys.exit(0)
 
 
