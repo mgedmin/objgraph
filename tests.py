@@ -21,10 +21,13 @@ class MyChecker(doctest.OutputChecker):
 def setUp(test):
     test.tmpdir = tempfile.mkdtemp(prefix='test-objgraph-')
     test.prevdir = os.getcwd()
+    test.prevtempdir = tempfile.tempdir
+    tempfile.tempdir = test.tmpdir
     os.chdir(test.tmpdir)
 
 
 def tearDown(test):
+    tempfile.tempdir = test.prevtempdir
     os.chdir(test.prevdir)
     shutil.rmtree(test.tmpdir)
 
