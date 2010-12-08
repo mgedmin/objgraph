@@ -37,6 +37,11 @@ test-all-pythons:
 	make test PYTHON=python2.6
 	make test PYTHON=python2.7
 
+.PHONY: preview-pypi-description
+preview-pypi-description:
+	# pip install restview, if missing
+	restview -e "$(PYTHON) setup.py --long-description"
+
 .PHONY: coverage
 coverage:
 	PYTHONPATH=.:$$PYTHONPATH coverage run tests.py
