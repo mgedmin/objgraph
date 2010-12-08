@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import os, sys, unittest, doctest, glob
+import os, sys, unittest, doctest
 
 try:
     from setuptools import setup
@@ -41,7 +41,7 @@ def get_description():
 def build_images(doctests=()):
     import tests
     if not doctests:
-        doctests = glob.glob('*.txt')
+        doctests = tests.find_doctests()
     suite = doctest.DocFileSuite(optionflags=doctest.ELLIPSIS,
                                  checker=tests.MyChecker(),
                                  *doctests)

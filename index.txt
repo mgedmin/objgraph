@@ -138,6 +138,13 @@ And here's the change log
 .. include:: README.txt
    :start-after: .. _devel:
 
+For more information, see :ref:`hacking`.
+
+.. toctree::
+   :hidden:
+
+   HACKING
+
 
 .. Indices and tables
 .. ------------------

@@ -9,6 +9,8 @@ Changes
 - Avoid test failures in uncollectable-garbage.txt (fixes `LP#686731
   <http://launchpad.net/bugs/686731>`_).
 
+- Added HACKING.txt.
+
 
 1.5.0 (2010-12-05)
 ------------------

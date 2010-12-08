@@ -32,11 +32,17 @@ def tearDown(test):
     shutil.rmtree(test.tmpdir)
 
 
+def find_doctests():
+    return [fn for fn in glob.glob('*.txt')
+            if fn != 'HACKING.txt']
+
+
 def test_suite():
+    doctests = find_doctests()
     return doctest.DocFileSuite(setUp=setUp, tearDown=tearDown,
                                 optionflags=doctest.ELLIPSIS,
                                 checker=MyChecker(),
-                                *glob.glob('*.txt'))
+                                *doctests)
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
