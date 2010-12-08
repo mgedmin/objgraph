@@ -43,7 +43,9 @@ def build_images():
     suite = doctest.DocFileSuite(optionflags=doctest.ELLIPSIS,
                                  checker=tests.MyChecker(),
                                  *glob.glob('*.txt'))
-    unittest.TextTestRunner().run(suite)
+    result = unittest.TextTestRunner().run(suite)
+    if not result.wasSuccessful():
+        sys.exit(1)
 
 
 if len(sys.argv) > 1 and sys.argv[1] == '--build-images':
