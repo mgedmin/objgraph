@@ -17,7 +17,7 @@ Suppose we've a generator that uses it
 and we make it active
 
     >>> it = count_to_three()
-    >>> it.next()
+    >>> next(it)
     1
 
 Now we can see that our Canary object is alive in memory
