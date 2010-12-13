@@ -32,10 +32,10 @@ test check:
 
 .PHONY: test-all-pythons
 test-all-pythons:
-	make test PYTHON=python2.4
-	make test PYTHON=python2.5
 	make test PYTHON=python2.6
 	make test PYTHON=python2.7
+	make test PYTHON=python3.1
+	make test PYTHON=python3.2
 
 .PHONY: preview-pypi-description
 preview-pypi-description:
