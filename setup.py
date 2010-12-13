@@ -65,4 +65,8 @@ setup(name='objgraph',
       license='MIT',
       description='Draws Python object reference graphs with graphviz',
       long_description=get_description(),
+      classifiers=[
+          'Programming Language :: Python',
+          'Programming Language :: Python :: 3',
+      ],
       py_modules=['objgraph'])
