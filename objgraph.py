@@ -165,7 +165,7 @@ def show_growth(limit=10, peak_stats={}):
     gc.collect()
     stats = typestats()
     deltas = {}
-    for name, count in stats.iteritems():
+    for name, count in stats.items():
         old_count = peak_stats.get(name, 0)
         if count > old_count:
             deltas[name] = count - old_count
@@ -598,7 +598,7 @@ def edge_label(source, target):
         if target is source.__func__:
             return ' [label="__func__",weight=10]'
     if isinstance(source, dict):
-        for k, v in source.iteritems():
+        for k, v in source.items():
             if v is target:
                 if isinstance(k, basestring) and k:
                     return ' [label="%s",weight=2]' % quote(k)
