@@ -52,6 +52,11 @@ import sys
 import itertools
 
 
+# Py3k Compatibility:
+if sys.version_info >= (3,):
+    basestring = str
+
+
 def count(typename):
     """Count objects tracked by the garbage collector with a given class name.
 
