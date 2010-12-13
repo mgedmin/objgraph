@@ -401,7 +401,7 @@ def show_graph(objs, edge_func, swap_source_target,
     if not isinstance(objs, (list, tuple)):
         objs = [objs]
     if filename and filename.endswith('.dot'):
-        f = file(filename, 'w')
+        f = open(filename, 'w')
         dot_filename = filename
     else:
         fd, dot_filename = tempfile.mkstemp('.dot', text=True)
@@ -497,7 +497,7 @@ def show_graph(objs, edge_func, swap_source_target,
         if not filename:
             print "Graph viewer (xdot) not found, generating a png instead"
         if filename and filename.endswith('.png'):
-            f = file(filename, 'wb')
+            f = open(filename, 'wb')
             png_filename = filename
         else:
             if filename:
