@@ -137,7 +137,7 @@ def show_most_common_types(limit=10):
     stats = most_common_types(limit)
     width = max(len(name) for name, count in stats)
     for name, count in stats:
-        print name.ljust(width), count
+        print(name.ljust(width) + ' ' + count)
 
 
 def show_growth(limit=10, peak_stats={}):
@@ -177,7 +177,7 @@ def show_growth(limit=10, peak_stats={}):
     if deltas:
         width = max(len(name) for name, count in deltas)
         for name, delta in deltas:
-            print name.ljust(width), "%9d %+9d" % (stats[name], delta)
+            print('%s%9d %+9d' % (name.ljust(width), stats[name], delta))
 
 
 def by_type(typename):
@@ -411,8 +411,8 @@ def show_graph(objs, edge_func, swap_source_target,
     else:
         fd, dot_filename = tempfile.mkstemp('.dot', text=True)
         f = os.fdopen(fd, "w")
-    print >> f, 'digraph ObjectGraph {'
-    print >> f, '  node[shape=box, style=filled, fillcolor=white];'
+    f.write('digraph ObjectGraph {\n'
+            '  node[shape=box, style=filled, fillcolor=white];\n')
     queue = []
     depth = {}
     ignore = set(extra_ignore)
@@ -424,7 +424,7 @@ def show_graph(objs, edge_func, swap_source_target,
     ignore.add(id(sys._getframe()))  # this function
     ignore.add(id(sys._getframe(1))) # show_refs/show_backrefs, most likely
     for obj in objs:
-        print >> f, '  %s[fontcolor=red];' % (obj_node_id(obj))
+        f.write('  %s[fontcolor=red];\n' % (obj_node_id(obj)))
         depth[id(obj)] = 0
         queue.append(obj)
         del obj
@@ -434,7 +434,7 @@ def show_graph(objs, edge_func, swap_source_target,
         nodes += 1
         target = queue.pop(0)
         tdepth = depth[id(target)]
-        print >> f, '  %s[label="%s"];' % (obj_node_id(target), obj_label(target, extra_info, refcounts))
+        f.write('  %s[label="%s"];\n' % (obj_node_id(target), obj_label(target, extra_info, refcounts)))
         h, s, v = gradient((0, 0, 1), (0, 0, .3), tdepth, max_depth)
         if inspect.ismodule(target):
             h = .3
@@ -443,12 +443,12 @@ def show_graph(objs, edge_func, swap_source_target,
             h = .6
             s = .6
             v = 0.5 + v * 0.5
-        print >> f, '  %s[fillcolor="%g,%g,%g"];' % (obj_node_id(target), h, s, v)
+        f.write('  %s[fillcolor="%g,%g,%g"];\n' % (obj_node_id(target), h, s, v))
         if v < 0.5:
-            print >> f, '  %s[fontcolor=white];' % (obj_node_id(target))
+            f.write('  %s[fontcolor=white];\n' % (obj_node_id(target)))
         if hasattr(getattr(target, '__class__', None), '__del__'):
-            print >> f, "  %s->%s_has_a_del[color=red,style=dotted,len=0.25,weight=10];" % (obj_node_id(target), obj_node_id(target))
-            print >> f, '  %s_has_a_del[label="__del__",shape=doublecircle,height=0.25,color=red,fillcolor="0,.5,1",fontsize=6];' % (obj_node_id(target))
+            f.write("  %s->%s_has_a_del[color=red,style=dotted,len=0.25,weight=10];\n" % (obj_node_id(target), obj_node_id(target)))
+            f.write('  %s_has_a_del[label="__del__",shape=doublecircle,height=0.25,color=red,fillcolor="0,.5,1",fontsize=6];\n' % (obj_node_id(target)))
         if tdepth >= max_depth:
             continue
         if inspect.ismodule(target) and not swap_source_target:
@@ -474,7 +474,7 @@ def show_graph(objs, edge_func, swap_source_target,
             else:
                 srcnode, tgtnode = source, target
             elabel = edge_label(srcnode, tgtnode)
-            print >> f, '  %s -> %s%s;' % (obj_node_id(srcnode), obj_node_id(tgtnode), elabel)
+            f.write('  %s -> %s%s;\n' % (obj_node_id(srcnode), obj_node_id(tgtnode), elabel))
             if id(source) not in depth:
                 depth[id(source)] = tdepth + 1
                 queue.append(source)
@@ -489,36 +489,36 @@ def show_graph(objs, edge_func, swap_source_target,
             else:
                 label = "%d more backreferences" % skipped
                 edge = "too_many_%s->%s" % (obj_node_id(target), obj_node_id(target))
-            print >> f, '  %s[color=red,style=dotted,len=0.25,weight=10];' % edge
-            print >> f, '  too_many_%s[label="%s",shape=box,height=0.25,color=red,fillcolor="%g,%g,%g",fontsize=6];' % (obj_node_id(target), label, h, s, v)
-            print >> f, '  too_many_%s[fontcolor=white];' % (obj_node_id(target))
-    print >> f, "}"
+            f.write('  %s[color=red,style=dotted,len=0.25,weight=10];\n' % edge)
+            f.write('  too_many_%s[label="%s",shape=box,height=0.25,color=red,fillcolor="%g,%g,%g",fontsize=6];\n' % (obj_node_id(target), label, h, s, v))
+            f.write('  too_many_%s[fontcolor=white];\n' % (obj_node_id(target)))
+    f.write("}\n")
     f.close()
-    print "Graph written to %s (%d nodes)" % (dot_filename, nodes)
+    print("Graph written to %s (%d nodes)" % (dot_filename, nodes))
     if not filename and program_in_path('xdot'):
-        print "Spawning graph viewer (xdot)"
+        print("Spawning graph viewer (xdot)")
         subprocess.Popen(['xdot', dot_filename])
     elif program_in_path('dot'):
         if not filename:
-            print "Graph viewer (xdot) not found, generating a png instead"
+            print("Graph viewer (xdot) not found, generating a png instead")
         if filename and filename.endswith('.png'):
             f = open(filename, 'wb')
             png_filename = filename
         else:
             if filename:
-                print "Unrecognized file type (%s)" % filename
+                print("Unrecognized file type (%s)" % filename)
             fd, png_filename = tempfile.mkstemp('.png', text=False)
             f = os.fdopen(fd, "wb")
         dot = subprocess.Popen(['dot', '-Tpng', dot_filename],
                                stdout=f)
         dot.wait()
         f.close()
-        print "Image generated as %s" % png_filename
+        print("Image generated as %s" % png_filename)
     else:
         if filename:
-            print "Graph viewer (xdot) and image renderer (dot) not found, not doing anything else"
+            print("Graph viewer (xdot) and image renderer (dot) not found, not doing anything else")
         else:
-            print "Unrecognized file type (%s), not doing anything else" % filename
+            print("Unrecognized file type (%s), not doing anything else" % filename)
 
 
 def obj_node_id(obj):
