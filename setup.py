@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import os, sys, unittest, doctest
+import os, re, sys, unittest, doctest
 
 try:
     from setuptools import setup
@@ -27,9 +27,11 @@ def unsphinx(text):
 
 
 def get_version():
-    d = {}
-    exec read('objgraph.py') in d
-    return d['__version__']
+    r = re.compile('^__version__ = "(.+)"$')
+    for line in read('objgraph.py').splitlines():
+        m = r.match(line)
+        if m:
+            return m.group(1)
 
 
 def get_description():
