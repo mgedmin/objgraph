@@ -401,8 +401,6 @@ def show_graph(objs, edge_func, swap_source_target,
                max_depth=3, extra_ignore=(), filter=None, too_many=10,
                highlight=None, filename=None, extra_info=None,
                refcounts=False):
-    # 2to3 gets confused by filter:
-    filter_ = filter
     if not isinstance(objs, (list, tuple)):
         objs = [objs]
     if filename and filename.endswith('.dot'):
@@ -464,7 +462,7 @@ def show_graph(objs, edge_func, swap_source_target,
         for source in neighbours:
             if id(source) in ignore:
                 continue
-            if filter_ and not filter_(source):
+            if filter and not filter(source):
                 continue
             if n >= too_many:
                 skipped += 1
