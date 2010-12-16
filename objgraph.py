@@ -145,7 +145,7 @@ def show_most_common_types(limit=10):
     stats = most_common_types(limit)
     width = max(len(name) for name, count in stats)
     for name, count in stats:
-        print(name.ljust(width) + ' ' + count)
+        print('%-*s %i' % (width, name, count))
 
 
 def show_growth(limit=10, peak_stats={}):
@@ -185,7 +185,7 @@ def show_growth(limit=10, peak_stats={}):
     if deltas:
         width = max(len(name) for name, count in deltas)
         for name, delta in deltas:
-            print('%s%9d %+9d' % (name.ljust(width), stats[name], delta))
+            print('%-*s%9d %+9d' % (width, name, stats[name], delta))
 
 
 def by_type(typename):
