@@ -58,6 +58,12 @@ except NameError:
     # Python 3.x compatibility
     basestring = str
 
+# Dictionary iteration behavior change in Python 3:
+if sys.version_info < (3,):
+    iteritems = lambda x: x.iteritems()
+else:
+    iteritems = lambda x: x.items()
+
 
 def count(typename):
     """Count objects tracked by the garbage collector with a given class name.
@@ -167,7 +173,7 @@ def show_growth(limit=10, peak_stats={}):
     gc.collect()
     stats = typestats()
     deltas = {}
-    for name, count in stats.items():
+    for name, count in iteritems(stats):
         old_count = peak_stats.get(name, 0)
         if count > old_count:
             deltas[name] = count - old_count
@@ -613,7 +619,7 @@ def edge_label(source, target):
             if target is source.im_func:
                 return ' [label="im_func",weight=10]'
     if isinstance(source, dict):
-        for k, v in source.items():
+        for k, v in iteritems(source):
             if v is target:
                 if isinstance(k, basestring) and k:
                     return ' [label="%s",weight=2]' % quote(k)
