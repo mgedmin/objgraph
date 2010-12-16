@@ -27,7 +27,7 @@ When you remove all other references to these, they end up in ``gc.garbage``.
 We highlight these objects by showing the existence of a ``__del__``.
 
     >>> objgraph.show_backrefs(objgraph.by_type('Nondestructible'),
-    ...                        filename='finalizers.png')
+    ...                        filename='finalizers.png') # doctest: +NODES_VARY
     Graph written to ....dot (8 nodes)
     Image generated as finalizers.png
 

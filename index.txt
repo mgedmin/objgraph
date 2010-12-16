@@ -28,7 +28,7 @@ Backreferences
 
 Now try
 
-    >>> objgraph.show_backrefs([x], filename='sample-backref-graph.png')
+    >>> objgraph.show_backrefs([x], filename='sample-backref-graph.png') # doctest: +NODES_VARY
     Graph written to ....dot (8 nodes)
     Image generated as sample-backref-graph.png
 

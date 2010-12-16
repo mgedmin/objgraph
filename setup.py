@@ -45,7 +45,7 @@ def build_images(doctests=()):
     if not doctests:
         doctests = tests.find_doctests()
     suite = doctest.DocFileSuite(optionflags=doctest.ELLIPSIS,
-                                 checker=tests.MyChecker(),
+                                 checker=tests.RandomOutputChecker(),
                                  *doctests)
     result = unittest.TextTestRunner().run(suite)
     if not result.wasSuccessful():

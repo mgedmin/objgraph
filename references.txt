@@ -32,7 +32,7 @@ the reference count somewhat.
     >>> import sys
     >>> one_reference = object()
     >>> objgraph.show_backrefs([one_reference], refcounts=True,
-    ...     filename='refcounts.png')
+    ...     filename='refcounts.png') # doctest: +NODES_VARY
     Graph written to ....dot (5 nodes)
     Image generated as refcounts.png
 
