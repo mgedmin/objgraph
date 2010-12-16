@@ -503,7 +503,7 @@ def show_graph(objs, edge_func, swap_source_target,
     print("Graph written to %s (%d nodes)" % (dot_filename, nodes))
     if not filename and program_in_path('xdot'):
         print("Spawning graph viewer (xdot)")
-        subprocess.Popen(['xdot', dot_filename])
+        subprocess.Popen(['xdot', dot_filename], close_fds=True)
     elif program_in_path('dot'):
         if not filename:
             print("Graph viewer (xdot) not found, generating a png instead")
@@ -516,7 +516,7 @@ def show_graph(objs, edge_func, swap_source_target,
             fd, png_filename = tempfile.mkstemp('.png', text=False)
             f = os.fdopen(fd, "wb")
         dot = subprocess.Popen(['dot', '-Tpng', dot_filename],
-                               stdout=f)
+                               stdout=f, close_fds=False)
         dot.wait()
         f.close()
         print("Image generated as %s" % png_filename)
