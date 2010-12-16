@@ -4,7 +4,6 @@ import doctest
 import tempfile
 import os
 import shutil
-import sys
 import glob
 
 
@@ -25,7 +24,10 @@ def setUp(test):
     test.prevtempdir = tempfile.tempdir
     tempfile.tempdir = test.tmpdir
     os.chdir(test.tmpdir)
-    if sys.version_info < (2, 6):
+    try:
+        next
+    except NameError:
+        # Python < 2.6 compatibility
         test.globs['next'] = lambda it: it.next()
 
 

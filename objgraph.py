@@ -52,8 +52,10 @@ import sys
 import itertools
 
 
-# Py3k Compatibility:
-if sys.version_info >= (3,):
+try:
+    basestring
+except NameError:
+    # Python 3.x compatibility
     basestring = str
 
 
@@ -556,12 +558,13 @@ def short_repr(obj):
                         types.BuiltinFunctionType)):
         return obj.__name__
     if isinstance(obj, types.MethodType):
-        if sys.version_info >= (2, 6):
+        try:
             if obj.__self__ is not None:
                 return obj.__func__.__name__ + ' (bound)'
             else:
                 return obj.__func__.__name__
-        else:
+        except AttributeError:
+            # Python < 2.6 compatibility
             if obj.im_self is not None:
                 return obj.im_func.__name__ + ' (bound)'
             else:
@@ -598,12 +601,13 @@ def edge_label(source, target):
         if target is source.f_globals:
             return ' [label="f_globals",weight=10]'
     if isinstance(source, types.MethodType):
-        if sys.version_info >= (2, 6):
+        try:
             if target is source.__self__:
                 return ' [label="__self__",weight=10]'
             if target is source.__func__:
                 return ' [label="__func__",weight=10]'
-        else:
+        except AttributeError:
+            # Python < 2.6 compatibility
             if target is source.im_self:
                 return ' [label="im_self",weight=10]'
             if target is source.im_func:
