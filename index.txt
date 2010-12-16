@@ -39,6 +39,19 @@ and you'll see
    :scale: 50%
 
 
+Memory overview
+---------------
+
+To get a quick overview of the objects in memory
+
+    >>> objgraph.show_most_common_types() # doctest: +RANDOM_OUTPUT
+    tuple                      5351
+    function                   1369
+    wrapper_descriptor         967
+    dict                       786
+    ...
+
+
 Memory leak example
 -------------------
 
