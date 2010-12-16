@@ -556,10 +556,17 @@ def short_repr(obj):
                         types.BuiltinFunctionType)):
         return obj.__name__
     if isinstance(obj, types.MethodType):
-        if obj.__self__ is not None:
-            return obj.__func__.__name__ + ' (bound)'
+        if sys.version_info >= (2, 6):
+            if obj.__self__ is not None:
+                return obj.__func__.__name__ + ' (bound)'
+            else:
+                return obj.__func__.__name__
         else:
-            return obj.__func__.__name__
+            if obj.im_self is not None:
+                return obj.im_func.__name__ + ' (bound)'
+            else:
+                return obj.im_func.__name__
+
     if isinstance(obj, types.FrameType):
         return '%s:%s' % (obj.f_code.co_filename, obj.f_lineno)
     if isinstance(obj, (tuple, list, dict, set)):
@@ -591,10 +598,16 @@ def edge_label(source, target):
         if target is source.f_globals:
             return ' [label="f_globals",weight=10]'
     if isinstance(source, types.MethodType):
-        if target is source.__self__:
-            return ' [label="__self__",weight=10]'
-        if target is source.__func__:
-            return ' [label="__func__",weight=10]'
+        if sys.version_info >= (2, 6):
+            if target is source.__self__:
+                return ' [label="__self__",weight=10]'
+            if target is source.__func__:
+                return ' [label="__func__",weight=10]'
+        else:
+            if target is source.im_self:
+                return ' [label="im_self",weight=10]'
+            if target is source.im_func:
+                return ' [label="im_func",weight=10]'
     if isinstance(source, dict):
         for k, v in source.items():
             if v is target:
