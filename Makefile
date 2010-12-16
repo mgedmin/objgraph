@@ -32,12 +32,16 @@ test check:
 
 .PHONY: test-all-pythons
 test-all-pythons:
-	make test PYTHON=python2.4
-	make test PYTHON=python2.5
-	make test PYTHON=python2.6
-	make test PYTHON=python2.7
-	make test PYTHON=python3.1
-	make test PYTHON=python3.2
+	set -e; \
+	for ver in 2.4 2.5 2.6 2.7 3.0 3.1 3.2; do \
+		if which python$$ver > /dev/null; then \
+			$(MAKE) test PYTHON=python$$ver; \
+		else \
+			echo "=================================="; \
+			echo "Skipping python$$ver, not available."; \
+			echo "=================================="; \
+		fi; \
+	done
 
 .PHONY: preview-pypi-description
 preview-pypi-description:
