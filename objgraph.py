@@ -51,11 +51,11 @@ except NameError:
     # Python 3.x compatibility
     basestring = str
 
-# Dictionary iteration behavior change in Python 3:
-if sys.version_info < (3,):
-    iteritems = lambda x: x.iteritems()
-else:
-    iteritems = lambda x: x.items()
+try:
+    iteritems = dict.iteritems
+except AttributeError:
+    # Python 3.x compatibility
+    iteritems = dict.items
 
 
 def count(typename):
