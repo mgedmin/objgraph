@@ -4,7 +4,7 @@ Changes
 .. currentmodule:: objgraph
 
 
-1.6 (unreleased)
+1.6.0 (2010-12-18)
 ------------------
 
 - Python 3 support, thanks to Stefano Rivera (fixes `LP#687601
