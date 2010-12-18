@@ -105,11 +105,24 @@ release: releasechecklist
 	@echo "about now.  Then commit the new images and run"
 	@echo
 	@echo "  $(PYTHON) setup.py sdist register upload && bzr tag `$(PYTHON) setup.py --version`"
+	@echo "  make publish-docs"
 	@echo
 	@echo "Please increment the version number in $(FILE_WITH_VERSION)"
 	@echo "and add a new empty entry at the top of the changelog in $(FILE_WITH_CHANGELOG), then"
 	@echo
 	@echo '  bzr ci -m "Post-release version bump" && bzr push'
 	@echo
-	@echo "and don't forget to publish the docs from _build/html"
+
+.PHONY: publish-docs
+publish-docs:
+	test -d ~/www/objgraph || { \
+	    echo "There's no ~/www/objgraph, do you have the website checked out?"; exit 1; }
+	make clean docs
+	cp -r docs/_build/html/* ~/www/objgraph/
+	svn st ~/www/objgraph/
+	@echo
+	@echo "If everything looks fine, please run"
+	@echo
+	@echo "  svn ci ~/www/objgraph/ -m \"Released objgraph `$(PYTHON) setup.py --version`\""
+	@echo
 
