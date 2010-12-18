@@ -28,7 +28,7 @@ Backreferences
 
 Now try
 
-    >>> objgraph.show_backrefs([x], filename='sample-backref-graph.png')
+    >>> objgraph.show_backrefs([x], filename='sample-backref-graph.png') # doctest: +NODES_VARY
     Graph written to ....dot (8 nodes)
     Image generated as sample-backref-graph.png
 
@@ -37,6 +37,19 @@ and you'll see
 .. figure:: sample-backref-graph.png
    :alt: [graph of objects from which y is reachable]
    :scale: 50%
+
+
+Memory overview
+---------------
+
+To get a quick overview of the objects in memory
+
+    >>> objgraph.show_most_common_types() # doctest: +RANDOM_OUTPUT
+    tuple                      5351
+    function                   1369
+    wrapper_descriptor         967
+    dict                       786
+    ...
 
 
 Memory leak example

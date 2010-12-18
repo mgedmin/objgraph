@@ -12,6 +12,7 @@ in that order.  Then use pydoc to read the docstrings, as there were
 improvements made since those blog posts.
 
 Copyright (c) 2008-2010 Marius Gedminas <marius@pov.lt>
+Copyright (c) 2010 Stefano Rivera <stefano@rivera.za.net>
 
 Released under the MIT licence.
 """
@@ -36,8 +37,8 @@ Released under the MIT licence.
 __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008-2010 Marius Gedminas"
 __license__ = "MIT"
-__version__ = "1.5.2dev"
-__date__ = "2010-12-09"
+__version__ = "1.6dev"
+__date__ = "2010-12-18"
 
 
 import gc
@@ -50,6 +51,19 @@ import subprocess
 import tempfile
 import sys
 import itertools
+
+
+try:
+    basestring
+except NameError:
+    # Python 3.x compatibility
+    basestring = str
+
+# Dictionary iteration behavior change in Python 3:
+if sys.version_info < (3,):
+    iteritems = lambda x: x.iteritems()
+else:
+    iteritems = lambda x: x.items()
 
 
 def count(typename):
@@ -132,7 +146,7 @@ def show_most_common_types(limit=10):
     stats = most_common_types(limit)
     width = max(len(name) for name, count in stats)
     for name, count in stats:
-        print name.ljust(width), count
+        print('%-*s %i' % (width, name, count))
 
 
 def show_growth(limit=10, peak_stats={}):
@@ -160,7 +174,7 @@ def show_growth(limit=10, peak_stats={}):
     gc.collect()
     stats = typestats()
     deltas = {}
-    for name, count in stats.iteritems():
+    for name, count in iteritems(stats):
         old_count = peak_stats.get(name, 0)
         if count > old_count:
             deltas[name] = count - old_count
@@ -172,7 +186,7 @@ def show_growth(limit=10, peak_stats={}):
     if deltas:
         width = max(len(name) for name, count in deltas)
         for name, delta in deltas:
-            print name.ljust(width), "%9d %+9d" % (stats[name], delta)
+            print('%-*s%9d %+9d' % (width, name, stats[name], delta))
 
 
 def by_type(typename):
@@ -399,13 +413,13 @@ def show_graph(objs, edge_func, swap_source_target,
     if not isinstance(objs, (list, tuple)):
         objs = [objs]
     if filename and filename.endswith('.dot'):
-        f = file(filename, 'w')
+        f = open(filename, 'w')
         dot_filename = filename
     else:
         fd, dot_filename = tempfile.mkstemp('.dot', text=True)
         f = os.fdopen(fd, "w")
-    print >> f, 'digraph ObjectGraph {'
-    print >> f, '  node[shape=box, style=filled, fillcolor=white];'
+    f.write('digraph ObjectGraph {\n'
+            '  node[shape=box, style=filled, fillcolor=white];\n')
     queue = []
     depth = {}
     ignore = set(extra_ignore)
@@ -417,7 +431,7 @@ def show_graph(objs, edge_func, swap_source_target,
     ignore.add(id(sys._getframe()))  # this function
     ignore.add(id(sys._getframe(1))) # show_refs/show_backrefs, most likely
     for obj in objs:
-        print >> f, '  %s[fontcolor=red];' % (obj_node_id(obj))
+        f.write('  %s[fontcolor=red];\n' % (obj_node_id(obj)))
         depth[id(obj)] = 0
         queue.append(obj)
         del obj
@@ -427,7 +441,7 @@ def show_graph(objs, edge_func, swap_source_target,
         nodes += 1
         target = queue.pop(0)
         tdepth = depth[id(target)]
-        print >> f, '  %s[label="%s"];' % (obj_node_id(target), obj_label(target, extra_info, refcounts))
+        f.write('  %s[label="%s"];\n' % (obj_node_id(target), obj_label(target, extra_info, refcounts)))
         h, s, v = gradient((0, 0, 1), (0, 0, .3), tdepth, max_depth)
         if inspect.ismodule(target):
             h = .3
@@ -436,12 +450,12 @@ def show_graph(objs, edge_func, swap_source_target,
             h = .6
             s = .6
             v = 0.5 + v * 0.5
-        print >> f, '  %s[fillcolor="%g,%g,%g"];' % (obj_node_id(target), h, s, v)
+        f.write('  %s[fillcolor="%g,%g,%g"];\n' % (obj_node_id(target), h, s, v))
         if v < 0.5:
-            print >> f, '  %s[fontcolor=white];' % (obj_node_id(target))
+            f.write('  %s[fontcolor=white];\n' % (obj_node_id(target)))
         if hasattr(getattr(target, '__class__', None), '__del__'):
-            print >> f, "  %s->%s_has_a_del[color=red,style=dotted,len=0.25,weight=10];" % (obj_node_id(target), obj_node_id(target))
-            print >> f, '  %s_has_a_del[label="__del__",shape=doublecircle,height=0.25,color=red,fillcolor="0,.5,1",fontsize=6];' % (obj_node_id(target))
+            f.write("  %s->%s_has_a_del[color=red,style=dotted,len=0.25,weight=10];\n" % (obj_node_id(target), obj_node_id(target)))
+            f.write('  %s_has_a_del[label="__del__",shape=doublecircle,height=0.25,color=red,fillcolor="0,.5,1",fontsize=6];\n' % (obj_node_id(target)))
         if tdepth >= max_depth:
             continue
         if inspect.ismodule(target) and not swap_source_target:
@@ -467,7 +481,7 @@ def show_graph(objs, edge_func, swap_source_target,
             else:
                 srcnode, tgtnode = source, target
             elabel = edge_label(srcnode, tgtnode)
-            print >> f, '  %s -> %s%s;' % (obj_node_id(srcnode), obj_node_id(tgtnode), elabel)
+            f.write('  %s -> %s%s;\n' % (obj_node_id(srcnode), obj_node_id(tgtnode), elabel))
             if id(source) not in depth:
                 depth[id(source)] = tdepth + 1
                 queue.append(source)
@@ -482,36 +496,36 @@ def show_graph(objs, edge_func, swap_source_target,
             else:
                 label = "%d more backreferences" % skipped
                 edge = "too_many_%s->%s" % (obj_node_id(target), obj_node_id(target))
-            print >> f, '  %s[color=red,style=dotted,len=0.25,weight=10];' % edge
-            print >> f, '  too_many_%s[label="%s",shape=box,height=0.25,color=red,fillcolor="%g,%g,%g",fontsize=6];' % (obj_node_id(target), label, h, s, v)
-            print >> f, '  too_many_%s[fontcolor=white];' % (obj_node_id(target))
-    print >> f, "}"
+            f.write('  %s[color=red,style=dotted,len=0.25,weight=10];\n' % edge)
+            f.write('  too_many_%s[label="%s",shape=box,height=0.25,color=red,fillcolor="%g,%g,%g",fontsize=6];\n' % (obj_node_id(target), label, h, s, v))
+            f.write('  too_many_%s[fontcolor=white];\n' % (obj_node_id(target)))
+    f.write("}\n")
     f.close()
-    print "Graph written to %s (%d nodes)" % (dot_filename, nodes)
+    print("Graph written to %s (%d nodes)" % (dot_filename, nodes))
     if not filename and program_in_path('xdot'):
-        print "Spawning graph viewer (xdot)"
-        subprocess.Popen(['xdot', dot_filename])
+        print("Spawning graph viewer (xdot)")
+        subprocess.Popen(['xdot', dot_filename], close_fds=True)
     elif program_in_path('dot'):
         if not filename:
-            print "Graph viewer (xdot) not found, generating a png instead"
+            print("Graph viewer (xdot) not found, generating a png instead")
         if filename and filename.endswith('.png'):
-            f = file(filename, 'wb')
+            f = open(filename, 'wb')
             png_filename = filename
         else:
             if filename:
-                print "Unrecognized file type (%s)" % filename
+                print("Unrecognized file type (%s)" % filename)
             fd, png_filename = tempfile.mkstemp('.png', text=False)
             f = os.fdopen(fd, "wb")
         dot = subprocess.Popen(['dot', '-Tpng', dot_filename],
-                               stdout=f)
+                               stdout=f, close_fds=False)
         dot.wait()
         f.close()
-        print "Image generated as %s" % png_filename
+        print("Image generated as %s" % png_filename)
     else:
         if filename:
-            print "Graph viewer (xdot) and image renderer (dot) not found, not doing anything else"
+            print("Graph viewer (xdot) and image renderer (dot) not found, not doing anything else")
         else:
-            print "Unrecognized file type (%s), not doing anything else" % filename
+            print("Unrecognized file type (%s), not doing anything else" % filename)
 
 
 def obj_node_id(obj):
@@ -551,10 +565,18 @@ def short_repr(obj):
                         types.BuiltinFunctionType)):
         return obj.__name__
     if isinstance(obj, types.MethodType):
-        if obj.im_self is not None:
-            return obj.im_func.__name__ + ' (bound)'
-        else:
-            return obj.im_func.__name__
+        try:
+            if obj.__self__ is not None:
+                return obj.__func__.__name__ + ' (bound)'
+            else:
+                return obj.__func__.__name__
+        except AttributeError:
+            # Python < 2.6 compatibility
+            if obj.im_self is not None:
+                return obj.im_func.__name__ + ' (bound)'
+            else:
+                return obj.im_func.__name__
+
     if isinstance(obj, types.FrameType):
         return '%s:%s' % (obj.f_code.co_filename, obj.f_lineno)
     if isinstance(obj, (tuple, list, dict, set)):
@@ -586,12 +608,19 @@ def edge_label(source, target):
         if target is source.f_globals:
             return ' [label="f_globals",weight=10]'
     if isinstance(source, types.MethodType):
-        if target is source.im_self:
-            return ' [label="im_self",weight=10]'
-        if target is source.im_func:
-            return ' [label="im_func",weight=10]'
+        try:
+            if target is source.__self__:
+                return ' [label="__self__",weight=10]'
+            if target is source.__func__:
+                return ' [label="__func__",weight=10]'
+        except AttributeError:
+            # Python < 2.6 compatibility
+            if target is source.im_self:
+                return ' [label="im_self",weight=10]'
+            if target is source.im_func:
+                return ' [label="im_func",weight=10]'
     if isinstance(source, dict):
-        for k, v in source.iteritems():
+        for k, v in iteritems(source):
             if v is target:
                 if isinstance(k, basestring) and k:
                     return ' [label="%s",weight=2]' % quote(k)

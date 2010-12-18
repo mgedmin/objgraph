@@ -17,7 +17,7 @@ Suppose we've a generator that uses it
 and we make it active
 
     >>> it = count_to_three()
-    >>> it.next()
+    >>> next(it)
     1
 
 Now we can see that our Canary object is alive in memory
@@ -30,7 +30,7 @@ and we can see what holds it in memory
 
     >>> objgraph.show_backrefs(objgraph.by_type('Canary'),
     ...                        max_depth=7,
-    ...                        filename='canary.png')
+    ...                        filename='canary.png') # doctest: +NODES_VARY
     Graph written to ....dot (15 nodes)
     Image generated as canary.png
 

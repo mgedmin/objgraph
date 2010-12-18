@@ -4,7 +4,7 @@ Too many references
 Objects that have too many references are truncated
 
     >>> import objgraph
-    >>> objgraph.show_refs([range(7)], too_many=5, filename='too-many.png')
+    >>> objgraph.show_refs([list(range(7))], too_many=5, filename='too-many.png')
     Graph written to ....dot (6 nodes)
     Image generated as too-many.png
 
@@ -32,7 +32,7 @@ the reference count somewhat.
     >>> import sys
     >>> one_reference = object()
     >>> objgraph.show_backrefs([one_reference], refcounts=True,
-    ...     filename='refcounts.png')
+    ...     filename='refcounts.png') # doctest: +NODES_VARY
     Graph written to ....dot (5 nodes)
     Image generated as refcounts.png
 

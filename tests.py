@@ -1,21 +1,33 @@
 #!/usr/bin/python
-import unittest
 import doctest
-import tempfile
-import os
-import shutil
 import glob
+import os
+import re
+import shutil
+import tempfile
+import unittest
 
 
+NODES_VARY = doctest.register_optionflag('NODES_VARY')
 RANDOM_OUTPUT = doctest.register_optionflag('RANDOM_OUTPUT')
 
 
-class MyChecker(doctest.OutputChecker):
+class RandomOutputChecker(doctest.OutputChecker):
 
     def check_output(self, want, got, optionflags):
         if optionflags & RANDOM_OUTPUT:
             return True
         return doctest.OutputChecker.check_output(self, want, got, optionflags)
+
+
+class IgnoreNodeCountChecker(RandomOutputChecker):
+    _r = re.compile('\(\d+ nodes\)$', re.MULTILINE)
+
+    def check_output(self, want, got, optionflags):
+        if optionflags & NODES_VARY:
+            want = self._r.sub('(X nodes)', want)
+            got = self._r.sub('(X nodes)', got)
+        return RandomOutputChecker.check_output(self, want, got, optionflags)
 
 
 def setUp(test):
@@ -24,6 +36,11 @@ def setUp(test):
     test.prevtempdir = tempfile.tempdir
     tempfile.tempdir = test.tmpdir
     os.chdir(test.tmpdir)
+    try:
+        next
+    except NameError:
+        # Python < 2.6 compatibility
+        test.globs['next'] = lambda it: it.next()
 
 
 def tearDown(test):
@@ -41,7 +58,7 @@ def test_suite():
     doctests = find_doctests()
     return doctest.DocFileSuite(setUp=setUp, tearDown=tearDown,
                                 optionflags=doctest.ELLIPSIS,
-                                checker=MyChecker(),
+                                checker=IgnoreNodeCountChecker(),
                                 *doctests)
 
 if __name__ == '__main__':
