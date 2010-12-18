@@ -1,15 +1,7 @@
 """
-Ad-hoc tools for drawing Python object reference graphs with graphviz.
+Tools for drawing Python object reference graphs with graphviz.
 
-This module is more useful as a repository of sample code and ideas, than
-as a finished product.  For documentation and background, read
-
-- http://mg.pov.lt/blog/hunting-python-memleaks.html
-- http://mg.pov.lt/blog/python-object-graphs.html
-- http://mg.pov.lt/blog/object-graphs-with-graphviz.html
-
-in that order.  Then use pydoc to read the docstrings, as there were
-improvements made since those blog posts.
+You can find documentation online at http://mg.pov.lt/objgraph/
 
 Copyright (c) 2008-2010 Marius Gedminas <marius@pov.lt>
 Copyright (c) 2010 Stefano Rivera <stefano@rivera.za.net>
