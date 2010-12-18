@@ -1,4 +1,4 @@
-.. include:: README.txt
+.. include:: ../README.txt
    :end-before: .. _history:
 
 
@@ -136,7 +136,7 @@ Reference Documentation
    objgraph
 
 
-.. include:: README.txt
+.. include:: ../README.txt
    :start-after: .. _history:
    :end-before: .. _devel:
 
@@ -148,7 +148,7 @@ And here's the change log
    CHANGES
 
 
-.. include:: README.txt
+.. include:: ../README.txt
    :start-after: .. _devel:
 
 For more information, see :ref:`hacking`.

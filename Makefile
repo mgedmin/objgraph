@@ -4,8 +4,8 @@ FILE_WITH_CHANGELOG = CHANGES.txt
 
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
-BUILDDIR      = _build
-ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(SPHINXOPTS) .
+BUILDDIR      = docs/_build
+ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(SPHINXOPTS) docs/
 
 
 .PHONY: default

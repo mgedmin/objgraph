@@ -50,8 +50,7 @@ def tearDown(test):
 
 
 def find_doctests():
-    return [fn for fn in glob.glob('*.txt')
-            if fn != 'HACKING.txt']
+    return glob.glob('docs/*.txt')
 
 
 def test_suite():
