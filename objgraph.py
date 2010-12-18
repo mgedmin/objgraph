@@ -36,7 +36,6 @@ __date__ = "2010-12-18"
 import gc
 import inspect
 import types
-import weakref
 import operator
 import os
 import subprocess
@@ -521,8 +520,6 @@ def show_graph(objs, edge_func, swap_source_target,
 
 
 def obj_node_id(obj):
-    if isinstance(obj, weakref.ref):
-        return 'all_weakrefs_are_one'
     return ('o%d' % id(obj)).replace('-', '_')
 
 
@@ -573,8 +570,6 @@ def short_repr(obj):
         return '%s:%s' % (obj.f_code.co_filename, obj.f_lineno)
     if isinstance(obj, (tuple, list, dict, set)):
         return '%d items' % len(obj)
-    if isinstance(obj, weakref.ref):
-        return 'all_weakrefs_are_one'
     return repr(obj)[:40]
 
 

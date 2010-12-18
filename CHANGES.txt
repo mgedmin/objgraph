@@ -10,6 +10,8 @@ Changes
 - Python 3 support, thanks to Stefano Rivera (fixes `LP#687601
   <http://launchpad.net/bugs/687601>`_).
 
+- Removed weird weakref special-casing.
+
 
 1.5.1 (2010-12-09)
 ------------------
