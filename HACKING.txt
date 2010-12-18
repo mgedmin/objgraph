@@ -15,7 +15,7 @@ The test suite is mostly smoke tests (i.e. crashes will be noticed, subtly
 wrong output will be missed).  I hope to improve that in the future, but don't
 hold your breath.  Most of the testing is done manually or semi-automatically,
 e.g. by running ``make images`` and eyeballing the results (`imgdiff
-<http://pypi.python.org/pypi/imgdiff>`_is handy there).
+<http://pypi.python.org/pypi/imgdiff>`_ is handy there).
 
 
 Sending me patches
