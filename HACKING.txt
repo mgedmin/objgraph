@@ -91,7 +91,7 @@ images with older versions::
 
   bzr diff --using imgdiff *.png
 
-When you add a new doctest file, remember to include it in ``index.txt``.
+When you add a new doctest file, remember to include it in ``docs/index.txt``.
 
 When you add a new function, make sure it has a `PEP-257
 <http://www.python.org/dev/peps/pep-0257/>`_-compliant docstring and
