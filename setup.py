@@ -47,6 +47,7 @@ def build_images(doctests=()):
     suite = doctest.DocFileSuite(optionflags=doctest.ELLIPSIS,
                                  checker=tests.RandomOutputChecker(),
                                  *doctests)
+    os.chdir('docs')
     result = unittest.TextTestRunner().run(suite)
     if not result.wasSuccessful():
         sys.exit(1)
