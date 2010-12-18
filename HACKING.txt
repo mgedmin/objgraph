@@ -14,7 +14,8 @@ Run the test suite with ::
 The test suite is mostly smoke tests (i.e. crashes will be noticed, subtly
 wrong output will be missed).  I hope to improve that in the future, but don't
 hold your breath.  Most of the testing is done manually or semi-automatically,
-e.g. by running ``make images`` and eyeballing the results.
+e.g. by running ``make images`` and eyeballing the results (`imgdiff
+<http://pypi.python.org/pypi/imgdiff>`_is handy there).
 
 
 Sending me patches
@@ -32,19 +33,18 @@ it a bug or a feature request.
 Supported Python versions
 -------------------------
 
-I try to support Python 2.4 through 2.7.  I would like 3.x support, but don't
-have the round tuits for that.
+Python 2.4 through 2.7, as well as 3.x.
 
 You can run the test suite for all supported Python versions with ::
 
   make test-all-pythons
 
-An easy way to get Pythons 2.4 through 2.7 on a Ubuntu is to use Felix
+An easy way to get Pythons 2.4 through 2.7 (and 3.1) on Ubuntu is to use Felix
 Krull's "`deadsnakes <https://launchpad.net/~fkrull/+archive/deadsnakes>`_"
 PPA::
 
   sudo add-apt-repository ppa:~fkrull/deadsnakes
-  sudo apt-get install python2.{4,5,6,7}
+  sudo apt-get install python2.{4,5,6,7} python3.1
 
 
 Test coverage
@@ -85,6 +85,11 @@ To fully rebuild the documentation, run ::
 Please ``bzr revert`` the png files that haven't changed significantly.  (Many
 of the images include things like memory addresses which tend to change from
 run to run.)
+
+`imgdiff <http://pypi.python.org/pypi/imgdiff>`_ is useful for comparing the
+images with older versions::
+
+  bzr diff --using imgdiff *.png
 
 When you add a new doctest file, remember to include it in ``index.txt``.
 
