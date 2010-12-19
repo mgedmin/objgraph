@@ -9,15 +9,15 @@
 Statistics
 ----------
 
-.. autofunction:: count
+.. autofunction:: count(typename[, objects])
 
-.. autofunction:: typestats
+.. autofunction:: typestats([objects])
 
-.. autofunction:: most_common_types
+.. autofunction:: most_common_types([limit=10, objects])
 
-.. autofunction:: show_most_common_types
+.. autofunction:: show_most_common_types([limit=10, objects])
 
-.. autofunction:: show_growth
+.. autofunction:: show_growth([limit=10, peak_stats={}])
 
 
 Locating and Filtering Objects
@@ -25,7 +25,7 @@ Locating and Filtering Objects
 
 .. autofunction:: get_leaking_objects
 
-.. autofunction:: by_type
+.. autofunction:: by_type(typename[, objects])
 
 .. autofunction:: at
 
@@ -33,11 +33,11 @@ Locating and Filtering Objects
 Traversing and Displaying Object Graphs
 ---------------------------------------
 
-.. autofunction:: find_backref_chain
+.. autofunction:: find_backref_chain(obj, predicate[, max_depth=20, extra_ignore=()])
 
 .. autofunction:: show_chain
 
-.. autofunction:: show_backrefs
+.. autofunction:: show_backrefs(objs[, max_depth=3, extra_ignore=(), filter=None, too_many=10, highlight=None, filename=None, extra_info=None, refcounts=False])
 
-.. autofunction:: show_refs
+.. autofunction:: show_refs(objs[, max_depth=3, extra_ignore=(), filter=None, too_many=10, highlight=None, filename=None, extra_info=None, refcounts=False])
 
