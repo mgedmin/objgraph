@@ -1,7 +1,10 @@
 Extra information
 -----------------
 
-You can add extra information to object graphs, if you desire.
+.. currentmodule:: objgraph
+
+You can add extra information to object graphs, if you desire.  For example,
+let's add object IDs:
 
     >>> x = []
     >>> y = [x, [x], dict(x=x)]
@@ -12,3 +15,16 @@ You can add extra information to object graphs, if you desire.
     Image generated as extra-info.png
 
 .. figure:: extra-info.png
+
+This way you can then look them up later with :func:`at`, if you desire to
+get a closer look at a particular object:
+
+    >>> objgraph.at(id(x)) is x
+    True
+
+Warning: this doesn't work with strings or ints or other simple types
+that aren't tracked by the cyclic garbage collector:
+
+    >>> a = 'a string'
+    >>> objgraph.at(id(a))
+
