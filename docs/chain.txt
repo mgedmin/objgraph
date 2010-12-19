@@ -1,0 +1,25 @@
+Graph searches
+--------------
+
+The other day I was wondering why pickling a particular object errored out
+with an error deep in one of the subobjects.
+
+    >>> class MyUnpicklableObject(object):
+    ...     def __getstate__(self):
+    ...         raise NotImplementedError
+    ...
+    >>> my_object = dict(foo=dict(unrelated='things'),
+    ...                  bar=[dict(nesting='fun'),
+    ...                       dict(boobytrap=MyUnpicklableObject())])
+    >>> import objgraph
+    >>> objgraph.show_chain(
+    ...     objgraph.find_ref_chain(
+    ...         my_object,
+    ...         lambda x: isinstance(x, MyUnpicklableObject)),
+    ...     filename='forward-chain.png')
+    Graph written to ...dot (4 nodes)
+    Image generated as forward-chain.png
+
+.. figure:: chain.png
+   :alt: [chain of references from my_object to a MyUnpicklableObject instance]
+

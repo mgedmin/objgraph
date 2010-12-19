@@ -262,6 +262,31 @@ def at(addr):
     return None
 
 
+def find_ref_chain(obj, predicate, max_depth=20, extra_ignore=()):
+    """Find a shortest chain of references leading from obj.
+
+    The end of the chain will be some object that matches your predicate.
+
+    ``predicate`` is a function taking one argument and returning a boolean.
+
+    ``max_depth`` limits the search depth.
+
+    ``extra_ignore`` can be a list of object IDs to exclude those objects from
+    your search.
+
+    Example:
+
+        >>> find_chain(obj, lambda x: isinstance(x, MyClass))
+        [obj, ..., <MyClass object at ...>]
+
+    Returns ``[obj]`` if such a chain could not be found.
+
+    .. versionadded:: 1.7
+    """
+    return find_chain(obj, predicate, gc.get_referents,
+                      max_depth=max_depth, extra_ignore=extra_ignore)[::-1]
+
+
 def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
     """Find a shortest chain of references leading to obj.
 
@@ -285,37 +310,8 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
        Returns ``obj`` instead of ``None`` when a chain could not be found.
 
     """
-    queue = [obj]
-    depth = {id(obj): 0}
-    parent = {id(obj): None}
-    ignore = set(extra_ignore)
-    ignore.add(id(extra_ignore))
-    ignore.add(id(queue))
-    ignore.add(id(depth))
-    ignore.add(id(parent))
-    ignore.add(id(ignore))
-    ignore.add(id(sys._getframe()))  # this function
-    gc.collect()
-    while queue:
-        target = queue.pop(0)
-        if predicate(target):
-            chain = [target]
-            while parent[id(target)] is not None:
-                target = parent[id(target)]
-                chain.append(target)
-            return chain
-        tdepth = depth[id(target)]
-        if tdepth < max_depth:
-            referrers = gc.get_referrers(target)
-            ignore.add(id(referrers))
-            for source in referrers:
-                if id(source) in ignore:
-                    continue
-                if id(source) not in depth:
-                    depth[id(source)] = tdepth + 1
-                    parent[id(source)] = target
-                    queue.append(source)
-    return [obj] # not found
+    return find_chain(obj, predicate, gc.get_referrers,
+                      max_depth=max_depth, extra_ignore=extra_ignore)
 
 
 def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
@@ -430,7 +426,8 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
 def show_chain(*chains, **kw):
     """Show a chain (or several chains) of object references.
 
-    Useful in combination with :func:`find_backref_chain`, e.g.
+    Useful in combination with :func:`find_ref_chain` or
+    :func:`find_backref_chain`, e.g.
 
         >>> show_chain(find_backref_chain(obj, inspect.ismodule))
 
@@ -448,6 +445,41 @@ def show_chain(*chains, **kw):
 #
 # Internal helpers
 #
+
+def find_chain(obj, predicate, edge_func, max_depth=20, extra_ignore=()):
+    queue = [obj]
+    depth = {id(obj): 0}
+    parent = {id(obj): None}
+    ignore = set(extra_ignore)
+    ignore.add(id(extra_ignore))
+    ignore.add(id(queue))
+    ignore.add(id(depth))
+    ignore.add(id(parent))
+    ignore.add(id(ignore))
+    ignore.add(id(sys._getframe()))  # this function
+    ignore.add(id(sys._getframe(1))) # find_chain/find_backref_chain, most likely
+    gc.collect()
+    while queue:
+        target = queue.pop(0)
+        if predicate(target):
+            chain = [target]
+            while parent[id(target)] is not None:
+                target = parent[id(target)]
+                chain.append(target)
+            return chain
+        tdepth = depth[id(target)]
+        if tdepth < max_depth:
+            referrers = edge_func(target)
+            ignore.add(id(referrers))
+            for source in referrers:
+                if id(source) in ignore:
+                    continue
+                if id(source) not in depth:
+                    depth[id(source)] = tdepth + 1
+                    parent[id(source)] = target
+                    queue.append(source)
+    return [obj] # not found
+
 
 def show_graph(objs, edge_func, swap_source_target,
                max_depth=3, extra_ignore=(), filter=None, too_many=10,

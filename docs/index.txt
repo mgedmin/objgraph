@@ -180,6 +180,7 @@ More examples, that also double as tests
    highlighting
    uncollectable
    generator-sample
+   chain
    quoting
 
 .. include:: ../README.txt
