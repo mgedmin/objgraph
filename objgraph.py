@@ -202,7 +202,7 @@ def show_growth(limit=10, peak_stats={}):
             print('%-*s%9d %+9d' % (width, name, stats[name], delta))
 
 
-def get_leaking_objects():
+def get_leaking_objects(objects=None):
     """Return objects that do not have any referents.
 
     These could indicate reference-counting bugs in C code.  Or they could
@@ -212,16 +212,17 @@ def get_leaking_objects():
 
     .. versionadded:: 1.7
     """
-    gc.collect()
-    all = gc.get_objects()
+    if objects is None:
+        gc.collect()
+        objects = gc.get_objects()
     try:
-        ids = set(id(i) for i in all)
-        for i in all:
+        ids = set(id(i) for i in objects)
+        for i in objects:
             ids.difference_update(id(j) for j in gc.get_referents(i))
         # this then is our set of objects without referrers
-        return [i for i in all if id(i) in ids]
+        return [i for i in objects if id(i) in ids]
     finally:
-        all = i = j = None # clear cyclic references to frame
+        objects = i = j = None # clear cyclic references to frame
 
 
 def by_type(typename, objects=None):
