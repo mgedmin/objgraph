@@ -30,7 +30,8 @@ Backreferences
 
 Now try
 
-    >>> objgraph.show_backrefs([x], filename='sample-backref-graph.png') # doctest: +NODES_VARY
+    >>> objgraph.show_backrefs([x], filename='sample-backref-graph.png')
+    ... # doctest: +NODES_VARY
     Graph written to ....dot (8 nodes)
     Image generated as sample-backref-graph.png
 
@@ -47,11 +48,16 @@ Memory overview
 To get a quick overview of the objects in memory
 
     >>> objgraph.show_most_common_types() # doctest: +RANDOM_OUTPUT
-    tuple                      5351
-    function                   1369
+    tuple                      5224
+    function                   1329
     wrapper_descriptor         967
-    dict                       786
-    ...
+    dict                       790
+    builtin_function_or_method 658
+    method_descriptor          340
+    weakref                    322
+    list                       168
+    member_descriptor          167
+    type                       163
 
 
 Memory leak example
@@ -63,7 +69,7 @@ see what references are keeping it alive.
 
     >>> class MyBigFatObject(object):
     ...     pass
-
+    ...
     >>> def computate_something(_cache={}):
     ...     _cache[42] = dict(foo=MyBigFatObject(),
     ...                       bar=MyBigFatObject())
@@ -71,25 +77,17 @@ see what references are keeping it alive.
 
 Let's take a look at object counts before we call our function
 
-    >>> objgraph.show_growth() # doctest: +RANDOM_OUTPUT
-    tuple                          12272    +12272
-    function                        3308     +3308
-    dict                            1915     +1915
-    ...
-
-    >>> computate_something()
+    >>> objgraph.show_growth(limit=3) # doctest: +RANDOM_OUTPUT
+    tuple                  5228     +5228
+    function               1330     +1330
+    wrapper_descriptor      967      +967
 
 and after
 
+    >>> computate_something()
     >>> objgraph.show_growth() # doctest: +RANDOM_OUTPUT
-    wrapper_descriptor       970       +14
-    tuple                  12282       +10
-    dict                    1922        +7
-    member_descriptor        170        +4
-    getset_descriptor        191        +3
-    list                     491        +2
-    MyBigFatObject             2        +2
-    method_descriptor        343        +1
+    MyBigFatObject        2        +2
+    dict                791        +1
 
 Now suppose I notice in the list above that there are MyBigFatObject
 instances in memory where there should be none.  I can pick one of them and
@@ -125,8 +123,22 @@ have any other objects pointing at them.  You can find these by calling
 roots from them, and there are a *lot* of those:
 
     >>> roots = objgraph.get_leaking_objects()
-    >>> len(roots)  # doctest: +RANDOM_OUTPUT
-    10510
+    >>> len(roots) # doctest: +RANDOM_OUTPUT
+    4621
+
+    >>> objgraph.show_most_common_types(objects=roots)
+    ... # doctest: +RANDOM_OUTPUT
+    tuple          4333
+    dict           171
+    list           74
+    instancemethod 4
+    listiterator   2
+    MemoryError    1
+    Sub            1
+    RuntimeError   1
+    Param          1
+    Add            1
+
     >>> objgraph.show_refs(roots[:3], refcounts=True, filename='roots.png')
     ... # doctest: +NODES_VARY
     Graph written to ...dot (19 nodes)
