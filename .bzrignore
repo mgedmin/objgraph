@@ -5,3 +5,5 @@ tmp
 .coverage
 _build
 tags
+build
+temp
