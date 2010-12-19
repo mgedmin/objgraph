@@ -545,6 +545,9 @@ def show_graph(objs, edge_func, swap_source_target,
     f.write("}\n")
     f.close()
     print("Graph written to %s (%d nodes)" % (dot_filename, nodes))
+    if filename and filename.endswith('.dot'):
+        # nothing else to do, the user asked for a .dot file
+        return
     if not filename and program_in_path('xdot'):
         print("Spawning graph viewer (xdot)")
         subprocess.Popen(['xdot', dot_filename], close_fds=True)

@@ -17,7 +17,11 @@ Changes
 - Edges pointing to function attributes such as __defaults__ or __globals__
   are now labeled.
 
-- Bugfix: '\0' used in a dictionary key could break graph generation.
+- Bugfix: '\0' and other unsafe characters used in a dictionary key could
+  break graph generation.
+
+- Bugfix: show_refs(..., filename='graph.dot') would then go to complain
+  about unrecognized file types and then produce a png.
 
 
 1.6.0 (2010-12-18)

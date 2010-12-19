@@ -8,7 +8,5 @@ Let's make sure our string quoting function can handle *anything*:
     >>> objgraph.show_refs(all_the_chars, too_many=600,
     ...                    filename='all-the-chars.dot')
     Graph written to all-the-chars.dot (513 nodes)
-    Unrecognized file type (all-the-chars.dot)
-    Image generated as /tmp/....png
 
 Trust me, you do not want to see the resulting image.
