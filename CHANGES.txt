@@ -21,6 +21,8 @@ Changes
 - Edges pointing to function attributes such as __defaults__ or __globals__
   are now labeled.
 
+- Edge labels that are not simple strings now show the type.
+
 - Bugfix: '\0' and other unsafe characters used in a dictionary key could
   break graph generation.
 

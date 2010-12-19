@@ -726,7 +726,8 @@ def edge_label(source, target):
                 if isinstance(k, basestring) and is_identifier(k):
                     return ' [label="%s",weight=2]' % quote(k)
                 else:
-                    return ' [label="%s"]' % quote(safe_repr(k))
+                    return ' [label="%s"]' % quote(type(k).__name__ + "\n"
+                                                   + safe_repr(k))
     return ''
 
 
