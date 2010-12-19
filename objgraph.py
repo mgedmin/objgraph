@@ -659,6 +659,10 @@ def edge_label(source, target):
                 return ' [label="im_self",weight=10]'
             if target is source.im_func:
                 return ' [label="im_func",weight=10]'
+    if isinstance(source, types.FunctionType):
+        for k in dir(source):
+            if target is getattr(source, k):
+                return ' [label="%s",weight=10]' % quote(k)
     if isinstance(source, dict):
         for k, v in iteritems(source):
             if v is target:
