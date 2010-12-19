@@ -6,11 +6,13 @@ Changes
 1.7.0 (unreleased)
 ------------------
 
+- New function: :func:`find_ref_chain`.
+
+- New ``backrefs`` argument for :func:`show_chain`.
+
 - New function: :func:`get_leaking_objects`, based on `a blog post by
   Kristján Valur
   <http://blog.ccpgames.com/kristjan/2010/12/08/finding-c-reference-leaks-using-the-gc-module/>`_.
-
-- New function: :func:`find_ref_chain`.
 
 - New ``objects`` argument for :func:`count`, :func:`typestats`,
   :func:`most_common_types`, :func:`show_most_common_types`, and

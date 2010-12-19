@@ -16,6 +16,7 @@ with an error deep in one of the subobjects.
     ...     objgraph.find_ref_chain(
     ...         my_object,
     ...         lambda x: isinstance(x, MyUnpicklableObject)),
+    ...     backrefs=False,
     ...     filename='forward-chain.png')
     Graph written to ...dot (4 nodes)
     Image generated as forward-chain.png

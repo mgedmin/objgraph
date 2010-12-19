@@ -431,15 +431,35 @@ def show_chain(*chains, **kw):
 
         >>> show_chain(find_backref_chain(obj, inspect.ismodule))
 
+    You can specify if you want that chain traced backwards or forwards
+    by passing a ``backrefs`` keyword argument, e.g.
+
+        >>> show_chain(find_ref_chain(obj, inspect.ismodule),
+        ...            backrefs=False)
+
+    Ideally this shouldn't matter, but for some objects
+    :func:`gc.get_referrers` and :func:`gc.get_referents` are not perfectly
+    symmetrical.
+
     You can specify ``highlight``, ``extra_info`` or ``filename`` arguments
-    like for :func:`show_backrefs`.
+    like for :func:`show_backrefs` or :func:`show_refs`.
 
     .. versionadded:: 1.5
+
+    .. versionchanged:: 1.7
+       New parameter: ``backrefs``.
+
     """
+    backrefs = kw.pop('backrefs', True)
     chains = [chain for chain in chains if chain] # remove empty ones
     def in_chains(x, ids=set(map(id, itertools.chain(*chains)))):
         return id(x) in ids
-    show_backrefs([chain[-1] for chain in chains], max(map(len, chains)) - 1,
+    max_depth = max(map(len, chains)) - 1
+    if backrefs:
+        show_backrefs([chain[-1] for chain in chains], max_depth=max_depth,
+                      filter=in_chains, **kw)
+    else:
+        show_refs([chain[0] for chain in chains], max_depth=max_depth,
                   filter=in_chains, **kw)
 
 #
