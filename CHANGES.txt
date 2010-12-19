@@ -10,6 +10,10 @@ Changes
   Kristján Valur
   <http://blog.ccpgames.com/kristjan/2010/12/08/finding-c-reference-leaks-using-the-gc-module/>`_.
 
+- New ``objects`` argument for :func:`count`, :func:`typestats`,
+  :func:`most_common_types`, :func:`show_most_common_types`, and
+  :func:`by_type`.
+
 - Bugfix: '\0' used in a dictionary key could break graph generation.
 
 

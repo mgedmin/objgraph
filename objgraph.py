@@ -57,22 +57,28 @@ except AttributeError:
     iteritems = dict.items
 
 
-def count(typename):
+def count(typename, objects=None):
     """Count objects tracked by the garbage collector with a given class name.
 
     Example:
 
         >>> count('dict')
         42
-        >>> count('MyClass')
+        >>> count('MyClass', get_leaking_objects())
         3
 
     Note that the GC does not track simple objects like int or str.
+
+    .. versionchanged:: 1.7
+       New parameter: ``objects``.
+
     """
-    return sum(1 for o in gc.get_objects() if type(o).__name__ == typename)
+    if objects is None:
+        objects = gc.get_objects()
+    return sum(1 for o in objects if type(o).__name__ == typename)
 
 
-def typestats():
+def typestats(objects=None):
     """Count the number of instances for each type tracked by the GC.
 
     Note that the GC does not track simple objects like int or str.
@@ -84,17 +90,25 @@ def typestats():
 
         >>> typestats()
         {'list': 12041, 'tuple': 10245, ...}
+        >>> typestats(get_leaking_objects())
+        {'MemoryError': 1, 'tuple': 2795, 'RuntimeError': 1, 'list': 47, ...}
 
     .. versionadded:: 1.1
+
+    .. versionchanged:: 1.7
+       New parameter: ``objects``.
+
     """
+    if objects is None:
+        objects = gc.get_objects()
     stats = {}
-    for o in gc.get_objects():
+    for o in objects:
         stats.setdefault(type(o).__name__, 0)
         stats[type(o).__name__] += 1
     return stats
 
 
-def most_common_types(limit=10):
+def most_common_types(limit=10, objects=None):
     """Count the names of types with the most instances.
 
     Returns a list of (type_name, count), sorted most-frequent-first.
@@ -110,15 +124,19 @@ def most_common_types(limit=10):
         [('list', 12041), ('tuple', 10245)]
 
     .. versionadded:: 1.4
+
+    .. versionchanged:: 1.7
+       New parameter: ``objects``.
+
     """
-    stats = sorted(typestats().items(), key=operator.itemgetter(1),
+    stats = sorted(typestats(objects).items(), key=operator.itemgetter(1),
                    reverse=True)
     if limit:
         stats = stats[:limit]
     return stats
 
 
-def show_most_common_types(limit=10):
+def show_most_common_types(limit=10, objects=None):
     """Print the table of types of most common instances
 
     The caveats documented in :func:`typestats` apply.
@@ -133,8 +151,12 @@ def show_most_common_types(limit=10):
         builtin_function_or_method 800
 
     .. versionadded:: 1.1
+
+    .. versionchanged:: 1.7
+       New parameter: ``objects``.
+
     """
-    stats = most_common_types(limit)
+    stats = most_common_types(limit, objects)
     width = max(len(name) for name, count in stats)
     for name, count in stats:
         print('%-*s %i' % (width, name, count))
@@ -187,6 +209,8 @@ def get_leaking_objects():
     be legitimate.
 
     Note that the GC does not track simple objects like int or str.
+
+    .. versionadded:: 1.7
     """
     gc.collect()
     all = gc.get_objects()
@@ -200,7 +224,7 @@ def get_leaking_objects():
         all = i = j = None # clear cyclic references to frame
 
 
-def by_type(typename):
+def by_type(typename, objects=None):
     """Return objects tracked by the garbage collector with a given class name.
 
     Example:
@@ -209,8 +233,14 @@ def by_type(typename):
         [<mymodule.MyClass object at 0x...>]
 
     Note that the GC does not track simple objects like int or str.
+
+    .. versionchanged:: 1.7
+       New parameter: ``objects``.
+
     """
-    return [o for o in gc.get_objects() if type(o).__name__ == typename]
+    if objects is None:
+        objects = gc.get_objects()
+    return [o for o in objects if type(o).__name__ == typename]
 
 
 def at(addr):
