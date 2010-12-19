@@ -160,8 +160,17 @@ roots from them, and there are a *lot* of those:
    :scale: 25%
 
 
-More examples
--------------
+API Documentation
+-----------------
+
+.. toctree::
+   :maxdepth: 2
+
+   objgraph
+
+
+More examples, that also double as tests
+----------------------------------------
 
 .. toctree::
    :maxdepth: 2
@@ -171,16 +180,7 @@ More examples
    highlighting
    uncollectable
    generator-sample
-
-
-Reference Documentation
------------------------
-
-.. toctree::
-   :maxdepth: 2
-
-   objgraph
-
+   quoting
 
 .. include:: ../README.txt
    :start-after: .. _history:

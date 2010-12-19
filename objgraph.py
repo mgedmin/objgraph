@@ -34,6 +34,7 @@ __date__ = "2010-12-19"
 
 
 import gc
+import re
 import inspect
 import types
 import operator
@@ -667,11 +668,14 @@ def edge_label(source, target):
     if isinstance(source, dict):
         for k, v in iteritems(source):
             if v is target:
-                if isinstance(k, basestring) and k:
+                if isinstance(k, basestring) and is_identifier(k):
                     return ' [label="%s",weight=2]' % quote(k)
                 else:
                     return ' [label="%s"]' % quote(safe_repr(k))
     return ''
+
+
+is_identifier = re.compile('[a-zA-Z_][a-zA-Z_0-9]*$').match
 
 
 def program_in_path(program):
