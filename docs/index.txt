@@ -1,6 +1,8 @@
 .. include:: ../README.txt
    :end-before: .. _history:
 
+.. currentmodule:: objgraph
+
 
 Quick start
 -----------
@@ -112,6 +114,27 @@ any examples where that isn't true, I'd love to hear about them.
 There are other tools, perhaps better suited for memory leak hunting:
 `heapy <http://pypi.python.org/pypi/guppy>`_,
 `Dozer <http://pypi.python.org/pypi/Dozer>`_.
+
+
+Reference counting bugs
+-----------------------
+
+Bugs in C-level reference counting may leave objects in memory that do not
+have any other objects pointing at them.  You can find these by calling
+:func:`get_leaking_objects`, but you'll have to filter out legitimate GC
+roots from them, and there are a *lot* of those:
+
+    >>> roots = objgraph.get_leaking_objects()
+    >>> len(roots)  # doctest: +RANDOM_OUTPUT
+    10510
+    >>> objgraph.show_refs(roots[:3], refcounts=True, filename='roots.png')
+    ... # doctest: +NODES_VARY
+    Graph written to ...dot (19 nodes)
+    Image generated as roots.png
+
+.. figure:: roots.png
+   :alt: [GC roots and potentially leaked objects]
+   :scale: 25%
 
 
 More examples

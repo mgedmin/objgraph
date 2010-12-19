@@ -3,8 +3,12 @@ Changes
 
 .. currentmodule:: objgraph
 
-1.6.1 (unreleased)
+1.7.0 (unreleased)
 ------------------
+
+- New function: :func:`get_leaking_objects`, based on `a blog post by
+  Kristján Valur
+  <http://blog.ccpgames.com/kristjan/2010/12/08/finding-c-reference-leaks-using-the-gc-module/>`_.
 
 
 1.6.0 (2010-12-18)

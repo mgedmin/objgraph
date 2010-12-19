@@ -29,8 +29,8 @@ Released under the MIT licence.
 __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008-2010 Marius Gedminas"
 __license__ = "MIT"
-__version__ = "1.6.1dev"
-__date__ = "2010-12-18"
+__version__ = "1.7.0dev"
+__date__ = "2010-12-19"
 
 
 import gc
@@ -178,6 +178,26 @@ def show_growth(limit=10, peak_stats={}):
         width = max(len(name) for name, count in deltas)
         for name, delta in deltas:
             print('%-*s%9d %+9d' % (width, name, stats[name], delta))
+
+
+def get_leaking_objects():
+    """Return objects that do not have any referents.
+
+    These could indicate reference-counting bugs in C code.  Or they could
+    be legitimate.
+
+    Note that the GC does not track simple objects like int or str.
+    """
+    gc.collect()
+    all = gc.get_objects()
+    try:
+        ids = set(id(i) for i in all)
+        for i in all:
+            ids.difference_update(id(j) for j in gc.get_referents(i))
+        # this then is our set of objects without referrers
+        return [i for i in all if id(i) in ids]
+    finally:
+        all = i = j = None # clear cyclic references to frame
 
 
 def by_type(typename):
@@ -539,7 +559,10 @@ def obj_label(obj, extra_info=None, refcounts=False):
 
 
 def quote(s):
-    return s.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n")
+    return (s.replace("\\", "\\\\")
+             .replace("\"", "\\\"")
+             .replace("\n", "\\n")
+             .replace("\0", "\\\\0"))
 
 
 def safe_repr(obj):

@@ -23,6 +23,8 @@ Statistics
 Locating and Filtering Objects
 ------------------------------
 
+.. autofunction:: get_leaking_objects
+
 .. autofunction:: by_type
 
 .. autofunction:: at
