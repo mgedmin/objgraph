@@ -137,7 +137,7 @@ def most_common_types(limit=10, objects=None):
 
 
 def show_most_common_types(limit=10, objects=None):
-    """Print the table of types of most common instances
+    """Print the table of types of most common instances.
 
     The caveats documented in :func:`typestats` apply.
 
@@ -319,7 +319,7 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
 def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
                   highlight=None, filename=None, extra_info=None,
                   refcounts=False):
-    """Generate an object reference graph ending at ``objs``
+    """Generate an object reference graph ending at ``objs``.
 
     The graph will show you what objects refer to ``objs``, directly and
     indirectly.
@@ -373,7 +373,7 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
 def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
               highlight=None, filename=None, extra_info=None,
               refcounts=False):
-    """Generate an object reference graph starting at ``objs``
+    """Generate an object reference graph starting at ``objs``.
 
     The graph will show you what objects are reachable from ``objs``, directly
     and indirectly.
