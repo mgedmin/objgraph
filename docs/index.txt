@@ -45,7 +45,8 @@ and you'll see
 Memory overview
 ---------------
 
-To get a quick overview of the objects in memory
+To get a quick overview of the objects in memory, use the imaginatively-named
+:func:`show_most_common_types`:
 
     >>> objgraph.show_most_common_types() # doctest: +RANDOM_OUTPUT
     tuple                      5224
@@ -63,7 +64,7 @@ To get a quick overview of the objects in memory
 Memory leak example
 -------------------
 
-The original purpose of ``objgraph`` was to help me find memory leaks.
+The original purpose of :mod:`objgraph` was to help me find memory leaks.
 The idea was to pick an object in memory that shouldn't be there and then
 see what references are keeping it alive.
 
@@ -89,12 +90,13 @@ and after
     MyBigFatObject        2        +2
     dict                791        +1
 
-Now suppose I notice in the list above that there are MyBigFatObject
+Now suppose I notice in the list above that there are :class:`MyBigFatObject`
 instances in memory where there should be none.  I can pick one of them and
 trace the reference chain back to one of the garbage collector's roots.
 
 For simplicity's sake let's assume all of the roots are modules; if you've
-any examples where that isn't true, I'd love to hear about them.
+any examples where that isn't true, I'd love to hear about them (although
+see :ref:`leaking-objects`).
 
     >>> import inspect, random
     >>> objgraph.show_chain(
@@ -109,10 +111,16 @@ any examples where that isn't true, I'd love to hear about them.
    :alt: [chain of references from a module to a MyBigFatObject instance]
    :scale: 50%
 
+It is perhaps surprising to find :mod:`linecache` at the end of that chain
+(apparently :mod:`doctest` monkey-patches it), but the important things --
+:func:`computate_something` and its cache dictionary -- are in there.
+
 There are other tools, perhaps better suited for memory leak hunting:
 `heapy <http://pypi.python.org/pypi/guppy>`_,
 `Dozer <http://pypi.python.org/pypi/Dozer>`_.
 
+
+.. _leaking-objects:
 
 Reference counting bugs
 -----------------------
