@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import os, re, sys, unittest, doctest
+import codecs, os, re, sys, unittest, doctest
 
 try:
     from setuptools import setup
@@ -13,9 +13,9 @@ def relative(filename):
 
 
 def read(filename):
-    f = open(relative(filename), 'rb')
+    f = codecs.open(relative(filename), 'r', 'utf-8')
     try:
-        return f.read().decode('utf-8')
+        return f.read()
     finally:
         f.close()
 
