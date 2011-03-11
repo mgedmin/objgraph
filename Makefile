@@ -102,7 +102,11 @@ release: releasechecklist
 	@echo "  make test-all-pythons"
 	@echo "  make clean images docs"
 	@echo
-	@echo "about now.  Then commit the new images and run"
+	@echo "about now.  Then sanity-check the images with"
+	@echo
+	@echo "  bzr diff --using='imgdiff -H --eog'"
+	@echo
+	@echo "then either revert or commit the new images and run"
 	@echo
 	@echo "  $(PYTHON) setup.py sdist register upload && bzr tag `$(PYTHON) setup.py --version`"
 	@echo "  make publish-docs"
@@ -119,6 +123,7 @@ publish-docs:
 	    echo "There's no ~/www/objgraph, do you have the website checked out?"; exit 1; }
 	make clean docs
 	cp -r docs/_build/html/* ~/www/objgraph/
+	svn add ~/www/objgraph/*.html ~/www/objgraph/_images/*.png 2>/dev/null
 	svn st ~/www/objgraph/
 	@echo
 	@echo "If everything looks fine, please run"
