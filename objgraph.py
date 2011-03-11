@@ -509,11 +509,7 @@ def show_graph(objs, edge_func, swap_source_target,
     if not isinstance(objs, (list, tuple)):
         objs = [objs]
     if filename and filename.endswith('.dot'):
-        try:
-            f = open(filename, 'w', encoding='UTF-8')
-        except TypeError:
-            # Python 2.x compatibility
-            f = codecs.open(filename, 'w', encoding='UTF-8')
+        f = codecs.open(filename, 'w', encoding='UTF-8')
         dot_filename = filename
     else:
         fd, dot_filename = tempfile.mkstemp('.dot', text=True)
