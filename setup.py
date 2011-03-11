@@ -13,9 +13,9 @@ def relative(filename):
 
 
 def read(filename):
-    f = open(relative(filename))
+    f = open(relative(filename), 'rb')
     try:
-        return f.read()
+        return f.read().decode('utf-8')
     finally:
         f.close()
 
