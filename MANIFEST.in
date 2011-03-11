@@ -2,6 +2,7 @@ include Makefile
 include *.txt
 include tests.py
 include docs/*.txt
+include docs/*.dot
 include docs/*.png
 include docs/conf.py
 include docs/_static/*.css
