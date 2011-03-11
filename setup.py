@@ -38,7 +38,10 @@ def get_description():
     readme = read('README.txt')
     changelog = read('CHANGES.txt')
     description = unsphinx(readme + '\n\n\n' + changelog)
-    description = description.encode('ascii', 'replace').decode('ascii')
+    if '--unicode-description' in sys.argv:
+        sys.argv.remove('--unicode-description')
+    else:
+        description = description.encode('ascii', 'replace').decode('ascii')
     return description
 
 
