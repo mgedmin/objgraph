@@ -27,10 +27,10 @@ Released under the MIT licence.
 # DEALINGS IN THE SOFTWARE.
 
 __author__ = "Marius Gedminas (marius@gedmin.as)"
-__copyright__ = "Copyright (c) 2008-2010 Marius Gedminas"
+__copyright__ = "Copyright (c) 2008-2011 Marius Gedminas"
 __license__ = "MIT"
-__version__ = "1.7.0dev"
-__date__ = "2010-12-19"
+__version__ = "1.7.0"
+__date__ = "2011-03-11"
 
 
 import gc

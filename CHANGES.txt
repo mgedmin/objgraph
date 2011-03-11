@@ -3,7 +3,7 @@ Changes
 
 .. currentmodule:: objgraph
 
-1.7.0 (unreleased)
+1.7.0 (2011-03-11)
 ------------------
 
 - New function: :func:`find_ref_chain`.
