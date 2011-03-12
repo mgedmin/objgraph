@@ -6,6 +6,10 @@ Changes
 1.7.1 (unreleased)
 ------------------
 
+- Bugfix: non-ASCII characters in object representations would break graph
+  generation on Python 3.x.  Reported and fixed by `Stefano Rivera
+  <https://launchpad.net/~stefanor>`_.
+
 
 1.7.0 (2011-03-11)
 ------------------

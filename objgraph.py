@@ -33,6 +33,7 @@ __version__ = "1.7.1dev"
 __date__ = "2011-03-11"
 
 
+import codecs
 import gc
 import re
 import inspect
@@ -508,11 +509,16 @@ def show_graph(objs, edge_func, swap_source_target,
     if not isinstance(objs, (list, tuple)):
         objs = [objs]
     if filename and filename.endswith('.dot'):
-        f = open(filename, 'w')
+        f = codecs.open(filename, 'w', encoding='utf-8')
         dot_filename = filename
     else:
         fd, dot_filename = tempfile.mkstemp('.dot', text=True)
         f = os.fdopen(fd, "w")
+        if f.encoding != None:
+            # Python 3 will wrap the file in the user's preferred encoding
+            # Re-wrap it for utf-8
+            import io
+            f = io.TextIOWrapper(f.detach(), 'utf-8')
     f.write('digraph ObjectGraph {\n'
             '  node[shape=box, style=filled, fillcolor=white];\n')
     queue = []
