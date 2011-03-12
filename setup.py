@@ -46,6 +46,7 @@ def get_description():
     if '--unicode-description' in sys.argv:
         sys.argv.remove('--unicode-description')
     else:
+        description = description.replace(u'Kristj\xe1n', 'Kristjan')
         description = description.encode('ascii', 'replace').decode('ascii')
     return description
 
