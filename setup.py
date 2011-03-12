@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import os, re, sys, unittest, doctest
+import codecs, os, re, sys, unittest, doctest
 
 try:
     from setuptools import setup
@@ -18,7 +18,7 @@ def relative(filename):
 
 
 def read(filename):
-    f = open(relative(filename))
+    f = codecs.open(relative(filename), 'r', 'utf-8')
     try:
         return f.read()
     finally:
@@ -42,7 +42,12 @@ def get_version():
 def get_description():
     readme = read('README.txt')
     changelog = read('CHANGES.txt')
-    return unsphinx(readme + '\n\n\n' + changelog)
+    description = unsphinx(readme + '\n\n\n' + changelog)
+    if '--unicode-description' in sys.argv:
+        sys.argv.remove('--unicode-description')
+    else:
+        description = description.encode('ascii', 'replace').decode('ascii')
+    return description
 
 
 def build_images(doctests=()):
