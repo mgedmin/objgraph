@@ -53,12 +53,30 @@ def find_doctests():
     return glob.glob('docs/*.txt')
 
 
+def doctest_setup_py_works():
+    """Test that setup.py works
+
+        >>> import sys
+        >>> orig_argv = sys.argv
+        >>> sys.argv = ['setup.py', '--description']
+
+        >>> import setup
+        Draws Python object reference graphs with graphviz
+
+        >>> sys.argv = orig_argv
+
+    """
+
+
 def test_suite():
     doctests = find_doctests()
-    return doctest.DocFileSuite(setUp=setUp, tearDown=tearDown,
-                                optionflags=doctest.ELLIPSIS,
-                                checker=IgnoreNodeCountChecker(),
-                                *doctests)
+    return unittest.TestSuite([
+        doctest.DocFileSuite(setUp=setUp, tearDown=tearDown,
+                             optionflags=doctest.ELLIPSIS,
+                             checker=IgnoreNodeCountChecker(),
+                             *doctests),
+        doctest.DocTestSuite(),
+    ])
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
