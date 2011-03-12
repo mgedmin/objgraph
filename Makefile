@@ -108,7 +108,7 @@ release: releasechecklist
 	@echo
 	@echo "then either revert or commit the new images and run"
 	@echo
-	@echo "  $(PYTHON) setup.py sdist register upload && bzr tag `$(PYTHON) setup.py --version`"
+	@echo "  $(PYTHON) setup.py sdist register upload --unicode-description && bzr tag `$(PYTHON) setup.py --version`"
 	@echo "  make publish-docs"
 	@echo
 	@echo "Please increment the version number in $(FILE_WITH_VERSION)"
