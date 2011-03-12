@@ -43,8 +43,17 @@ An easy way to get Pythons 2.4 through 2.7 (and 3.1) on Ubuntu is to use Felix
 Krull's "`deadsnakes <https://launchpad.net/~fkrull/+archive/deadsnakes>`_"
 PPA::
 
-  sudo add-apt-repository ppa:~fkrull/deadsnakes
+  sudo add-apt-repository ppa:fkrull/deadsnakes
+  sudo apt-get update
   sudo apt-get install python2.{4,5,6,7} python3.1
+
+Python 3.2 is not available there at the time of this writing, but there's
+a `Python 3.2 PPA <https://launchpad.net/~irie/+archive/python3.2>`_ by IRIE
+Shinsuke::
+
+  sudo add-apt-repository ppa:irie/python3.2
+  sudo apt-get update
+  sudo apt-get install python3.2
 
 
 Test coverage
@@ -87,9 +96,14 @@ of the images include things like memory addresses which tend to change from
 run to run.)
 
 `imgdiff <http://pypi.python.org/pypi/imgdiff>`_ is useful for comparing the
-images with older versions::
+images with their older versions::
 
   bzr diff --using imgdiff *.png
+
+It has a few options that may make the changes easier to see.  I personally
+like::
+
+  bzr diff --using "imgdiff -H --eog" *.png
 
 When you add a new doctest file, remember to include it in ``docs/index.txt``.
 
@@ -109,7 +123,8 @@ preceded by a blank line.  Example::
 If Emacs is broken, fix emacs, do not make my docstrings ugly.
 
 On the other hand, if the last thing in a docstring is an indented block
-quote/doctest section, it should be surrounded by blank lines.  Like this::
+quote or a doctest section, it should be surrounded by blank lines.  Like
+this::
 
    def do_something():
        """Do something.
