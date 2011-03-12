@@ -7,3 +7,4 @@ _build
 tags
 build
 temp
+__pycache__
