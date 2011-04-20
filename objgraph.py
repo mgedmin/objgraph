@@ -743,5 +743,6 @@ is_identifier = re.compile('[a-zA-Z_][a-zA-Z_0-9]*$').match
 def program_in_path(program):
     path = os.environ.get("PATH", os.defpath).split(os.pathsep)
     path = [os.path.join(dir, program) for dir in path]
-    path = [True for file in path if os.path.isfile(file)]
+    path = [True for file in path
+            if os.path.isfile(file) or os.path.isfile(file + '.exe')]
     return bool(path)

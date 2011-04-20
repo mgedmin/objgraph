@@ -12,6 +12,9 @@ Changes
 
 - Bugfix: setup.py was broken on Python 3.x
 
+- Bugfix: dot.exe/xdot.exe were not found on Windows (`LP#767239
+  <http://launchpad.net/bugs/767239>`_).
+
 
 1.7.0 (2011-03-11)
 ------------------
