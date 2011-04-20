@@ -11,6 +11,12 @@ else:
         test_suite='tests.test_suite',
     )
 
+try:
+    unichr
+except NameError:
+    # Python 3.x support
+    unichr = chr
+
 
 def relative(filename):
     here = os.path.dirname('__file__')
@@ -46,7 +52,9 @@ def get_description():
     if '--unicode-description' in sys.argv:
         sys.argv.remove('--unicode-description')
     else:
-        description = description.replace(u'Kristj\xe1n', 'Kristjan')
+        # can't use u'' literals, this is supposed to work on both Py2 and Py3
+        description = description.replace('Kristj%sn' % unichr(0xe1),
+                                          'Kristjan')
         description = description.encode('ascii', 'replace').decode('ascii')
     return description
 

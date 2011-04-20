@@ -10,6 +10,8 @@ Changes
   generation on Python 3.x, in some locales (e.g. with LC_ALL=C).  Reported and
   fixed by `Stefano Rivera <https://launchpad.net/~stefanor>`_.
 
+- Bugfix: setup.py was broken on Python 3.x
+
 
 1.7.0 (2011-03-11)
 ------------------
