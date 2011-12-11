@@ -61,7 +61,7 @@ dist:
 distcheck:
 	# Bit of a chicken-and-egg here, but if the tree is unclean, make
 	# distcheck will fail.  Thankfully bzr lets me uncommit.
-	@test -z "`bzr status 2>&1`" || { echo; echo "Your working tree is not clean" 1>&2; bzr status; exit 1; }
+	@test -z "`bzr status 2>&1|grep -v 'shelves exist'`" || { echo; echo "Your working tree is not clean" 1>&2; bzr status; exit 1; }
 	make dist
 	pkg_and_version=`$(PYTHON) setup.py --name`-`$(PYTHON) setup.py --version` && \
 	rm -rf tmp && \
