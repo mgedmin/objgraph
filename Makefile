@@ -104,7 +104,7 @@ release: releasechecklist
 	@echo
 	@echo "about now.  Then sanity-check the images with"
 	@echo
-	@echo "  bzr diff --using='imgdiff -H --eog'"
+	@echo "  bzr diff --using=imgdiff --diff-options='-H --eog'"
 	@echo
 	@echo "then either revert or commit the new images and run"
 	@echo
