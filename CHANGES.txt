@@ -15,6 +15,9 @@ Changes
 - Bugfix: dot.exe/xdot.exe were not found on Windows (`LP#767239
   <http://launchpad.net/bugs/767239>`_).
 
+- Documentation updates: document the forgotten :func:`find_ref_chain`,
+  update :func:`show_chain` prototype.
+
 
 1.7.0 (2011-03-11)
 ------------------

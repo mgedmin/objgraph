@@ -33,9 +33,11 @@ Locating and Filtering Objects
 Traversing and Displaying Object Graphs
 ---------------------------------------
 
+.. autofunction:: find_ref_chain(obj, predicate[, max_depth=20, extra_ignore=()])
+
 .. autofunction:: find_backref_chain(obj, predicate[, max_depth=20, extra_ignore=()])
 
-.. autofunction:: show_chain
+.. autofunction:: show_chain(chain[, ..., highlight=None, filename=None, extra_info=None, refcounts=False])
 
 .. autofunction:: show_backrefs(objs[, max_depth=3, extra_ignore=(), filter=None, too_many=10, highlight=None, filename=None, extra_info=None, refcounts=False])
 
