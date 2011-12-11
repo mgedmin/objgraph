@@ -3,7 +3,7 @@ Changes
 
 .. currentmodule:: objgraph
 
-1.7.1 (unreleased)
+1.7.1 (2011-12-11)
 ------------------
 
 - Bugfix: non-ASCII characters in object representations would break graph
