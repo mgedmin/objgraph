@@ -29,7 +29,7 @@ Released under the MIT licence.
 __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008-2011 Marius Gedminas"
 __license__ = "MIT"
-__version__ = "1.7.1"
+__version__ = "1.7.2dev"
 __date__ = "2011-12-11"
 
 
