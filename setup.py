@@ -41,6 +41,7 @@ def get_version():
             # python2.7 setup.py sdist will try to mix a unicode filename with
             # the byte stream of the .tar file
             return str(m.group(1))
+    raise AssertionError('Could not determine version number from objgraph.py')
 
 
 def get_description():
