@@ -18,13 +18,8 @@ except NameError:
     unichr = chr
 
 
-def relative(filename):
-    here = os.path.dirname('__file__')
-    return os.path.join(here, filename)
-
-
 def read(filename):
-    f = codecs.open(relative(filename), 'r', 'utf-8')
+    f = codecs.open(filename, 'r', 'utf-8')
     try:
         return f.read()
     finally:
