@@ -37,7 +37,10 @@ def get_version():
     for line in read('objgraph.py').splitlines():
         m = r.match(line)
         if m:
-            return m.group(1)
+            # our read() returns unicode; coerce it back into str, or
+            # python2.7 setup.py sdist will try to mix a unicode filename with
+            # the byte stream of the .tar file
+            return str(m.group(1))
 
 
 def get_description():

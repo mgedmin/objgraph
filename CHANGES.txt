@@ -6,6 +6,9 @@ Changes
 1.7.2 (unreleased)
 ------------------
 
+- Bugfix: setup.py sdist was broken on Python 2.7 (UnicodeDecodeError in
+  tarfile).
+
 
 1.7.1 (2011-12-11)
 ------------------
