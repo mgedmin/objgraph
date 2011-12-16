@@ -123,7 +123,7 @@ publish-docs:
 	    echo "There's no ~/www/objgraph, do you have the website checked out?"; exit 1; }
 	make clean docs
 	cp -r docs/_build/html/* ~/www/objgraph/
-	svn add ~/www/objgraph/*.html ~/www/objgraph/_images/*.png 2>/dev/null
+	svn add ~/www/objgraph/*.html ~/www/objgraph/_images/*.png ~/www/objgraph/_sources/* ~/www/objgraph/_static/* 2>/dev/null
 	svn st ~/www/objgraph/
 	@echo
 	@echo "If everything looks fine, please run"
