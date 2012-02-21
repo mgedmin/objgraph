@@ -326,11 +326,14 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     ``objs`` can be a single object, or it can be a list of objects.  If
     unsure, wrap the single object in a new list.
 
-    ``filename`` if specified, can be the name of a .dot or a .png file,
-    indicating the desired output format.  If not specified, ``show_backrefs``
-    will try to produce a .dot file and spawn a viewer (xdot).  If xdot is
-    not available, ``show_backrefs`` will convert the .dot file to a .png
-    and print its name.
+    ``filename`` if specified, can be the name of a .dot or a image
+    file, whose extension indicates the desired output format; note
+    that output to a specific format is entirely handled by GraphViz:
+    if the desired format is not supported, you just get the .dot
+    file.  If ``filename`` is not specified, ``show_backrefs`` will
+    try to produce a .dot file and spawn a viewer (xdot).  If xdot is
+    not available, ``show_backrefs`` will convert the .dot file to a
+    .png and print its name.
 
     Use ``max_depth`` and ``too_many`` to limit the depth and breadth of the
     graph.
@@ -380,11 +383,14 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     ``objs`` can be a single object, or it can be a list of objects.  If
     unsure, wrap the single object in a new list.
 
-    ``filename`` if specified, can be the name of a .dot or a .png file,
-    indicating the desired output format.  If not specified, ``show_refs``
-    will try to produce a .dot file and spawn a viewer (xdot).  If xdot is
-    not available, ``show_refs`` will convert the .dot file to a .png
-    and print its name.
+    ``filename`` if specified, can be the name of a .dot or a image
+    file, whose extension indicates the desired output format; note
+    that output to a specific format is entirely handled by GraphViz:
+    if the desired format is not supported, you just get the .dot
+    file.  If ``filename`` is not specified, ``show_refs`` will
+    try to produce a .dot file and spawn a viewer (xdot).  If xdot is
+    not available, ``show_refs`` will convert the .dot file to a
+    .png and print its name.
 
     Use ``max_depth`` and ``too_many`` to limit the depth and breadth of the
     graph.
@@ -612,19 +618,17 @@ def show_graph(objs, edge_func, swap_source_target,
     elif program_in_path('dot'):
         if not filename:
             print("Graph viewer (xdot) not found, generating a png instead")
-        if filename and filename.endswith('.png'):
-            f = open(filename, 'wb')
-            png_filename = filename
-        else:
-            if filename:
-                print("Unrecognized file type (%s)" % filename)
-            fd, png_filename = tempfile.mkstemp('.png', text=False)
-            f = os.fdopen(fd, "wb")
-        dot = subprocess.Popen(['dot', '-Tpng', dot_filename],
+            filename = dot_filename[:-4] + '.png'
+        stem, ext = os.path.splitext(filename)
+        f = open(filename, 'wb')
+        dot = subprocess.Popen(['dot', ('-T' + ext[1:]), dot_filename],
                                stdout=f, close_fds=False)
         dot.wait()
+        if dot.returncode != 0:
+            # XXX: shouldn't this go to stderr or a log?
+            print("dot failed to generate '%s' image: output format not supported?")
         f.close()
-        print("Image generated as %s" % png_filename)
+        print("Image generated as %s" % filename)
     else:
         if filename:
             print("Graph viewer (xdot) and image renderer (dot) not found, not doing anything else")
