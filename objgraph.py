@@ -518,7 +518,8 @@ def show_graph(objs, edge_func, swap_source_target,
         f = codecs.open(filename, 'w', encoding='utf-8')
         dot_filename = filename
     else:
-        fd, dot_filename = tempfile.mkstemp('.dot', text=True)
+        fd, dot_filename = tempfile.mkstemp(prefix='objgraph-',
+                                            suffix='.dot', text=True)
         f = os.fdopen(fd, "w")
         if f.encoding != None:
             # Python 3 will wrap the file in the user's preferred encoding

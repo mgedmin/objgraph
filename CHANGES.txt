@@ -13,6 +13,8 @@ Changes
   allows arbitrary image formats, not just PNG.  Patch by `Riccardo
   Murri <https://launchpad.net/~rmurri>`_.
 
+- Temporary dot files are now named `objgraph-*.dot` instead of `tmp*.dot`.
+
 
 1.7.1 (2011-12-11)
 ------------------
