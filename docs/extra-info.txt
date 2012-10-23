@@ -11,7 +11,7 @@ let's add object IDs:
     >>> import objgraph
     >>> objgraph.show_refs([y], extra_info=lambda x: hex(id(x)),
     ...                    filename='extra-info.png')
-    Graph written to ....dot (5 nodes)
+    Graph written to ....dot (... nodes)
     Image generated as extra-info.png
 
 .. figure:: extra-info.png
