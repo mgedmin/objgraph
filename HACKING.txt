@@ -39,21 +39,23 @@ You can run the test suite for all supported Python versions with ::
 
   make test-all-pythons
 
-An easy way to get Pythons 2.4 through 2.7 (and 3.1) on Ubuntu is to use Felix
+or with `detox <http://pypi.python.org/pypi/detox>`_.
+
+If a test fails, often the easiest way to debug is is to compare the output
+visually ::
+
+  make images PYTHON=pythonX.Y
+  bzr diff --using imgdiff --diff-options="-H --eog" docs/image.png
+  bzr revert images/*.png images/*.dot
+
+
+An easy way to get Pythons 2.4 through 2.7 (and 3.x) on Ubuntu is to use Felix
 Krull's "`deadsnakes <https://launchpad.net/~fkrull/+archive/deadsnakes>`_"
 PPA::
 
   sudo add-apt-repository ppa:fkrull/deadsnakes
   sudo apt-get update
-  sudo apt-get install python2.{4,5,6,7} python3.1
-
-Python 3.2 is not available there at the time of this writing, but there's
-a `Python 3.2 PPA <https://launchpad.net/~irie/+archive/python3.2>`_ by IRIE
-Shinsuke::
-
-  sudo add-apt-repository ppa:irie/python3.2
-  sudo apt-get update
-  sudo apt-get install python3.2
+  sudo apt-get install python2.{4,5,6,7} python3.{1,2,3}
 
 
 Test coverage
@@ -98,12 +100,12 @@ run to run.)
 `imgdiff <http://pypi.python.org/pypi/imgdiff>`_ is useful for comparing the
 images with their older versions::
 
-  bzr diff --using imgdiff *.png
+  bzr diff --using imgdiff docs/*.png
 
 It has a few options that may make the changes easier to see.  I personally
 like::
 
-  bzr diff --using "imgdiff -H --eog" *.png
+  bzr diff --using imgdiff --diff-options="-H --eog" docs/*.png
 
 When you add a new doctest file, remember to include it in ``docs/index.txt``.
 

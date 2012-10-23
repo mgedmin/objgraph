@@ -15,6 +15,12 @@ Changes
 
 - Temporary dot files are now named `objgraph-*.dot` instead of `tmp*.dot`.
 
+- Python 3.3 support: no code changes, but some tests started failing because
+  the new and improved dictionary implementation no longer holds references to
+  str objects used as dict keys.
+
+- Added a tox.ini for convenient multi-Python testing.
+
 
 1.7.1 (2011-12-11)
 ------------------

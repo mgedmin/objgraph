@@ -13,7 +13,7 @@ Try this in a Python shell:
     >>> y = [x, [x], dict(x=x)]
     >>> import objgraph
     >>> objgraph.show_refs([y], filename='sample-graph.png')
-    Graph written to ....dot (5 nodes)
+    Graph written to ....dot (... nodes)
     Image generated as sample-graph.png
 
 (If you've installed ``xdot``, omit the filename argument to get the

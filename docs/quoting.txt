@@ -7,6 +7,6 @@ Let's make sure our string quoting function can handle *anything*:
     >>> all_the_chars = dict((chr(i), i) for i in range(256))
     >>> objgraph.show_refs(all_the_chars, too_many=600,
     ...                    filename='all-the-chars.dot')
-    Graph written to all-the-chars.dot (513 nodes)
+    Graph written to all-the-chars.dot (... nodes)
 
 Trust me, you do not want to see the resulting image.

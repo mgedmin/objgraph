@@ -8,3 +8,5 @@ tags
 build
 temp
 __pycache__
+.tox
+.toxbox

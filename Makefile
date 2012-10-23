@@ -2,6 +2,8 @@ PYTHON = python
 FILE_WITH_VERSION = objgraph.py
 FILE_WITH_CHANGELOG = CHANGES.txt
 
+SUPPORTED_PYTHON_VERSIONS = 2.4 2.5 2.6 2.7 3.1 3.2 3.3
+
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 BUILDDIR      = docs/_build
@@ -33,7 +35,7 @@ test check:
 .PHONY: test-all-pythons
 test-all-pythons:
 	set -e; \
-	for ver in 2.4 2.5 2.6 2.7 3.0 3.1 3.2; do \
+	for ver in $(SUPPORTED_PYTHON_VERSIONS); do \
 		if which python$$ver > /dev/null; then \
 			$(MAKE) test PYTHON=python$$ver; \
 		else \
