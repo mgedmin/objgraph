@@ -1,6 +1,7 @@
 include Makefile
 include *.txt
 include tests.py
+include tox.ini
 include docs/*.txt
 include docs/*.dot
 include docs/*.png
