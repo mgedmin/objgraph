@@ -44,7 +44,8 @@ If a test fails, often the easiest way to debug is is to compare the output
 visually ::
 
   make images PYTHON=pythonX.Y
-  XXX: translate to git: bzr diff --using imgdiff --diff-options="-H --eog" docs/image.png
+  git config diff.imgdiff.command 'f() { imgdiff --eog -H $1 $2; }; f'
+  git diff docs/*.png
   git checkout -- docs/*.png docs/*.dot
 
 
@@ -99,12 +100,14 @@ from run to run.)
 `imgdiff <http://pypi.python.org/pypi/imgdiff>`_ is useful for comparing the
 images with their older versions::
 
-  XXX: how do I git: bzr diff --using imgdiff docs/*.png
+  git config diff.imgdiff.command 'f() { imgdiff $1 $2; }; f'
+  git diff docs/*.png
 
 It has a few options that may make the changes easier to see.  I personally
 like::
 
-  XXX: how do I git: bzr diff --using imgdiff --diff-options="-H --eog" docs/*.png
+  git config diff.imgdiff.command 'f() { imgdiff --eog -H $1 $2; }; f'
+  git diff docs/*.png
 
 When you add a new doctest file, remember to include it in ``docs/index.txt``.
 

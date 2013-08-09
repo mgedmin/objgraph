@@ -4,7 +4,7 @@ FILE_WITH_VERSION = objgraph.py
 FILE_WITH_CHANGELOG = CHANGES.txt
 VCS_STATUS = git status --porcelain
 VCS_EXPORT = git archive --format=tar --prefix=tmp/tree/ HEAD | tar -xf -
-VCS_DIFF_IMAGES = bzr diff --using=imgdiff --diff-options='-H --eog' # XXX
+VCS_DIFF_IMAGES = git diff docs/*.png
 VCS_TAG = git tag
 VCS_COMMIT_AND_PUSH = git commit -av -m "Post-release version bump" && git push && git push --tags
 
@@ -102,8 +102,17 @@ releasechecklist:
 	        echo "$(FILE_WITH_CHANGELOG) has no entry for $$ver_and_date"; exit 1; }
 	make distcheck
 
+# Make sure $(VCS_DIFF_IMAGES) can work
+.PHONY: config-imgdiff
+config-imgdiff:
+	@test -z "`git config diff.imgdiff.command`" && git config diff.imgdiff.command 'f() { imgdiff --eog -H $$1 $$2; }; f' || true
+
+.PHONY: imgdiff
+imgdiff: config-imgdiff
+	$(VCS_DIFF_IMAGES)
+
 .PHONY: release
-release: releasechecklist
+release: releasechecklist config-imgdiff
 	# I'm chicken so I won't actually do these things yet
 	@echo "It is a good idea to run"
 	@echo
