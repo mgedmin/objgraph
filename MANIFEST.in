@@ -1,5 +1,5 @@
 include Makefile
-include *.txt
+include *.rst
 include tests.py
 include tox.ini
 include docs/*.txt

@@ -1,4 +1,4 @@
-.. include:: ../README.txt
+.. include:: ../README.rst
    :end-before: .. _history:
 
 .. currentmodule:: objgraph
@@ -183,7 +183,7 @@ More examples, that also double as tests
    chain
    quoting
 
-.. include:: ../README.txt
+.. include:: ../README.rst
    :start-after: .. _history:
    :end-before: .. _devel:
 
@@ -195,7 +195,7 @@ And here's the change log
    CHANGES
 
 
-.. include:: ../README.txt
+.. include:: ../README.rst
    :start-after: .. _devel:
 
 For more information, see :ref:`hacking`.

@@ -27,7 +27,7 @@ def read(filename):
 
 
 def unsphinx(text):
-    # remove Sphinx extensions used in CHANGES.txt from reStructuredText
+    # remove Sphinx extensions used in CHANGES.rst from reStructuredText
     # so that it can be handled by plain docutils
     return text.replace(':func:', '').replace('.. currentmodule:: objgraph', '')
 
@@ -45,8 +45,8 @@ def get_version():
 
 
 def get_description():
-    readme = read('README.txt')
-    changelog = read('CHANGES.txt')
+    readme = read('README.rst')
+    changelog = read('CHANGES.rst')
     description = unsphinx(readme + '\n\n\n' + changelog)
     if '--unicode-description' in sys.argv:
         sys.argv.remove('--unicode-description')

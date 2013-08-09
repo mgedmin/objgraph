@@ -6,6 +6,7 @@ Changes
 1.7.3 (unreleased)
 ------------------
 
+- Moved to GitHub.
 
 
 1.7.2 (2012-10-23)
@@ -85,7 +86,7 @@ Changes
 - Avoid test failures in uncollectable-garbage.txt (fixes `LP#686731
   <http://launchpad.net/bugs/686731>`_).
 
-- Added HACKING.txt.
+- Added HACKING.txt (later renamed to HACKING.rst).
 
 
 1.5.0 (2010-12-05)
