@@ -1,6 +1,12 @@
 PYTHON = python
+
 FILE_WITH_VERSION = objgraph.py
 FILE_WITH_CHANGELOG = CHANGES.txt
+VCS_STATUS = git status --porcelain
+VCS_EXPORT = git archive --format=tar --prefix=tmp/tree/ HEAD | tar -xf -
+VCS_DIFF_IMAGES = bzr diff --using=imgdiff --diff-options='-H --eog' # XXX
+VCS_TAG = git tag
+VCS_COMMIT_AND_PUSH = git commit -av -m "Post-release version bump" && git push && git push --tags
 
 SUPPORTED_PYTHON_VERSIONS = 2.4 2.5 2.6 2.7 3.1 3.2 3.3
 
@@ -62,13 +68,13 @@ dist:
 .PHONY: distcheck
 distcheck:
 	# Bit of a chicken-and-egg here, but if the tree is unclean, make
-	# distcheck will fail.  Thankfully bzr lets me uncommit.
-	@test -z "`bzr status 2>&1|grep -v 'shelves exist'`" || { echo; echo "Your working tree is not clean" 1>&2; bzr status; exit 1; }
+	# distcheck will fail.
+	@test -z "`$(VCS_STATUS) 2>&1`" || { echo; echo "Your working tree is not clean" 1>&2; $(VCS_STATUS); exit 1; }
 	make dist
 	pkg_and_version=`$(PYTHON) setup.py --name`-`$(PYTHON) setup.py --version` && \
 	rm -rf tmp && \
 	mkdir tmp && \
-	bzr export tmp/tree && \
+	$(VCS_EXPORT) && \
 	cd tmp && \
 	tar xvzf ../dist/$$pkg_and_version.tar.gz && \
 	diff -ur $$pkg_and_version tree -x PKG-INFO -x setup.cfg -x '*.egg-info' && \
@@ -106,17 +112,17 @@ release: releasechecklist
 	@echo
 	@echo "about now.  Then sanity-check the images with"
 	@echo
-	@echo "  bzr diff --using=imgdiff --diff-options='-H --eog'"
+	@echo "  $(VCS_DIFF_IMAGES)"
 	@echo
 	@echo "then either revert or commit the new images and run"
 	@echo
-	@echo "  $(PYTHON) setup.py sdist register upload --unicode-description && bzr tag `$(PYTHON) setup.py --version`"
+	@echo "  $(PYTHON) setup.py sdist register upload --unicode-description && $(VCS_TAG) `$(PYTHON) setup.py --version`"
 	@echo "  make publish-docs"
 	@echo
 	@echo "Please increment the version number in $(FILE_WITH_VERSION)"
 	@echo "and add a new empty entry at the top of the changelog in $(FILE_WITH_CHANGELOG), then"
 	@echo
-	@echo '  bzr ci -m "Post-release version bump" && bzr push'
+	@echo '  $(VCS_COMMIT_AND_PUSH)'
 	@echo
 
 .PHONY: publish-docs

@@ -42,10 +42,10 @@ illustrated examples -- is in this series of blog posts:
 Support and Development
 -----------------------
 
-The source code can be found in this Bazaar repository:
-https://code.launchpad.net/~mgedmin/objgraph/trunk.
+The source code can be found in this Git repository:
+https://github.com/mgedmin/objgraph.
 
-To check it out, use ``bzr branch lp:objgraph``.
+To check it out, use ``git clone https://github.com/mgedmin/objgraph``.
 
-Report bugs at https://bugs.launchpad.net/objgraph.
+Report bugs at https://github.com/mgedmin/objgraph/issues.
 

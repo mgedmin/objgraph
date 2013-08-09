@@ -5,7 +5,7 @@ Hacking on objgraph
 
 Start by geting the latest source with ::
 
-  bzr branch lp:objgraph
+  git clone https://github.com/mgedmin/objgraph
 
 Run the test suite with ::
 
@@ -21,13 +21,11 @@ e.g. by running ``make images`` and eyeballing the results (`imgdiff
 Sending me patches
 ------------------
 
-Bazaar branches and merge proposals are probably the best way to send me
-patches.  Or just attach the pathces to a bug in Launchpad.  Or email them
-to <marius@gedmin.as>.
+GitHub pull requests are probably the best way to send me patches.  Or just
+email them to <marius@gedmin.as>.
 
-I'd appreciate `bugs in launchpad
-<https://bugs.launchpad.net/objgraph/+filebug>`_ for each proposed change, be
-it a bug or a feature request.
+I'd appreciate `issues in GitHub <https://github.com/mgedmin/objgraph/issues>`_
+for each proposed change, be it a bug or a feature request.
 
 
 Supported Python versions
@@ -39,14 +37,15 @@ You can run the test suite for all supported Python versions with ::
 
   make test-all-pythons
 
-or with `detox <http://pypi.python.org/pypi/detox>`_.
+or with `detox <http://pypi.python.org/pypi/detox>`_ (which will be faster,
+since it runs the tests in parallel).
 
 If a test fails, often the easiest way to debug is is to compare the output
 visually ::
 
   make images PYTHON=pythonX.Y
-  bzr diff --using imgdiff --diff-options="-H --eog" docs/image.png
-  bzr revert images/*.png images/*.dot
+  XXX: translate to git: bzr diff --using imgdiff --diff-options="-H --eog" docs/image.png
+  git checkout -- docs/*.png docs/*.dot
 
 
 An easy way to get Pythons 2.4 through 2.7 (and 3.x) on Ubuntu is to use Felix
@@ -93,19 +92,19 @@ To fully rebuild the documentation, run ::
 
   make clean images docs
 
-Please ``bzr revert`` the png files that haven't changed significantly.  (Many
-of the images include things like memory addresses which tend to change from
-run to run.)
+Please ``git checkout --`` the png files that haven't changed significantly.
+(Many of the images include things like memory addresses which tend to change
+from run to run.)
 
 `imgdiff <http://pypi.python.org/pypi/imgdiff>`_ is useful for comparing the
 images with their older versions::
 
-  bzr diff --using imgdiff docs/*.png
+  XXX: how do I git: bzr diff --using imgdiff docs/*.png
 
 It has a few options that may make the changes easier to see.  I personally
 like::
 
-  bzr diff --using imgdiff --diff-options="-H --eog" docs/*.png
+  XXX: how do I git: bzr diff --using imgdiff --diff-options="-H --eog" docs/*.png
 
 When you add a new doctest file, remember to include it in ``docs/index.txt``.
 
@@ -163,8 +162,8 @@ is tedious, and bash has tab-completion for makefile rules.
 Making releases
 ---------------
 
-You need write access to the PyPI package and to the Bazaar branch on
-Launchpad.  At the moment of this writing, this means you must be me.
+You need write access to the PyPI package and to the Git branch on
+GitHub.  At the moment of this writing, this means you must be me.
 
 Run ``make release`` and follow the instructions.  It is safe to run this
 command at any time: it never commits/pushes/uploads to PyPI, it just tells
@@ -185,3 +184,4 @@ plugins installed.  You can run ::
 to be sure this is so, but it's not necessary -- ``make release`` will do this
 every time.
 
+XXX: mention check-manifest
