@@ -302,7 +302,7 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
 
     Example:
 
-        >>> find_backref_chain(obj, inspect.ismodule)
+        >>> find_backref_chain(obj, is_proper_module)
         [<module ...>, ..., obj]
 
     Returns ``[obj]`` if such a chain could not be found.
@@ -436,12 +436,12 @@ def show_chain(*chains, **kw):
     Useful in combination with :func:`find_ref_chain` or
     :func:`find_backref_chain`, e.g.
 
-        >>> show_chain(find_backref_chain(obj, inspect.ismodule))
+        >>> show_chain(find_backref_chain(obj, is_proper_module))
 
     You can specify if you want that chain traced backwards or forwards
     by passing a ``backrefs`` keyword argument, e.g.
 
-        >>> show_chain(find_ref_chain(obj, inspect.ismodule),
+        >>> show_chain(find_ref_chain(obj, is_proper_module),
         ...            backrefs=False)
 
     Ideally this shouldn't matter, but for some objects
@@ -468,6 +468,23 @@ def show_chain(*chains, **kw):
     else:
         show_refs([chain[0] for chain in chains], max_depth=max_depth,
                   filter=in_chains, **kw)
+
+def is_proper_module(obj):
+    """
+    Returns ``True`` if ``obj`` can be treated like a garbage collector root.
+
+    That is, if ``obj`` is a module that is in ``sys.modules``.
+
+    >>> import imp
+    >>> is_proper_module([])
+    False
+    >>> is_proper_module(imp)
+    True
+    >>> is_proper_module(imp.new_module('foo'))
+    False
+    """
+    return (inspect.ismodule(obj) and
+            obj is sys.modules.get(getattr(obj, '__name__', None)))
 
 #
 # Internal helpers
@@ -566,7 +583,7 @@ def show_graph(objs, edge_func, swap_source_target,
             f.write('  %s_has_a_del[label="__del__",shape=doublecircle,height=0.25,color=red,fillcolor="0,.5,1",fontsize=6];\n' % (obj_node_id(target)))
         if tdepth >= max_depth:
             continue
-        if inspect.ismodule(target) and not swap_source_target:
+        if is_proper_module(target) and not swap_source_target:
             # For show_backrefs(), it makes sense to stop when reaching a
             # module because you'll end up in sys.modules and explode the
             # graph with useless clutter.  For show_refs(), it makes sense
