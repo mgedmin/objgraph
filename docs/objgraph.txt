@@ -29,6 +29,8 @@ Locating and Filtering Objects
 
 .. autofunction:: at
 
+.. autofunction:: is_proper_module(obj)
+
 
 Traversing and Displaying Object Graphs
 ---------------------------------------
