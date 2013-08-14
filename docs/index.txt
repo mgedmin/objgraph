@@ -97,15 +97,16 @@ It's easy to see :class:`MyBigFatObject` instances that appeared and were
 not freed.  I can pick one of them at random and trace the reference chain
 back to one of the garbage collector's roots.
 
-For simplicity's sake let's assume all of the roots are modules; if you've
-any examples where that isn't true, I'd love to hear about them (although
-see :ref:`leaking-objects`).
+For simplicity's sake let's assume all of the roots are modules.  ``objgraph``
+provides a function, :func:`~objgraph.is_proper_module`, to check this. If
+you've any examples where that isn't true, I'd love to hear about them
+(although see :ref:`leaking-objects`).
 
-    >>> import inspect, random
+    >>> import random
     >>> objgraph.show_chain(
     ...     objgraph.find_backref_chain(
     ...         random.choice(objgraph.by_type('MyBigFatObject')),
-    ...         inspect.ismodule),
+    ...         objgraph.is_proper_module),
     ...     filename='chain.png')
     Graph written to ...dot (13 nodes)
     Image generated as chain.png

@@ -38,12 +38,11 @@ and we can see what holds it in memory
    :alt: [graph of objects from which the canary is reachable]
    :scale: 50%
 
-Or we can examine just one of the reference chains leading straight a module.
+Or we can examine just one of the reference chains leading straight to a module.
 
-    >>> import inspect
     >>> objgraph.show_chain(
     ...     objgraph.find_backref_chain(objgraph.by_type('Canary')[0],
-    ...                                 inspect.ismodule),
+    ...                                 objgraph.is_proper_module),
     ...     filename='canary-chain.png')
     Graph written to ....dot (11 nodes)
     Image generated as canary-chain.png
