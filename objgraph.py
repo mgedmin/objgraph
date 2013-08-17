@@ -3,7 +3,7 @@ Tools for drawing Python object reference graphs with graphviz.
 
 You can find documentation online at http://mg.pov.lt/objgraph/
 
-Copyright (c) 2008-2010 Marius Gedminas <marius@pov.lt>
+Copyright (c) 2008-2013 Marius Gedminas <marius@pov.lt>
 Copyright (c) 2010 Stefano Rivera <stefano@rivera.za.net>
 
 Released under the MIT licence.
@@ -27,10 +27,10 @@ Released under the MIT licence.
 # DEALINGS IN THE SOFTWARE.
 
 __author__ = "Marius Gedminas (marius@gedmin.as)"
-__copyright__ = "Copyright (c) 2008-2012 Marius Gedminas"
+__copyright__ = "Copyright (c) 2008-2013 Marius Gedminas"
 __license__ = "MIT"
-__version__ = "1.7.3dev"
-__date__ = "2012-10-23"
+__version__ = "1.8.0dev"
+__date__ = "2013-08-17"
 
 
 import codecs
@@ -482,6 +482,8 @@ def is_proper_module(obj):
     True
     >>> is_proper_module(imp.new_module('foo'))
     False
+
+    .. versionadded:: 1.8
     """
     return (inspect.ismodule(obj) and
             obj is sys.modules.get(getattr(obj, '__name__', None)))

@@ -3,8 +3,10 @@ Changes
 
 .. currentmodule:: objgraph
 
-1.7.3 (unreleased)
+1.8.0 (unreleased)
 ------------------
+
+- New function: :func:`is_proper_module`.
 
 - Moved to GitHub.
 
