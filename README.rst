@@ -1,6 +1,9 @@
 Python Object Graphs
 ====================
 
+.. image:: https://travis-ci.org/mgedmin/objgraph.png?branch=master
+   :target: https://travis-ci.org/mgedmin/objgraph
+
 ``objgraph`` is a module that lets you visually explore Python object graphs.
 
 You'll need `graphviz <http://www.graphviz.org/>`_ if you want to draw
