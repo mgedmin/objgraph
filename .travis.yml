@@ -4,6 +4,8 @@ python:
     - 2.7
     - 3.2
     - 3.3
+install:
+    - sudo apt-get install graphviz
 script:
     - python tests.py
 notifications:
