@@ -350,7 +350,7 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
 
 def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
                   highlight=None, filename=None, extra_info=None,
-                  refcounts=False):
+                  refcounts=False, shortnames=True):
     """Generate an object reference graph ending at ``objs``.
 
     The graph will show you what objects refer to ``objs``, directly and
@@ -383,6 +383,10 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     These will mostly match the number of arrows pointing to an object,
     but can be different for various reasons.
 
+    Specify ``shortnames=False`` if you want to see fully-qualified type
+    names ('package.module.ClassName').  By default you get to see only the
+    class name part.
+
     Examples:
 
         >>> show_backrefs(obj)
@@ -398,16 +402,20 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     .. versionchanged:: 1.5
        New parameter: ``refcounts``.
 
+    .. versionchanged:: 1.8
+       New parameter: ``shortnames``.
+
     """
     show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
                filter=filter, too_many=too_many, highlight=highlight,
                edge_func=gc.get_referrers, swap_source_target=False,
-               filename=filename, extra_info=extra_info, refcounts=refcounts)
+               filename=filename, extra_info=extra_info, refcounts=refcounts,
+               shortnames=shortnames)
 
 
 def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
               highlight=None, filename=None, extra_info=None,
-              refcounts=False):
+              refcounts=False, shortnames=True):
     """Generate an object reference graph starting at ``objs``.
 
     The graph will show you what objects are reachable from ``objs``, directly
@@ -453,14 +461,18 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
        New parameters: ``filename``, ``extra_info``.
 
     .. versionchanged:: 1.5
-       New parameter: ``refcounts``.
        Follows references from module objects instead of stopping.
+       New parameter: ``refcounts``.
+
+    .. versionchanged:: 1.8
+       New parameter: ``shortnames``.
 
     """
     show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
                filter=filter, too_many=too_many, highlight=highlight,
                edge_func=gc.get_referents, swap_source_target=True,
-               filename=filename, extra_info=extra_info, refcounts=refcounts)
+               filename=filename, extra_info=extra_info, refcounts=refcounts,
+               shortnames=shortnames)
 
 
 def show_chain(*chains, **kw):
@@ -481,8 +493,9 @@ def show_chain(*chains, **kw):
     :func:`gc.get_referrers` and :func:`gc.get_referents` are not perfectly
     symmetrical.
 
-    You can specify ``highlight``, ``extra_info`` or ``filename`` arguments
-    like for :func:`show_backrefs` or :func:`show_refs`.
+    You can specify ``highlight``, ``extra_info``, ``refcounts``,
+    ``shortnames`` or ``filename`` arguments like for :func:`show_backrefs` or
+    :func:`show_refs`.
 
     .. versionadded:: 1.5
 
@@ -565,7 +578,7 @@ def find_chain(obj, predicate, edge_func, max_depth=20, extra_ignore=()):
 def show_graph(objs, edge_func, swap_source_target,
                max_depth=3, extra_ignore=(), filter=None, too_many=10,
                highlight=None, filename=None, extra_info=None,
-               refcounts=False):
+               refcounts=False, shortnames=True):
     if not isinstance(objs, (list, tuple)):
         objs = [objs]
     if filename and filename.endswith('.dot'):
@@ -603,7 +616,7 @@ def show_graph(objs, edge_func, swap_source_target,
         nodes += 1
         target = queue.pop(0)
         tdepth = depth[id(target)]
-        f.write('  %s[label="%s"];\n' % (obj_node_id(target), obj_label(target, extra_info, refcounts)))
+        f.write('  %s[label="%s"];\n' % (obj_node_id(target), obj_label(target, extra_info, refcounts, shortnames)))
         h, s, v = gradient((0, 0, 1), (0, 0, .3), tdepth, max_depth)
         if inspect.ismodule(target):
             h = .3
@@ -642,7 +655,7 @@ def show_graph(objs, edge_func, swap_source_target,
                 srcnode, tgtnode = target, source
             else:
                 srcnode, tgtnode = source, target
-            elabel = edge_label(srcnode, tgtnode)
+            elabel = edge_label(srcnode, tgtnode, shortnames)
             f.write('  %s -> %s%s;\n' % (obj_node_id(srcnode), obj_node_id(tgtnode), elabel))
             if id(source) not in depth:
                 depth[id(source)] = tdepth + 1
@@ -695,8 +708,11 @@ def obj_node_id(obj):
     return ('o%d' % id(obj)).replace('-', '_')
 
 
-def obj_label(obj, extra_info=None, refcounts=False):
-    label = [type(obj).__name__]
+def obj_label(obj, extra_info=None, refcounts=False, shortnames=True):
+    if shortnames:
+        label = [type(obj).__name__]
+    else:
+        label = [long_typename(obj)]
     if refcounts:
         label[0] += ' [%d]' % (sys.getrefcount(obj) - 4)
         # Why -4?  To ignore the references coming from
@@ -775,7 +791,7 @@ def gradient(start_color, end_color, depth, max_depth):
     return h, s, v
 
 
-def edge_label(source, target):
+def edge_label(source, target, shortnames=True):
     if isinstance(target, dict) and target is getattr(source, '__dict__', None):
         return ' [label="__dict__",weight=10]'
     if isinstance(source, types.FrameType):
@@ -805,8 +821,11 @@ def edge_label(source, target):
                 if isinstance(k, basestring) and is_identifier(k):
                     return ' [label="%s",weight=2]' % quote(k)
                 else:
-                    return ' [label="%s"]' % quote(type(k).__name__ + "\n"
-                                                   + safe_repr(k))
+                    if shortnames:
+                        tn = type(k).__name__
+                    else:
+                        tn = long_typename(k)
+                    return ' [label="%s"]' % quote(tn + "\n" + safe_repr(k))
     return ''
 
 
