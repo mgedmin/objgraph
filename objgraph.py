@@ -68,16 +68,25 @@ def count(typename, objects=None):
         42
         >>> count('MyClass', get_leaking_objects())
         3
+        >>> count('mymodule.MyClass')
+        2
 
     Note that the GC does not track simple objects like int or str.
 
     .. versionchanged:: 1.7
        New parameter: ``objects``.
 
+    .. versionchanged:: 1.8
+       Accepts fully-qualified type names (i.e. 'package.module.ClassName')
+       as well as short type names (i.e. 'ClassName').
+
     """
     if objects is None:
         objects = gc.get_objects()
-    return sum(1 for o in objects if type(o).__name__ == typename)
+    if '.' in typename:
+        return sum(1 for o in objects if long_typename(o) == typename)
+    else:
+        return sum(1 for o in objects if type(o).__name__ == typename)
 
 
 def typestats(objects=None, shortnames=True):
