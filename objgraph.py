@@ -44,7 +44,6 @@ import subprocess
 import tempfile
 import sys
 import itertools
-import collections
 
 
 try:
@@ -111,9 +110,10 @@ def typestats(objects=None, shortnames=True):
         typename = short_typename
     else:
         typename = long_typename
-    stats = collections.defaultdict(int)
+    stats = {}
     for o in objects:
-        stats[typename(o)] += 1
+        n = typename(o)
+        stats[n] = stats.get(n, 0) + 1
     return stats
 
 
