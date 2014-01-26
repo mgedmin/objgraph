@@ -8,7 +8,7 @@ VCS_DIFF_IMAGES = git diff docs/*.png
 VCS_TAG = git tag
 VCS_COMMIT_AND_PUSH = git commit -av -m "Post-release version bump" && git push && git push --tags
 
-SUPPORTED_PYTHON_VERSIONS = 2.4 2.5 2.6 2.7 3.1 3.2 3.3
+SUPPORTED_PYTHON_VERSIONS = 2.4 2.5 2.6 2.7 3.1 3.2 3.3 3.4
 
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
