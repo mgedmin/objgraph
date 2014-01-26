@@ -469,6 +469,7 @@ def show_chain(*chains, **kw):
         show_refs([chain[0] for chain in chains], max_depth=max_depth,
                   filter=in_chains, **kw)
 
+
 def is_proper_module(obj):
     """
     Returns ``True`` if ``obj`` can be treated like a garbage collector root.
@@ -487,6 +488,7 @@ def is_proper_module(obj):
     """
     return (inspect.ismodule(obj) and
             obj is sys.modules.get(getattr(obj, '__name__', None)))
+
 
 #
 # Internal helpers
