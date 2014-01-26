@@ -266,10 +266,17 @@ def by_type(typename, objects=None):
     .. versionchanged:: 1.7
        New parameter: ``objects``.
 
+    .. versionchanged:: 1.8
+       Accepts fully-qualified type names (i.e. 'package.module.ClassName')
+       as well as short type names (i.e. 'ClassName').
+
     """
     if objects is None:
         objects = gc.get_objects()
-    return [o for o in objects if type(o).__name__ == typename]
+    if '.' in typename:
+        return [o for o in objects if long_typename(o) == typename]
+    else:
+        return [o for o in objects if type(o).__name__ == typename]
 
 
 def at(addr):
