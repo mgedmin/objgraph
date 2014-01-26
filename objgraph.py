@@ -148,7 +148,7 @@ def most_common_types(limit=10, objects=None, shortnames=True):
     return stats
 
 
-def show_most_common_types(limit=10, objects=None):
+def show_most_common_types(limit=10, objects=None, shortnames=True):
     """Print the table of types of most common instances.
 
     The caveats documented in :func:`typestats` apply.
@@ -167,8 +167,11 @@ def show_most_common_types(limit=10, objects=None):
     .. versionchanged:: 1.7
        New parameter: ``objects``.
 
+    .. versionchanged:: 1.8
+       New parameter: ``shortnames``.
+
     """
-    stats = most_common_types(limit, objects)
+    stats = most_common_types(limit, objects, shortnames=shortnames)
     width = max(len(name) for name, count in stats)
     for name, count in stats:
         print('%-*s %i' % (width, name, count))
