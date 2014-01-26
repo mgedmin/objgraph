@@ -177,7 +177,7 @@ def show_most_common_types(limit=10, objects=None, shortnames=True):
         print('%-*s %i' % (width, name, count))
 
 
-def show_growth(limit=10, peak_stats={}):
+def show_growth(limit=10, peak_stats={}, shortnames=True):
     """Show the increase in peak object counts since last call.
 
     Limits the output to ``limit`` largest deltas.  You may set ``limit`` to
@@ -198,9 +198,13 @@ def show_growth(limit=10, peak_stats={}):
         ...
 
     .. versionadded:: 1.5
+
+    .. versionchanged:: 1.8
+       New parameter: ``shortnames``.
+
     """
     gc.collect()
-    stats = typestats()
+    stats = typestats(shortnames=shortnames)
     deltas = {}
     for name, count in iteritems(stats):
         old_count = peak_stats.get(name, 0)
