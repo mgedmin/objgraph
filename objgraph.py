@@ -224,7 +224,7 @@ def get_leaking_objects(objects=None):
         # this then is our set of objects without referrers
         return [i for i in objects if id(i) in ids]
     finally:
-        objects = i = j = None # clear cyclic references to frame
+        objects = i = None # clear cyclic references to frame
 
 
 def by_type(typename, objects=None):
