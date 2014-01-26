@@ -117,7 +117,7 @@ def typestats(objects=None, shortnames=True):
     return stats
 
 
-def most_common_types(limit=10, objects=None):
+def most_common_types(limit=10, objects=None, shortnames=True):
     """Count the names of types with the most instances.
 
     Returns a list of (type_name, count), sorted most-frequent-first.
@@ -137,9 +137,12 @@ def most_common_types(limit=10, objects=None):
     .. versionchanged:: 1.7
        New parameter: ``objects``.
 
+    .. versionchanged:: 1.8
+       New parameter: ``shortnames``.
+
     """
-    stats = sorted(typestats(objects).items(), key=operator.itemgetter(1),
-                   reverse=True)
+    stats = sorted(typestats(objects, shortnames=shortnames).items(),
+                   key=operator.itemgetter(1), reverse=True)
     if limit:
         stats = stats[:limit]
     return stats
