@@ -2,7 +2,7 @@ Uncollectable garbage
 ---------------------
 
 Objects that have a ``__del__`` method cannot be collected by the garbage
-collector if they participate in a cycle.
+collector if they participate in a cycle, prior to Python 3.4.
 
     >>> class Nondestructible(list):
     ...     def __del__(self):

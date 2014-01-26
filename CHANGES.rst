@@ -10,6 +10,8 @@ Changes
 
 - Moved to GitHub.
 
+- Python 3.4 support (`LP#1270872 <http://launchpad.net/bugs/1270872>`_).
+
 
 1.7.2 (2012-10-23)
 ------------------

@@ -3,6 +3,7 @@ import doctest
 import glob
 import os
 import re
+import sys
 import shutil
 import tempfile
 import unittest
@@ -50,7 +51,11 @@ def tearDown(test):
 
 
 def find_doctests():
-    return glob.glob('docs/*.txt')
+    doctests = set(glob.glob('docs/*.txt'))
+    if sys.version_info >= (3, 4):
+        # Skip uncollectable.txt on Python 3.4 and newer
+        doctests.discard('docs/uncollectable.txt')
+    return sorted(doctests)
 
 
 def doctest_setup_py_works():
