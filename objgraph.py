@@ -44,6 +44,7 @@ import subprocess
 import tempfile
 import sys
 import itertools
+import collections
 
 
 try:
@@ -80,13 +81,13 @@ def count(typename, objects=None):
     return sum(1 for o in objects if type(o).__name__ == typename)
 
 
-def typestats(objects=None):
+def typestats(objects=None, shortnames=True):
     """Count the number of instances for each type tracked by the GC.
 
     Note that the GC does not track simple objects like int or str.
 
     Note that classes with the same name but defined in different modules
-    will be lumped together.
+    will be lumped together if ``shortnames`` is True.
 
     Example:
 
@@ -100,13 +101,19 @@ def typestats(objects=None):
     .. versionchanged:: 1.7
        New parameter: ``objects``.
 
+    .. versionchanged:: 1.8
+       New parameter: ``shortnames``.
+
     """
     if objects is None:
         objects = gc.get_objects()
-    stats = {}
+    if shortnames:
+        typename = short_typename
+    else:
+        typename = long_typename
+    stats = collections.defaultdict(int)
     for o in objects:
-        stats.setdefault(type(o).__name__, 0)
-        stats[type(o).__name__] += 1
+        stats[typename(o)] += 1
     return stats
 
 
@@ -682,6 +689,20 @@ def quote(s):
              .replace("\"", "\\\"")
              .replace("\n", "\\n")
              .replace("\0", "\\\\0"))
+
+
+def short_typename(obj):
+    return type(obj).__name__
+
+
+def long_typename(obj):
+    objtype = type(obj)
+    name = objtype.__name__
+    module = getattr(objtype, '__module__', None)
+    if module:
+        return '%s.%s' % (module, name)
+    else:
+        return name
 
 
 def safe_repr(obj):
