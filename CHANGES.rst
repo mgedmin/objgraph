@@ -12,6 +12,14 @@ Changes
 
 - Python 3.4 support (`LP#1270872 <http://launchpad.net/bugs/1270872>`_).
 
+- New ``shortnames`` argument for :func:`typestats`, :func:`most_common_types`,
+  :func:`show_most_common_types`, :func:`show_growth`, :func:`show_refs`,
+  and :func:`show_backrefs`.
+
+  :func:`count` and :func:`by_type` accept fully-qualified type names now.
+
+  Fixes `issue 4 <https://github.com/mgedmin/objgraph/issues/4>`_.
+
 
 1.7.2 (2012-10-23)
 ------------------
