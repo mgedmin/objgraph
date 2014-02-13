@@ -3,14 +3,14 @@ Changes
 
 .. currentmodule:: objgraph
 
-1.8.0 (unreleased)
+1.8.0 (2014-02-13)
 ------------------
-
-- New function: :func:`is_proper_module`.
 
 - Moved to GitHub.
 
 - Python 3.4 support (`LP#1270872 <http://launchpad.net/bugs/1270872>`_).
+
+- New function: :func:`is_proper_module`.
 
 - New ``shortnames`` argument for :func:`typestats`, :func:`most_common_types`,
   :func:`show_most_common_types`, :func:`show_growth`, :func:`show_refs`,

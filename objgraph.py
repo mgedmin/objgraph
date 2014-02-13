@@ -3,7 +3,7 @@ Tools for drawing Python object reference graphs with graphviz.
 
 You can find documentation online at http://mg.pov.lt/objgraph/
 
-Copyright (c) 2008-2013 Marius Gedminas <marius@pov.lt>
+Copyright (c) 2008-2014 Marius Gedminas <marius@pov.lt>
 Copyright (c) 2010 Stefano Rivera <stefano@rivera.za.net>
 
 Released under the MIT licence.
@@ -27,10 +27,10 @@ Released under the MIT licence.
 # DEALINGS IN THE SOFTWARE.
 
 __author__ = "Marius Gedminas (marius@gedmin.as)"
-__copyright__ = "Copyright (c) 2008-2013 Marius Gedminas"
+__copyright__ = "Copyright (c) 2008-2014 Marius Gedminas"
 __license__ = "MIT"
-__version__ = "1.8.0dev"
-__date__ = "2013-08-17"
+__version__ = "1.8.0"
+__date__ = "2014-02-13"
 
 
 import codecs
