@@ -200,6 +200,7 @@ def doctest_gradient_empty():
 
 
 @skipIf(sys.version_info[0] > 2, "Python 3 has no unbound methods")
+@skipIf(sys.version_info[:2] < (2, 6), "Python 2.5 and older has no __func__")
 def doctest_edge_label_unbound_method():
     r"""Test for edge_label
 
