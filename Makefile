@@ -58,7 +58,7 @@ preview-pypi-description:
 
 .PHONY: coverage
 coverage:
-	PYTHONPATH=.:$$PYTHONPATH coverage run tests.py
+	PYTHONPATH=.:$$PYTHONPATH coverage run --source=objgraph tests.py
 	coverage report
 
 .PHONY: dist
