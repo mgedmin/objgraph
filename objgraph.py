@@ -604,7 +604,9 @@ def show_graph(objs, edge_func, swap_source_target,
     ignore.add(id(depth))
     ignore.add(id(ignore))
     ignore.add(id(sys._getframe()))  # this function
+    ignore.add(id(sys._getframe().f_locals))
     ignore.add(id(sys._getframe(1))) # show_refs/show_backrefs, most likely
+    ignore.add(id(sys._getframe(1).f_locals))
     for obj in objs:
         f.write('  %s[fontcolor=red];\n' % (obj_node_id(obj)))
         depth[id(obj)] = 0
