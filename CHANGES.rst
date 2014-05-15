@@ -3,7 +3,7 @@ Changes
 
 .. currentmodule:: objgraph
 
-1.8.1 (unreleased)
+1.8.1 (2014-05-15)
 ------------------
 
 - Do not expect file objects to have an ``encoding`` attribute.  Makes objgraph
