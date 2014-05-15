@@ -766,7 +766,7 @@ def short_repr(obj):
                 return obj.__func__.__name__ + ' (bound)'
             else:
                 return obj.__func__.__name__
-        except AttributeError:
+        except AttributeError:  # pragma: nocover
             # Python < 2.6 compatibility
             if obj.im_self is not None:
                 return obj.im_func.__name__ + ' (bound)'
@@ -807,7 +807,7 @@ def edge_label(source, target, shortnames=True):
                 return ' [label="__self__",weight=10]'
             if target is source.__func__:
                 return ' [label="__func__",weight=10]'
-        except AttributeError:
+        except AttributeError:  # pragma: nocover
             # Python < 2.6 compatibility
             if target is source.im_self:
                 return ' [label="im_self",weight=10]'
