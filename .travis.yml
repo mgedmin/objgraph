@@ -7,7 +7,11 @@ python:
     - 3.4
 install:
     - sudo apt-get install graphviz
+    - pip install coverage coveralls
+    - pip install -e .
 script:
-    - python tests.py
+    - coverage run --source=objgraph tests.py
+after_success:
+    - coveralls
 notifications:
     email: false
