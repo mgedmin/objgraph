@@ -124,6 +124,17 @@ def doctest_by_type_long_type_names():
     """
 
 
+def doctest_find_chain_no_chain():
+    """Test for find_chain
+
+        >>> from objgraph import find_chain
+        >>> a = object()
+        >>> find_chain(a, lambda x: False, gc.get_referrers) == [a]
+        True
+
+    """
+
+
 def doctest_obj_label_long_type_names():
     r"""Test for obj_label
 
