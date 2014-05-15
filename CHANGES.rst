@@ -6,6 +6,12 @@ Changes
 1.8.1 (unreleased)
 ------------------
 
+- Do not expect file objects to have an ``encoding`` attribute.  Makes objgraph
+  compatible with Eventlet's monkey-patching.
+
+  Fixes `issue 6 <https://github.com/mgedmin/objgraph/pull/6>`_.  Contributed
+  by Jakub Stasiak.
+
 
 1.8.0 (2014-02-13)
 ------------------
