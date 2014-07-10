@@ -55,5 +55,3 @@ https://github.com/mgedmin/objgraph.
 To check it out, use ``git clone https://github.com/mgedmin/objgraph``.
 
 Report bugs at https://github.com/mgedmin/objgraph/issues.
-
-If you want to leave a tip, see https://www.gittip.com/mgedmin/
