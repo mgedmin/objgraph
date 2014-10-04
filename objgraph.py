@@ -45,6 +45,14 @@ import tempfile
 import sys
 import itertools
 
+try:
+    try:
+        from cStringIO import StringIO
+    except ImportError:
+        from stringio import StringIO
+except ImportError:
+    # Python 3.x compatibility
+    from io import StringIO
 
 try:
     basestring
@@ -186,7 +194,7 @@ def show_most_common_types(limit=10, objects=None, shortnames=True):
         print('%-*s %i' % (width, name, count))
 
 
-def growth(limit=10, peak_stats={}, shortnames=Truse):
+def growth(limit=10, peak_stats={}, shortnames=True):
     """Calculate the increase in peak object counts since last call.
 
     Returns a dict of {type_name: (delta, count)}.
@@ -385,10 +393,11 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     file, whose extension indicates the desired output format; note
     that output to a specific format is entirely handled by GraphViz:
     if the desired format is not supported, you just get the .dot
-    file.  If ``filename`` is not specified, ``show_backrefs`` will
-    try to produce a .dot file and spawn a viewer (xdot).  If xdot is
-    not available, ``show_backrefs`` will convert the .dot file to a
-    .png and print its name.
+    file. If ``filename`` is specified as "string", the .dot file will
+    be returned as a string instead of written to disk. If ``filename``
+    is not specified, ``show_backrefs`` will try to produce a .dot file
+    and spawn a viewer (xdot).  If xdot is not available, ``show_backrefs``
+    will convert the .dot file to a .png and print its name.
 
     Use ``max_depth`` and ``too_many`` to limit the depth and breadth of the
     graph.
@@ -427,8 +436,10 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     .. versionchanged:: 1.8
        New parameter: ``shortnames``.
 
+    .. versionchanged:: 1.8
+       New return value: the return value of :func:`show_graph()` (usually None).
     """
-    show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
+    return show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
                filter=filter, too_many=too_many, highlight=highlight,
                edge_func=gc.get_referrers, swap_source_target=False,
                filename=filename, extra_info=extra_info, refcounts=refcounts,
@@ -450,10 +461,11 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     file, whose extension indicates the desired output format; note
     that output to a specific format is entirely handled by GraphViz:
     if the desired format is not supported, you just get the .dot
-    file.  If ``filename`` is not specified, ``show_refs`` will
-    try to produce a .dot file and spawn a viewer (xdot).  If xdot is
-    not available, ``show_refs`` will convert the .dot file to a
-    .png and print its name.
+    file.  If ``filename`` is specified as "string", the .dot file will
+    be returned as a string instead of written to disk.  If ``filename``
+    is not specified, ``show_refs`` will try to produce a .dot file and
+    spawn a viewer (xdot).  If xdot is not available, ``show_refs`` will
+    convert the .dot file to a .png and print its name.
 
     Use ``max_depth`` and ``too_many`` to limit the depth and breadth of the
     graph.
@@ -489,8 +501,10 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     .. versionchanged:: 1.8
        New parameter: ``shortnames``.
 
+    .. versionchanged:: 1.8
+       New return value: the return value of :func:`show_graph()` (usually None).
     """
-    show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
+    return show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
                filter=filter, too_many=too_many, highlight=highlight,
                edge_func=gc.get_referents, swap_source_target=True,
                filename=filename, extra_info=extra_info, refcounts=refcounts,
@@ -523,7 +537,9 @@ def show_chain(*chains, **kw):
 
     .. versionchanged:: 1.7
        New parameter: ``backrefs``.
-
+       
+    .. versionchanged:: 1.8
+       New return value: the return value of :func:`show_graph()` (usually None).
     """
     backrefs = kw.pop('backrefs', True)
     chains = [chain for chain in chains if chain] # remove empty ones
@@ -531,10 +547,10 @@ def show_chain(*chains, **kw):
         return id(x) in ids
     max_depth = max(map(len, chains)) - 1
     if backrefs:
-        show_backrefs([chain[-1] for chain in chains], max_depth=max_depth,
+        return show_backrefs([chain[-1] for chain in chains], max_depth=max_depth,
                       filter=in_chains, **kw)
     else:
-        show_refs([chain[0] for chain in chains], max_depth=max_depth,
+        return show_refs([chain[0] for chain in chains], max_depth=max_depth,
                   filter=in_chains, **kw)
 
 
@@ -603,6 +619,10 @@ def show_graph(objs, edge_func, swap_source_target,
                refcounts=False, shortnames=True):
     if not isinstance(objs, (list, tuple)):
         objs = [objs]
+
+    # Write to a file-like string buffer, rather than disk.
+    if filename == "string":
+        f = StringIO()
     if filename and filename.endswith('.dot'):
         f = codecs.open(filename, 'w', encoding='utf-8')
         dot_filename = filename
@@ -699,8 +719,16 @@ def show_graph(objs, edge_func, swap_source_target,
             f.write('  too_many_%s[label="%s",shape=box,height=0.25,color=red,fillcolor="%g,%g,%g",fontsize=6];\n' % (obj_node_id(target), label, h, s, v))
             f.write('  too_many_%s[fontcolor=white];\n' % (obj_node_id(target)))
     f.write("}\n")
-    f.close()
-    print("Graph written to %s (%d nodes)" % (dot_filename, nodes))
+    
+    # If writing to a string, perform cleanup and return early.
+    if filename == "string":
+        graph = f.getvalue()
+        f.close()
+        return graph
+    else:
+        print("Graph written to %s (%d nodes)" % (dot_filename, nodes))        
+        f.close()
+
     if filename and filename.endswith('.dot'):
         # nothing else to do, the user asked for a .dot file
         return
