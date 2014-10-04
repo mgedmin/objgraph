@@ -186,8 +186,10 @@ def show_most_common_types(limit=10, objects=None, shortnames=True):
         print('%-*s %i' % (width, name, count))
 
 
-def show_growth(limit=10, peak_stats={}, shortnames=True):
-    """Show the increase in peak object counts since last call.
+def growth(limit=10, peak_stats={}, shortnames=Truse):
+    """Calculate the increase in peak object counts since last call.
+
+    Returns a dict of {type_name: (delta, count)}.
 
     Limits the output to ``limit`` largest deltas.  You may set ``limit`` to
     None to see all of them.
@@ -195,6 +197,33 @@ def show_growth(limit=10, peak_stats={}, shortnames=True):
     Uses and updates ``peak_stats``, a dictionary from type names to previously
     seen peak object counts.  Usually you don't need to pay attention to this
     argument.
+
+    The caveats documented in :func:`typestats` apply.
+
+    Example:
+
+        >>> growth(limit=3)
+        {'wrapper_descriptor': 14, 'tuple': 10, 'dict': 7}
+
+    .. versionadded:: 1.8
+    """
+    gc.collect()
+    stats = objgraph.typestats(shortnames=shortnames)
+    deltas = []
+    for name, count in iteritems(stats):
+        delta = count - peak_stats.get(name, 0)
+        if delta > 0:
+            deltas.append((name, (delta, count)))
+            peak_stats[name] = count
+    deltas = sorted(deltas, key=operator.itemgetter(1, 0), reverse=True)
+
+    if limit:
+        deltas = deltas[:limit]
+    return dict(deltas)
+
+
+def show_growth(*args, **kwargs):
+    """Print a table of increase in peak object counts since last call.
 
     The caveats documented in :func:`typestats` apply.
 
@@ -211,23 +240,16 @@ def show_growth(limit=10, peak_stats={}, shortnames=True):
     .. versionchanged:: 1.8
        New parameter: ``shortnames``.
 
+    .. versionchanged:: 1.8
+       Now calls growth(*args, **kwargs) to retrieve delta and count data.
     """
-    gc.collect()
-    stats = typestats(shortnames=shortnames)
-    deltas = {}
-    for name, count in iteritems(stats):
-        old_count = peak_stats.get(name, 0)
-        if count > old_count:
-            deltas[name] = count - old_count
-            peak_stats[name] = count
-    deltas = sorted(deltas.items(), key=operator.itemgetter(1),
-                    reverse=True)
-    if limit:
-        deltas = deltas[:limit]
-    if deltas:
-        width = max(len(name) for name, count in deltas)
-        for name, delta in deltas:
-            print('%-*s%9d %+9d' % (width, name, stats[name], delta))
+    growth_stats = growth(*args, **kwargs)
+
+    if growth_stats:
+        width = len(max(growth_stats.keys(), key=len))
+        for name, stats in iteritems(growth_stats):
+            delta, count = stats
+            print('%-*s%9d %+9d' % (width, name, count, delta))
 
 
 def get_leaking_objects(objects=None):
