@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import doctest
-import gc
+import gc                   # noqa
 import glob
 import os
 import re
