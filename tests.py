@@ -20,28 +20,94 @@ except ImportError:
 
 # Unit tests
 
+SINGLE_ELEMENT_OUTPUT = ('digraph ObjectGraph {\n'
+    '  node[shape=box, style=filled, fillcolor=white];\n'
+    '  %s[fontcolor=red];\n'
+    '  %s[label="instance\\nTestObject(A)"];\n'
+    '  %s[fillcolor="0,0,1"];\n'
+    '}\n')
+
+
+TWO_ELEMENT_OUTPUT = ('digraph ObjectGraph {\n'
+    '  node[shape=box, style=filled, fillcolor=white];\n'
+    '  %s[fontcolor=red];\n'
+    '  %s[label="instance\\nTestObject(A)"];\n'
+    '  %s[fillcolor="0,0,1"];\n'
+    '  %s -> %s;\n'
+    '  %s[label="instance\\nTestObject(B)"];\n'
+    '  %s[fillcolor="0,0,0.766667"];\n'
+    '}\n')
+
 
 def empty_edge_function(obj):
   return []
 
 
 class TestObject:
-  pass
+    _objs = {}
+
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return 'TestObject(%s)' % self.name
+
+    @classmethod
+    def get(cls, name):
+        if name in cls._objs:
+            return cls._objs[name]
+        obj = TestObject(name)
+        cls._objs[name] = obj
+        return obj
+
+
+def edge_function(chain_map):
+    """Given a mapping of src name -> dst name  or src name -> [dst names]
+    returns an edge_function."""
+    def helper(src):
+        if src.name not in chain_map:
+            return []
+        dst_names = chain_map[src.name]
+        if not isinstance(dst_names, (list, tuple)):
+            dst_names = [dst_names]
+        return [TestObject.get(dst_name) for dst_name in dst_names]
+    return helper
 
 
 class ShowGraphTest(unittest.TestCase):
-  """Tests for the show_graph function."""
+    """Tests for the show_graph function."""
 
-  def test_basic_file_output(self):
-    obj = TestObject()
-    output = StringIO()
-    show_graph([obj], empty_edge_function, False, output=output)
-    output_value = output.getvalue()
-    self.assertIsNotNone(output_value)
-    self.assertRegexpMatches(output_value, r'digraph ObjectGraph')
-    self.assertRegexpMatches(output_value, 
-                            r'%s\[.*?\]' % obj_node_id(obj))
+    def test_basic_file_output(self):
+        obj = TestObject.get("A")
+        output = StringIO()
+        show_graph([obj], empty_edge_function, False, output=output,
+                   shortnames=True)
+        output_value = output.getvalue()
+        label = obj_node_id(obj)
+        self.assertEqual(output_value, SINGLE_ELEMENT_OUTPUT %
+            (label, label, label))
 
+    def test_simple_chain(self):
+        edge_fn = edge_function({'A' : 'B'})
+        output = StringIO()
+        show_graph([TestObject.get("A")], edge_fn, False, output=output,
+                   shortnames=True)
+        output_value = output.getvalue()
+        label_a = obj_node_id(TestObject.get("A"))
+        label_b = obj_node_id(TestObject.get("B"))
+        self.assertEqual(output_value, TWO_ELEMENT_OUTPUT %
+            (label_a, label_a, label_a, label_b, label_a, label_b, label_b))
+
+
+class FindChainTest(unittest.TestCase):
+    """Tests for the find_chain function."""
+
+    def test_single_chain(self):
+        chain = edge_function({
+            "A": "B",
+            "B": "C",
+            "C": "D"
+        })
 
 # Doc tests
 

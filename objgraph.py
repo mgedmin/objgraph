@@ -590,11 +590,9 @@ def show_graph(objs, edge_func, swap_source_target,
                max_depth=3, extra_ignore=(), filter=None, too_many=10,
                highlight=None, filename=None, extra_info=None,
                refcounts=False, shortnames=True, output=None):
-    if not isinstance(objs, (list, tuple)):
-        objs = [objs]
     if filename and output:
         raise ValueError('Cannot specify output and filename.')
-    elif output:
+    if output:
         f = output
     elif filename and filename.endswith('.dot'):
         f = codecs.open(filename, 'w', encoding='utf-8')
@@ -608,90 +606,12 @@ def show_graph(objs, edge_func, swap_source_target,
             # Re-wrap it for utf-8
             import io
             f = io.TextIOWrapper(f.detach(), 'utf-8')
-    f.write('digraph ObjectGraph {\n'
-            '  node[shape=box, style=filled, fillcolor=white];\n')
-    queue = []
-    depth = {}
-    ignore = set(extra_ignore)
-    ignore.add(id(objs))
-    ignore.add(id(extra_ignore))
-    ignore.add(id(queue))
-    ignore.add(id(depth))
-    ignore.add(id(ignore))
-    ignore.add(id(sys._getframe()))  # this function
-    ignore.add(id(sys._getframe().f_locals))
-    ignore.add(id(sys._getframe(1))) # show_refs/show_backrefs, most likely
-    ignore.add(id(sys._getframe(1).f_locals))
-    for obj in objs:
-        f.write('  %s[fontcolor=red];\n' % (obj_node_id(obj)))
-        depth[id(obj)] = 0
-        queue.append(obj)
-        del obj
-    gc.collect()
-    nodes = 0
-    while queue:
-        nodes += 1
-        target = queue.pop(0)
-        tdepth = depth[id(target)]
-        f.write('  %s[label="%s"];\n' % (obj_node_id(target), obj_label(target, extra_info, refcounts, shortnames)))
-        h, s, v = gradient((0, 0, 1), (0, 0, .3), tdepth, max_depth)
-        if inspect.ismodule(target):
-            h = .3
-            s = 1
-        if highlight and highlight(target):
-            h = .6
-            s = .6
-            v = 0.5 + v * 0.5
-        f.write('  %s[fillcolor="%g,%g,%g"];\n' % (obj_node_id(target), h, s, v))
-        if v < 0.5:
-            f.write('  %s[fontcolor=white];\n' % (obj_node_id(target)))
-        if hasattr(getattr(target, '__class__', None), '__del__'):
-            f.write("  %s->%s_has_a_del[color=red,style=dotted,len=0.25,weight=10];\n" % (obj_node_id(target), obj_node_id(target)))
-            f.write('  %s_has_a_del[label="__del__",shape=doublecircle,height=0.25,color=red,fillcolor="0,.5,1",fontsize=6];\n' % (obj_node_id(target)))
-        if tdepth >= max_depth:
-            continue
-        if is_proper_module(target) and not swap_source_target:
-            # For show_backrefs(), it makes sense to stop when reaching a
-            # module because you'll end up in sys.modules and explode the
-            # graph with useless clutter.  For show_refs(), it makes sense
-            # to continue.
-            continue
-        neighbours = edge_func(target)
-        ignore.add(id(neighbours))
-        n = 0
-        skipped = 0
-        for source in neighbours:
-            if id(source) in ignore:
-                continue
-            if filter and not filter(source):
-                continue
-            if n >= too_many:
-                skipped += 1
-                continue
-            if swap_source_target:
-                srcnode, tgtnode = target, source
-            else:
-                srcnode, tgtnode = source, target
-            elabel = edge_label(srcnode, tgtnode, shortnames)
-            f.write('  %s -> %s%s;\n' % (obj_node_id(srcnode), obj_node_id(tgtnode), elabel))
-            if id(source) not in depth:
-                depth[id(source)] = tdepth + 1
-                queue.append(source)
-            n += 1
-            del source
-        del neighbours
-        if skipped > 0:
-            h, s, v = gradient((0, 1, 1), (0, 1, .3), tdepth + 1, max_depth)
-            if swap_source_target:
-                label = "%d more references" % skipped
-                edge = "%s->too_many_%s" % (obj_node_id(target), obj_node_id(target))
-            else:
-                label = "%d more backreferences" % skipped
-                edge = "too_many_%s->%s" % (obj_node_id(target), obj_node_id(target))
-            f.write('  %s[color=red,style=dotted,len=0.25,weight=10];\n' % edge)
-            f.write('  too_many_%s[label="%s",shape=box,height=0.25,color=red,fillcolor="%g,%g,%g",fontsize=6];\n' % (obj_node_id(target), label, h, s, v))
-            f.write('  too_many_%s[fontcolor=white];\n' % (obj_node_id(target)))
-    f.write("}\n")
+
+    nodes = build_graph(objs, edge_func, swap_source_target, f,
+                        max_depth=max_depth, extra_ignore=extra_ignore,
+                        filter=filter, too_many=too_many, highlight=highlight,
+                        extra_info=extra_info, refcounts=refcounts,
+                        shortnames=shortnames)
     if output:
         return
     # The file should only be closed if this function was in charge of opening
@@ -723,6 +643,103 @@ def show_graph(objs, edge_func, swap_source_target,
             print("Graph viewer (xdot) and image renderer (dot) not found, not doing anything else")
         else:
             print("Unrecognized file type (%s), not doing anything else" % filename)
+
+
+
+def build_graph(objs, edge_func, swap_source_target, output,
+               max_depth=3, extra_ignore=(), filter=None, too_many=10,
+               highlight=None, extra_info=None,
+               refcounts=False, shortnames=True):
+    # Returns the number of nodes created.
+    if not isinstance(objs, (list, tuple)):
+        objs = [objs]
+    output.write('digraph ObjectGraph {\n'
+            '  node[shape=box, style=filled, fillcolor=white];\n')
+    queue = []
+    depth = {}
+    ignore = set(extra_ignore)
+    ignore.add(id(objs))
+    ignore.add(id(extra_ignore))
+    ignore.add(id(queue))
+    ignore.add(id(depth))
+    ignore.add(id(ignore))
+    ignore.add(id(sys._getframe()))  # this function
+    ignore.add(id(sys._getframe().f_locals))
+    ignore.add(id(sys._getframe(1))) # show_graph
+    ignore.add(id(sys._getframe(1).f_locals))
+    ignore.add(id(sys._getframe(2))) # show_refs/show_backrefs, most likely
+    ignore.add(id(sys._getframe(2).f_locals))
+    for obj in objs:
+        output.write('  %s[fontcolor=red];\n' % (obj_node_id(obj)))
+        depth[id(obj)] = 0
+        queue.append(obj)
+        del obj
+    gc.collect()
+    nodes = 0
+    while queue:
+        nodes += 1
+        target = queue.pop(0)
+        tdepth = depth[id(target)]
+        output.write('  %s[label="%s"];\n' % (obj_node_id(target), obj_label(target, extra_info, refcounts, shortnames)))
+        h, s, v = gradient((0, 0, 1), (0, 0, .3), tdepth, max_depth)
+        if inspect.ismodule(target):
+            h = .3
+            s = 1
+        if highlight and highlight(target):
+            h = .6
+            s = .6
+            v = 0.5 + v * 0.5
+        output.write('  %s[fillcolor="%g,%g,%g"];\n' % (obj_node_id(target), h, s, v))
+        if v < 0.5:
+            output.write('  %s[fontcolor=white];\n' % (obj_node_id(target)))
+        if hasattr(getattr(target, '__class__', None), '__del__'):
+            output.write("  %s->%s_has_a_del[color=red,style=dotted,len=0.25,weight=10];\n" % (obj_node_id(target), obj_node_id(target)))
+            output.write('  %s_has_a_del[label="__del__",shape=doublecircle,height=0.25,color=red,fillcolor="0,.5,1",fontsize=6];\n' % (obj_node_id(target)))
+        if tdepth >= max_depth:
+            continue
+        if is_proper_module(target) and not swap_source_target:
+            # For show_backrefs(), it makes sense to stop when reaching a
+            # module because you'll end up in sys.modules and explode the
+            # graph with useless clutter.  For show_refs(), it makes sense
+            # to continue.
+            continue
+        neighbours = edge_func(target)
+        ignore.add(id(neighbours))
+        n = 0
+        skipped = 0
+        for source in neighbours:
+            if id(source) in ignore:
+                continue
+            if filter and not filter(source):
+                continue
+            if n >= too_many:
+                skipped += 1
+                continue
+            if swap_source_target:
+                srcnode, tgtnode = target, source
+            else:
+                srcnode, tgtnode = source, target
+            elabel = edge_label(srcnode, tgtnode, shortnames)
+            output.write('  %s -> %s%s;\n' % (obj_node_id(srcnode), obj_node_id(tgtnode), elabel))
+            if id(source) not in depth:
+                depth[id(source)] = tdepth + 1
+                queue.append(source)
+            n += 1
+            del source
+        del neighbours
+        if skipped > 0:
+            h, s, v = gradient((0, 1, 1), (0, 1, .3), tdepth + 1, max_depth)
+            if swap_source_target:
+                label = "%d more references" % skipped
+                edge = "%s->too_many_%s" % (obj_node_id(target), obj_node_id(target))
+            else:
+                label = "%d more backreferences" % skipped
+                edge = "too_many_%s->%s" % (obj_node_id(target), obj_node_id(target))
+            output.write('  %s[color=red,style=dotted,len=0.25,weight=10];\n' % edge)
+            output.write('  too_many_%s[label="%s",shape=box,height=0.25,color=red,fillcolor="%g,%g,%g",fontsize=6];\n' % (obj_node_id(target), label, h, s, v))
+            output.write('  too_many_%s[fontcolor=white];\n' % (obj_node_id(target)))
+    output.write("}\n")
+    return nodes
 
 
 def obj_node_id(obj):
