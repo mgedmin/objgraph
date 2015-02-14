@@ -1,5 +1,6 @@
 PYTHON = python
 
+PYLINT = pylint
 FILE_WITH_VERSION = objgraph.py
 FILE_WITH_CHANGELOG = CHANGES.rst
 VCS_STATUS = git status --porcelain
@@ -37,6 +38,10 @@ clean:
 .PHONY: test check
 test check:
 	$(PYTHON) tests.py
+
+.PHONY: lint
+lint:
+	$(PYLINT) objgraph.py
 
 .PHONY: test-all-pythons
 test-all-pythons:

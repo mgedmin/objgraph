@@ -1,5 +1,11 @@
 #!/usr/bin/python
-import codecs, os, re, sys, unittest, doctest
+import codecs
+import doctest
+import logging
+import os
+import re
+import sys
+import unittest
 
 try:
     from setuptools import setup
@@ -65,6 +71,8 @@ def build_images(doctests=()):
     suite = doctest.DocFileSuite(optionflags=doctest.ELLIPSIS,
                                  checker=tests.IgnoreNodeCountChecker(),
                                  *doctests)
+    tests._logger.setLevel(logging.INFO)
+    tests._logger.addHandler(tests._print_handler)
     os.chdir('docs')
     result = unittest.TextTestRunner().run(suite)
     if not result.wasSuccessful():
