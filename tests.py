@@ -9,6 +9,41 @@ import shutil
 import tempfile
 import unittest
 
+from objgraph import obj_node_id
+from objgraph import show_graph
+
+try:
+  from cStringIO import StringIO
+except ImportError:
+  from StringIO import StringIO
+
+
+# Unit tests
+
+
+def empty_edge_function(obj):
+  return []
+
+
+class TestObject:
+  pass
+
+
+class ShowGraphTest(unittest.TestCase):
+  """Tests for the show_graph function."""
+
+  def test_basic_file_output(self):
+    obj = TestObject()
+    output = StringIO()
+    show_graph([obj], empty_edge_function, False, output=output)
+    output_value = output.getvalue()
+    self.assertIsNotNone(output_value)
+    self.assertRegexpMatches(output_value, r'digraph ObjectGraph')
+    self.assertRegexpMatches(output_value,
+                             r'%s\[.*?\]' % obj_node_id(obj))
+
+
+# Doc tests
 
 NODES_VARY = doctest.register_optionflag('NODES_VARY')
 RANDOM_OUTPUT = doctest.register_optionflag('RANDOM_OUTPUT')
@@ -228,7 +263,7 @@ def doctest_edge_label_long_type_names():
     """
 
 
-def test_suite():
+def doc_test_suite():
     doctests = find_doctests()
     return unittest.TestSuite([
         doctest.DocFileSuite(setUp=setUp, tearDown=tearDown,
@@ -238,5 +273,15 @@ def test_suite():
         doctest.DocTestSuite(),
     ])
 
+
+# Test suite rules.
+
+
+def suite():
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.TestLoader().loadTestsFromTestCase(ShowGraphTest))
+    suite.addTest(doc_test_suite())
+    return suite
+
 if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')
+    unittest.main(defaultTest='suite')
