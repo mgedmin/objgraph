@@ -6,6 +6,7 @@ Changes
 1.8.2 (unreleased)
 ------------------
 
+- Allow user to provide file object rather than specify a filename.
 
 1.8.1 (2014-05-15)
 ------------------

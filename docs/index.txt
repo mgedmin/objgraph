@@ -24,6 +24,9 @@ You should see a graph like this:
 .. figure:: sample-graph.png
    :alt: [graph of objects reachable from y]
 
+If you prefer to handle your own file output, you can provide a file object to
+the ``output`` parameter of ``show_refs`` and ``show_backrefs`` instead of a
+filename.
 
 Backreferences
 --------------
