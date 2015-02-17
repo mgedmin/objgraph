@@ -18,6 +18,20 @@ except ImportError:
   from io import StringIO
 
 
+class Python25CompatibleTestCaseMixin:
+
+    def assertRegexpMatches(self, text, expected_regexp, msg=None):
+        if isinstance(expected_regexp, basestring):
+            expected_regexp = re.compile(expected_regexp)
+        if not expected_regexp.search(text):
+            msg = msg or "Regexp didn't match"
+            msg = '%s: %r not found in %r' % (msg, expected_regexp.pattern, text)
+            raise self.failureException(msg)
+
+    def assertIsNotNone(self, value):
+        self.assertTrue(value is not None)
+
+
 # Unit tests
 
 
@@ -29,7 +43,7 @@ class TestObject:
   pass
 
 
-class ShowGraphTest(unittest.TestCase):
+class ShowGraphTest(unittest.TestCase, Python25CompatibleTestCaseMixin):
   """Tests for the show_graph function."""
 
   def test_basic_file_output(self):
