@@ -707,7 +707,7 @@ def show_graph(objs, edge_func, swap_source_target,
     if not filename and program_in_path('xdot'):
         print("Spawning graph viewer (xdot)")
         subprocess.Popen(['xdot', dot_filename], close_fds=True)
-    elif filename and program_in_path('dot'):
+    elif program_in_path('dot'):
         if not filename:
             print("Graph viewer (xdot) not found, generating a png instead")
             filename = dot_filename[:-4] + '.png'
