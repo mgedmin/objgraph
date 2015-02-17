@@ -15,7 +15,7 @@ from objgraph import show_graph
 try:
   from cStringIO import StringIO
 except ImportError:
-  from StringIO import StringIO
+  from io import StringIO
 
 
 # Unit tests
