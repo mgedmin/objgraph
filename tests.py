@@ -11,7 +11,6 @@ import string
 import tempfile
 import unittest
 
-<<<<<<< HEAD
 from objgraph import _obj_node_id
 from objgraph import show_graph
 from objgraph import by_type
@@ -29,7 +28,7 @@ try:
   from cStringIO import StringIO
 except ImportError:
   from io import StringIO
-=======
+
 from objgraph import obj_node_id
 from objgraph import show_graph
 
@@ -49,38 +48,6 @@ class Python25CompatibleTestCaseMixin:
             msg = '%s: %r not found in %r' % (msg, expected_regexp.pattern, text)
             raise self.failureException(msg)
 
-
-# Unit tests
-
-
-def empty_edge_function(obj):
-  return []
-
-
-class TestObject:
-  pass
-
-
-class ShowGraphTest(unittest.TestCase, Python25CompatibleTestCaseMixin):
-    """Tests for the show_graph function."""
-
-    def test_basic_file_output(self):
-        obj = TestObject()
-        output = StringIO()
-        show_graph([obj], empty_edge_function, False, output=output)
-        output_value = output.getvalue()
-        self.assertRegexpMatches(output_value, r'digraph ObjectGraph')
-        self.assertRegexpMatches(output_value,
-                                 r'%s\[.*?\]' % obj_node_id(obj))
-
-    def test_filename_and_output(self):
-        output = StringIO()
-        self.assertRaises(TypeError,
-            show_graph([], empty_edge_function, False, filename='filename',
-                       output=output)
-
-# Doc tests
->>>>>>> origin/file-output
 
 def skipIf(condition, reason):
     def wrapper(fn):
@@ -359,8 +326,6 @@ def find_doctests():
         doctests.discard(os.path.join('docs', 'uncollectable.txt'))
     return sorted(doctests)
 
-
-<<<<<<< HEAD
 def doctest_setup_py_works():
     """Test that setup.py works
 
@@ -375,10 +340,8 @@ def doctest_setup_py_works():
 
     """
 
-def doc_test_suite():
-=======
+
 def suite():
->>>>>>> origin/file-output
     doctests = find_doctests()
     return unittest.TestSuite([
         unittest.defaultTestLoader.loadTestsFromName(__name__),
@@ -390,23 +353,5 @@ def suite():
     ])
 
 
-<<<<<<< HEAD
-# Test suite rules.
-
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.TestLoader().loadTestsFromTestCase(ShowGraphTest))
-    suite.addTest(unittest.TestLoader().loadTestsFromTestCase(FindChainTest))
-    suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TypestatsTest))
-    suite.addTest(unittest.TestLoader().loadTestsFromTestCase(ByTypeTest))
-    suite.addTest(
-        unittest.TestLoader().loadTestsFromTestCase(StringRepresentationTest))
-
-    suite.addTest(doc_test_suite())
-    return suite
-
-=======
->>>>>>> origin/file-output
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')
