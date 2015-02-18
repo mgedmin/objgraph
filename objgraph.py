@@ -29,7 +29,7 @@ Released under the MIT licence.
 __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008-2014 Marius Gedminas"
 __license__ = "MIT"
-__version__ = "1.8.2.dev0"
+__version__ = "1.9"
 __date__ = "2014-05-15"
 
 
@@ -408,7 +408,7 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     .. versionchanged:: 1.8
        New parameter: ``shortnames``.
 
-    .. versionchanged:: 1.8.2
+    .. versionchanged:: 1.9
        New parameter: ``output``.
 
     """
@@ -476,7 +476,7 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     .. versionchanged:: 1.8
        New parameter: ``shortnames``.
 
-    .. versionchanged:: 1.8.2
+    .. versionchanged:: 1.9
        New parameter: ``output``.
     """
     show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
@@ -513,7 +513,7 @@ def show_chain(*chains, **kw):
     .. versionchanged:: 1.7
        New parameter: ``backrefs``.
 
-    .. versionchanged:: 1.8.2
+    .. versionchanged:: 1.9
        New parameter: ``output``.
 
     """
@@ -596,7 +596,7 @@ def show_graph(objs, edge_func, swap_source_target,
     if not isinstance(objs, (list, tuple)):
         objs = [objs]
     if filename and output:
-        raise ValueError('Cannot specify output and filename.')
+        raise ValueError('Cannot specify both output and filename.')
     elif output:
         f = output
     elif filename and filename.endswith('.dot'):

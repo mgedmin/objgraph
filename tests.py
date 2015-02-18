@@ -13,9 +13,9 @@ from objgraph import obj_node_id
 from objgraph import show_graph
 
 try:
-  from cStringIO import StringIO
+    from cStringIO import StringIO
 except ImportError:
-  from io import StringIO
+    from io import StringIO
 
 
 class Python25CompatibleTestCaseMixin:
@@ -27,9 +27,6 @@ class Python25CompatibleTestCaseMixin:
             msg = msg or "Regexp didn't match"
             msg = '%s: %r not found in %r' % (msg, expected_regexp.pattern, text)
             raise self.failureException(msg)
-
-    def assertIsNotNone(self, value):
-        self.assertTrue(value is not None)
 
 
 # Unit tests
@@ -44,18 +41,22 @@ class TestObject:
 
 
 class ShowGraphTest(unittest.TestCase, Python25CompatibleTestCaseMixin):
-  """Tests for the show_graph function."""
+    """Tests for the show_graph function."""
 
-  def test_basic_file_output(self):
-    obj = TestObject()
-    output = StringIO()
-    show_graph([obj], empty_edge_function, False, output=output)
-    output_value = output.getvalue()
-    self.assertIsNotNone(output_value)
-    self.assertRegexpMatches(output_value, r'digraph ObjectGraph')
-    self.assertRegexpMatches(output_value,
-                             r'%s\[.*?\]' % obj_node_id(obj))
+    def test_basic_file_output(self):
+        obj = TestObject()
+        output = StringIO()
+        show_graph([obj], empty_edge_function, False, output=output)
+        output_value = output.getvalue()
+        self.assertRegexpMatches(output_value, r'digraph ObjectGraph')
+        self.assertRegexpMatches(output_value,
+                                 r'%s\[.*?\]' % obj_node_id(obj))
 
+    def test_filename_and_output(self):
+        output = StringIO()
+        self.assertRaises(TypeError,
+            show_graph([], empty_edge_function, False, filename='filename',
+                       output=output)
 
 # Doc tests
 
@@ -277,9 +278,10 @@ def doctest_edge_label_long_type_names():
     """
 
 
-def doc_test_suite():
+def suite():
     doctests = find_doctests()
     return unittest.TestSuite([
+        unittest.defaultTestLoader.loadTestsFromName(__name__),
         doctest.DocFileSuite(setUp=setUp, tearDown=tearDown,
                              optionflags=doctest.ELLIPSIS,
                              checker=IgnoreNodeCountChecker(),
@@ -287,15 +289,6 @@ def doc_test_suite():
         doctest.DocTestSuite(),
     ])
 
-
-# Test suite rules.
-
-
-def suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.TestLoader().loadTestsFromTestCase(ShowGraphTest))
-    suite.addTest(doc_test_suite())
-    return suite
 
 if __name__ == '__main__':
     unittest.main(defaultTest='suite')
