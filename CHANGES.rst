@@ -3,10 +3,11 @@ Changes
 
 .. currentmodule:: objgraph
 
-1.8.2 (unreleased)
+1.9 (unreleased)
 ------------------
 
-- Allow user to provide file object rather than specify a filename.
+- :func:`show_ref` and :func:`show_backref` now accept a file-like object as an
+  alternative to a filename.
 
 1.8.1 (2014-05-15)
 ------------------

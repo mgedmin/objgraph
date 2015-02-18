@@ -29,7 +29,7 @@ Released under the MIT licence.
 __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008-2014 Marius Gedminas"
 __license__ = "MIT"
-__version__ = "1.8.2.dev0"
+__version__ = "1.9"
 __date__ = "2014-05-15"
 
 
@@ -414,15 +414,24 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     .. versionchanged:: 1.8
        New parameter: ``shortnames``.
 
+<<<<<<< HEAD
     .. versionchanged:: 1.8.2
+=======
+    .. versionchanged:: 1.9
+>>>>>>> origin/file-output
        New parameter: ``output``.
 
     """
     show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
                filter=filter, too_many=too_many, highlight=highlight,
                edge_func=gc.get_referrers, swap_source_target=False,
+<<<<<<< HEAD
                filename=filename, output=output, extra_info=extra_info,
                refcounts=refcounts, shortnames=shortnames)
+=======
+               filename=filename, output=output, extra_info=extra_info, refcounts=refcounts,
+               shortnames=shortnames)
+>>>>>>> origin/file-output
 
 
 def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
@@ -482,7 +491,11 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     .. versionchanged:: 1.8
        New parameter: ``shortnames``.
 
+<<<<<<< HEAD
     .. versionchanged:: 1.8.2
+=======
+    .. versionchanged:: 1.9
+>>>>>>> origin/file-output
        New parameter: ``output``.
     """
     show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
@@ -518,6 +531,9 @@ def show_chain(*chains, **kw):
 
     .. versionchanged:: 1.7
        New parameter: ``backrefs``.
+
+    .. versionchanged:: 1.9
+       New parameter: ``output``.
 
     """
     backrefs = kw.pop('backrefs', True)
@@ -618,6 +634,7 @@ def show_graph(objs, edge_func, swap_source_target,
                max_depth=3, extra_ignore=(), filter=None, too_many=10,
                highlight=None, filename=None, extra_info=None,
                refcounts=False, shortnames=True, output=None):
+<<<<<<< HEAD
     """Outputs a graph.
 
     See :func:`show_refs` or :func:`show_backrefs` for more information.
@@ -626,6 +643,16 @@ def show_graph(objs, edge_func, swap_source_target,
         raise ValueError('Cannot specify output and filename.')
     if filename and filename.endswith('.dot'):
         output = codecs.open(filename, 'w', encoding='utf-8')
+=======
+    if not isinstance(objs, (list, tuple)):
+        objs = [objs]
+    if filename and output:
+        raise ValueError('Cannot specify both output and filename.')
+    elif output:
+        f = output
+    elif filename and filename.endswith('.dot'):
+        f = codecs.open(filename, 'w', encoding='utf-8')
+>>>>>>> origin/file-output
         dot_filename = filename
     elif not output:
         fd, dot_filename = tempfile.mkstemp(prefix='objgraph-',
@@ -796,11 +823,56 @@ def _build_graph(objs, edge_func, swap_source_target, output,
             del source
         del neighbours
         if skipped > 0:
+<<<<<<< HEAD
             _output_skipped_node(output, target, skipped, tdepth, max_depth,
                                  swap_source_target)
 
     output.write('}\n')
     return nodes
+=======
+            h, s, v = gradient((0, 1, 1), (0, 1, .3), tdepth + 1, max_depth)
+            if swap_source_target:
+                label = "%d more references" % skipped
+                edge = "%s->too_many_%s" % (obj_node_id(target), obj_node_id(target))
+            else:
+                label = "%d more backreferences" % skipped
+                edge = "too_many_%s->%s" % (obj_node_id(target), obj_node_id(target))
+            f.write('  %s[color=red,style=dotted,len=0.25,weight=10];\n' % edge)
+            f.write('  too_many_%s[label="%s",shape=box,height=0.25,color=red,fillcolor="%g,%g,%g",fontsize=6];\n' % (obj_node_id(target), label, h, s, v))
+            f.write('  too_many_%s[fontcolor=white];\n' % (obj_node_id(target)))
+    f.write("}\n")
+    if output:
+        return
+    # The file should only be closed if this function was in charge of opening
+    # the file.
+    f.close()
+    print("Graph written to %s (%d nodes)" % (dot_filename, nodes))
+    if filename and filename.endswith('.dot'):
+        # nothing else to do, the user asked for a .dot file
+        return
+    if not filename and program_in_path('xdot'):
+        print("Spawning graph viewer (xdot)")
+        subprocess.Popen(['xdot', dot_filename], close_fds=True)
+    elif program_in_path('dot'):
+        if not filename:
+            print("Graph viewer (xdot) not found, generating a png instead")
+            filename = dot_filename[:-4] + '.png'
+        stem, ext = os.path.splitext(filename)
+        f = open(filename, 'wb')
+        dot = subprocess.Popen(['dot', ('-T' + ext[1:]), dot_filename],
+                               stdout=f, close_fds=False)
+        dot.wait()
+        if dot.returncode != 0:
+            # XXX: shouldn't this go to stderr or a log?
+            print("dot failed to generate '%s' image: output format not supported?")
+        f.close()
+        print("Image generated as %s" % filename)
+    else:
+        if filename:
+            print("Graph viewer (xdot) and image renderer (dot) not found, not doing anything else")
+        else:
+            print("Unrecognized file type (%s), not doing anything else" % filename)
+>>>>>>> origin/file-output
 
 
 def _obj_node_id(obj):
