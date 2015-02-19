@@ -60,7 +60,7 @@ def format(text, **kwargs):
 SINGLE_ELEMENT_OUTPUT = (
     'digraph ObjectGraph {\n'
     '  node[shape=box, style=filled, fillcolor=white];\n'
-    '  ${label_a}[label="${instance}\\nTestObject(A)"];\n'
+    '  ${label_a}[label="TestObject\\nTestObject(A)"];\n'
     '  ${label_a}[fontcolor=red];\n'
     '  ${label_a}[fillcolor="0,0,1"];\n'
     '}\n')
@@ -69,11 +69,11 @@ SINGLE_ELEMENT_OUTPUT = (
 TWO_ELEMENT_OUTPUT = (
     'digraph ObjectGraph {\n'
     '  node[shape=box, style=filled, fillcolor=white];\n'
-    '  ${label_a}[label="${instance}\\nTestObject(A)"];\n'
+    '  ${label_a}[label="TestObject\\nTestObject(A)"];\n'
     '  ${label_a}[fontcolor=red];\n'
     '  ${label_a}[fillcolor="0,0,1"];\n'
     '  ${label_b} -> ${label_a};\n'
-    '  ${label_b}[label="${instance}\\nTestObject(B)"];\n'
+    '  ${label_b}[label="TestObject\\nTestObject(B)"];\n'
     '  ${label_b}[fillcolor="0,0,0.766667"];\n'
     '}\n')
 
@@ -123,7 +123,6 @@ class ShowGraphTest(GarbageCollectedTestCase):
     """Tests for the show_graph function."""
 
     def test_basic_file_output(self):
-        instance = 'TestObject' if sys.version_info[0] > 2 else 'instance'
         obj = TestObject.get("A")
         output = StringIO()
         objgraph.show_graph([obj], empty_edge_function, False, output=output,
@@ -132,11 +131,9 @@ class ShowGraphTest(GarbageCollectedTestCase):
         label = objgraph._obj_node_id(obj)
         self.assertEqual(output_value,
                          format(SINGLE_ELEMENT_OUTPUT,
-                                label_a=label,
-                                instance=instance))
+                                label_a=label))
 
     def test_simple_chain(self):
-        instance = 'TestObject' if sys.version_info[0] > 2 else 'instance'
         edge_fn = edge_function({'A' : 'B'})
         output = StringIO()
         objgraph.show_graph([TestObject.get("A")], edge_fn, False, output=output,
@@ -147,8 +144,7 @@ class ShowGraphTest(GarbageCollectedTestCase):
         self.assertEqual(output_value,
                          format(TWO_ELEMENT_OUTPUT,
                                 label_a=label_a,
-                                label_b=label_b,
-                                instance=instance))
+                                label_b=label_b))
 
     def test_filename_and_output(self):
         output = StringIO()
@@ -204,7 +200,7 @@ class StringRepresentationTest(GarbageCollectedTestCase,
 
         self.assertRegex(
             objgraph._obj_label(x, shortnames=False),
-            r'mymodule\.MyClass\\\\n<mymodule\.MyClass object at .*')
+            'mymodule\.MyClass\\\\n<mymodule\.MyClass object at .*')
 
     def test_long_typename_with_no_module(self):
         x = type('MyClass', (), {'__module__': None})()
@@ -250,7 +246,7 @@ class StringRepresentationTest(GarbageCollectedTestCase,
 
         self.assertRegex(
             objgraph._edge_label(d, 1, shortnames=False),
-            r' [label="mymodule\.MyClass\\n<mymodule\.MyClass object at .*"]')
+            ' [label="mymodule\.MyClass\\n<mymodule\.MyClass object at .*"]')
 
 
 # Doctests
