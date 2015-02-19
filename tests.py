@@ -18,15 +18,26 @@ except ImportError:
     from io import StringIO
 
 
-class Python25CompatibleTestCaseMixin:
+class CompatibilityMixin:
 
-    def assertRegexpMatches(self, text, expected_regexp, msg=None):
-        if isinstance(expected_regexp, basestring):
-            expected_regexp = re.compile(expected_regexp)
-        if not expected_regexp.search(text):
-            msg = msg or "Regexp didn't match"
-            msg = '%s: %r not found in %r' % (msg, expected_regexp.pattern, text)
-            raise self.failureException(msg)
+    # Python 2.7 .. 3.1 has assertRegexpMatches but not assertRegex
+    # Python <= 2.6 has neither
+    # Python >= 3.2 has both and emits deprecation warnings if you use
+    # assertRegexpMatches.
+
+    if not hasattr(unittest.TestCase, 'assertRegex'):
+        if hasattr(unittest.TestCase, 'assertRegexpMatches'):
+            # This is needed for Python 3.1: let's reuse the existing
+            # function because our replacement doesn't work on Python 3
+            assertRegex = unittest.TestCase.assertRegexpMatches
+        else:
+            def assertRegex(self, text, expected_regexp, msg=None):
+                if isinstance(expected_regexp, basestring):
+                    expected_regexp = re.compile(expected_regexp)
+                if not expected_regexp.search(text):
+                    msg = msg or "Regexp didn't match"
+                    msg = '%s: %r not found in %r' % (msg, expected_regexp.pattern, text)
+                    raise self.failureException(msg)
 
 
 # Unit tests
@@ -40,7 +51,7 @@ class TestObject:
     pass
 
 
-class ShowGraphTest(unittest.TestCase, Python25CompatibleTestCaseMixin):
+class ShowGraphTest(unittest.TestCase, CompatibilityMixin):
     """Tests for the show_graph function."""
 
     def test_basic_file_output(self):
@@ -48,9 +59,8 @@ class ShowGraphTest(unittest.TestCase, Python25CompatibleTestCaseMixin):
         output = StringIO()
         show_graph([obj], empty_edge_function, False, output=output)
         output_value = output.getvalue()
-        self.assertRegexpMatches(output_value, r'digraph ObjectGraph')
-        self.assertRegexpMatches(output_value,
-                                 r'%s\[.*?\]' % obj_node_id(obj))
+        self.assertRegex(output_value, r'digraph ObjectGraph')
+        self.assertRegex(output_value, r'%s\[.*?\]' % obj_node_id(obj))
 
     def test_filename_and_output(self):
         output = StringIO()
@@ -58,7 +68,8 @@ class ShowGraphTest(unittest.TestCase, Python25CompatibleTestCaseMixin):
             show_graph, [], empty_edge_function, False, filename='filename',
             output=output)
 
-# Doc tests
+
+# Doctests
 
 NODES_VARY = doctest.register_optionflag('NODES_VARY')
 RANDOM_OUTPUT = doctest.register_optionflag('RANDOM_OUTPUT')
