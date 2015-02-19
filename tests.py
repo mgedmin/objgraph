@@ -11,42 +11,33 @@ import string
 import tempfile
 import unittest
 
-from objgraph import _obj_node_id
-from objgraph import show_graph
-from objgraph import by_type
-from objgraph import typestats
-from objgraph import count
-from objgraph import _short_repr
-from objgraph import _safe_repr
-from objgraph import _obj_label
-from objgraph import _edge_label
-from objgraph import _long_typename
-from objgraph import _gradient
-from objgraph import find_chain
-
-try:
-  from cStringIO import StringIO
-except ImportError:
-  from io import StringIO
-
-from objgraph import obj_node_id
-from objgraph import show_graph
-
 try:
     from cStringIO import StringIO
 except ImportError:
     from io import StringIO
 
+import objgraph
 
-class Python25CompatibleTestCaseMixin:
 
-    def assertRegexpMatches(self, text, expected_regexp, msg=None):
-        if isinstance(expected_regexp, basestring):
-            expected_regexp = re.compile(expected_regexp)
-        if not expected_regexp.search(text):
-            msg = msg or "Regexp didn't match"
-            msg = '%s: %r not found in %r' % (msg, expected_regexp.pattern, text)
-            raise self.failureException(msg)
+class CompatibilityMixin(object):
+
+    # Python 2.7 .. 3.1 has assertRegexpMatches but not assertRegex
+    # Python <= 2.6 has neither
+    # Python >= 3.2 has both and emits deprecation warnings if you use
+    # assertRegexpMatches.
+    if not hasattr(unittest.TestCase, 'assertRegex'):
+        if hasattr(unittest.TestCase, 'assertRegexpMatches'):
+            # This is needed for Python 3.1: let's reuse the existing
+            # function because our replacement doesn't work on Python 3
+            assertRegex = unittest.TestCase.assertRegexpMatches
+        else:
+            def assertRegex(self, text, expected_regexp, msg=None):
+                if isinstance(expected_regexp, basestring):
+                    expected_regexp = re.compile(expected_regexp)
+                if not expected_regexp.search(text):
+                    msg = msg or "Regexp didn't match"
+                    msg = '%s: %r not found in %r' % (msg, expected_regexp.pattern, text)
+                    raise self.failureException(msg)
 
 
 def skipIf(condition, reason):
@@ -66,7 +57,8 @@ def format(text, **kwargs):
 
 # Unit tests
 
-SINGLE_ELEMENT_OUTPUT = ('digraph ObjectGraph {\n'
+SINGLE_ELEMENT_OUTPUT = (
+    'digraph ObjectGraph {\n'
     '  node[shape=box, style=filled, fillcolor=white];\n'
     '  ${label_a}[label="${instance}\\nTestObject(A)"];\n'
     '  ${label_a}[fontcolor=red];\n'
@@ -74,7 +66,8 @@ SINGLE_ELEMENT_OUTPUT = ('digraph ObjectGraph {\n'
     '}\n')
 
 
-TWO_ELEMENT_OUTPUT = ('digraph ObjectGraph {\n'
+TWO_ELEMENT_OUTPUT = (
+    'digraph ObjectGraph {\n'
     '  node[shape=box, style=filled, fillcolor=white];\n'
     '  ${label_a}[label="${instance}\\nTestObject(A)"];\n'
     '  ${label_a}[fontcolor=red];\n'
@@ -86,10 +79,10 @@ TWO_ELEMENT_OUTPUT = ('digraph ObjectGraph {\n'
 
 
 def empty_edge_function(obj):
-  return []
+    return []
 
 
-class TestObject:
+class TestObject(object):
     _objs = {}
 
     def __init__(self, name):
@@ -120,20 +113,8 @@ def edge_function(chain_map):
     return helper
 
 
-class Python25CompatibleTestCaseMixin:
-
-    def assertRegexpMatches(self, text, expected_regexp, msg=None):
-        if isinstance(expected_regexp, basestring):
-            expected_regexp = re.compile(expected_regexp)
-        if not expected_regexp.search(text):
-            msg = msg or "Regexp didn't match"
-            msg = '%s: %r not found in %r' % (msg, expected_regexp.pattern, text)
-            raise self.failureException(msg)
-
-
 class GarbageCollectedTestCase(unittest.TestCase):
     """A base TestCase that garbage collects before running."""
-
     def setUp(self):
         gc.collect()
 
@@ -145,10 +126,10 @@ class ShowGraphTest(GarbageCollectedTestCase):
         instance = 'TestObject' if sys.version_info[0] > 2 else 'instance'
         obj = TestObject.get("A")
         output = StringIO()
-        show_graph([obj], empty_edge_function, False, output=output,
-                   shortnames=True)
+        objgraph.show_graph([obj], empty_edge_function, False, output=output,
+                            shortnames=True)
         output_value = output.getvalue()
-        label = _obj_node_id(obj)
+        label = objgraph._obj_node_id(obj)
         self.assertEqual(output_value,
                          format(SINGLE_ELEMENT_OUTPUT,
                                 label_a=label,
@@ -158,16 +139,22 @@ class ShowGraphTest(GarbageCollectedTestCase):
         instance = 'TestObject' if sys.version_info[0] > 2 else 'instance'
         edge_fn = edge_function({'A' : 'B'})
         output = StringIO()
-        show_graph([TestObject.get("A")], edge_fn, False, output=output,
-                   shortnames=True)
+        objgraph.show_graph([TestObject.get("A")], edge_fn, False, output=output,
+                            shortnames=True)
         output_value = output.getvalue()
-        label_a = _obj_node_id(TestObject.get("A"))
-        label_b = _obj_node_id(TestObject.get("B"))
+        label_a = objgraph._obj_node_id(TestObject.get("A"))
+        label_b = objgraph._obj_node_id(TestObject.get("B"))
         self.assertEqual(output_value,
                          format(TWO_ELEMENT_OUTPUT,
                                 label_a=label_a,
                                 label_b=label_b,
                                 instance=instance))
+
+    def test_filename_and_output(self):
+        output = StringIO()
+        self.assertRaises(ValueError, objgraph.show_graph, [],
+                          empty_edge_function, False,
+                          filename='filename', output=output)
 
 
 class FindChainTest(GarbageCollectedTestCase):
@@ -175,7 +162,10 @@ class FindChainTest(GarbageCollectedTestCase):
 
     def test_no_chain(self):
         a = object()
-        self.assertEqual([a], find_chain(a, lambda x: False, gc.get_referrers))
+        self.assertEqual([a],
+                         objgraph.find_chain(a,
+                                             lambda x: False,
+                                             gc.get_referrers))
 
 
 class CountTest(GarbageCollectedTestCase):
@@ -184,8 +174,8 @@ class CountTest(GarbageCollectedTestCase):
     def test_long_type_names(self):
         x = type('MyClass', (), {'__module__': 'mymodule'})()
         y = type('MyClass', (), {'__module__': 'other'})()
-        self.assertEqual(2, count('MyClass'))
-        self.assertEqual(1, count('mymodule.MyClass'))
+        self.assertEqual(2, objgraph.count('MyClass'))
+        self.assertEqual(1, objgraph.count('mymodule.MyClass'))
 
 
 class TypestatsTest(GarbageCollectedTestCase):
@@ -193,7 +183,7 @@ class TypestatsTest(GarbageCollectedTestCase):
 
     def test_long_type_names(self):
         x = type('MyClass', (), {'__module__': 'mymodule'})()
-        stats = typestats(shortnames=False)
+        stats = objgraph.typestats(shortnames=False)
         self.assertEqual(1, stats['mymodule.MyClass'])
 
 
@@ -202,29 +192,29 @@ class ByTypeTest(GarbageCollectedTestCase):
 
     def test_long_type_names(self):
         x = type('MyClass', (), {'__module__': 'mymodule'})()
-        self.assertEqual([x], by_type('mymodule.MyClass'))
+        self.assertEqual([x], objgraph.by_type('mymodule.MyClass'))
 
 
 class StringRepresentationTest(GarbageCollectedTestCase,
-                               Python25CompatibleTestCaseMixin):
+                               CompatibilityMixin):
     """Tests for the string representation of objects and edges."""
 
     def test_obj_label_long_type_name(self):
         x = type('MyClass', (), {'__module__': 'mymodule'})()
 
-        self.assertRegexpMatches(
-             _obj_label(x, shortnames=False),
-            'mymodule\.MyClass\\\\n<mymodule\.MyClass object at .*')
+        self.assertRegex(
+            objgraph._obj_label(x, shortnames=False),
+            r'mymodule\.MyClass\\\\n<mymodule\.MyClass object at .*')
 
     def test_long_typename_with_no_module(self):
         x = type('MyClass', (), {'__module__': None})()
-        self.assertEqual('MyClass', _long_typename(x))
+        self.assertEqual('MyClass', objgraph._long_typename(x))
 
     def test_safe_repr(self):
         class MyClass(object):
             def __repr__(self):
                 return 1/0
-        self.assertEqual('(unrepresentable)', _safe_repr(MyClass()))
+        self.assertEqual('(unrepresentable)', objgraph._safe_repr(MyClass()))
 
 
     @skipIf(sys.version_info[0] > 2, "Python 3 has no unbound methods")
@@ -233,11 +223,13 @@ class StringRepresentationTest(GarbageCollectedTestCase,
             def a_method(self):
                 pass
 
-        self.assertEqual('a_method', _short_repr(MyClass.a_method))
+        self.assertEqual('a_method', objgraph._short_repr(MyClass.a_method))
 
     def test_gradient_empty(self):
         self.assertEqual((0.1, 0.2, 0.3),
-                         _gradient((0.1, 0.2, 0.3), (0.2, 0.3, 0.4), 0, 0))
+                         objgraph._gradient((0.1, 0.2, 0.3),
+                                            (0.2, 0.3, 0.4),
+                                            0, 0))
 
 
     @skipIf(sys.version_info[0] > 2, "Python 3 has no unbound methods")
@@ -248,20 +240,20 @@ class StringRepresentationTest(GarbageCollectedTestCase,
             def a_method(self):
                 pass
         self.assertEqual(' [label="__func__",weight=10]',
-                         _edge_label(MyClass.a_method,
-                                     MyClass.a_method.__func__))
+                         objgraph._edge_label(MyClass.a_method,
+                                              MyClass.a_method.__func__))
 
 
     def test_edge_label_long_type_names(self):
-         x = type('MyClass', (), {'__module__': 'mymodule'})()
-         d = {x: 1}
+        x = type('MyClass', (), {'__module__': 'mymodule'})()
+        d = {x: 1}
 
-         self.assertRegexpMatches(
-             _edge_label(d, 1, shortnames=False),
-             ' [label="mymodule\.MyClass\\n<mymodule\.MyClass object at .*"]')
+        self.assertRegex(
+            objgraph._edge_label(d, 1, shortnames=False),
+            r' [label="mymodule\.MyClass\\n<mymodule\.MyClass object at .*"]')
 
 
-# Doc tests
+# Doctests
 
 
 NODES_VARY = doctest.register_optionflag('NODES_VARY')
@@ -277,7 +269,7 @@ class RandomOutputChecker(doctest.OutputChecker):
 
 
 class IgnoreNodeCountChecker(RandomOutputChecker):
-    _r = re.compile('\(\d+ nodes\)$', re.MULTILINE)
+    _r = re.compile(r'\(\d+ nodes\)$', re.MULTILINE)
 
     def check_output(self, want, got, optionflags):
         if optionflags & NODES_VARY:
@@ -341,7 +333,7 @@ def doctest_setup_py_works():
     """
 
 
-def suite():
+def test_suite():
     doctests = find_doctests()
     return unittest.TestSuite([
         unittest.defaultTestLoader.loadTestsFromName(__name__),
@@ -354,4 +346,4 @@ def suite():
 
 
 if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
+    unittest.main(defaultTest='test_suite')

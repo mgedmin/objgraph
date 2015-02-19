@@ -26,11 +26,8 @@ You should see a graph like this:
 
 If you prefer to handle your own file output, you can provide a file object to
 the ``output`` parameter of ``show_refs`` and ``show_backrefs`` instead of a
-<<<<<<< HEAD
-filename.
-=======
 filename. The contents of this file will contain the graph source in DOT format.
->>>>>>> origin/file-output
+
 
 Backreferences
 --------------
