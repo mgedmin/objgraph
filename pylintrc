@@ -40,31 +40,13 @@ evaluation=10.0 - ((float(5 * error + warning + refactor + convention) / stateme
 # evaluation report (RP0004).
 comment=no
 
-# Template used to display messages. This is a python new-style format string
-# used to format the message information. See doc for all details
-#msg-template=
-
-
 [BASIC]
-
-# Required attributes for module, separated by a comma
-required-attributes=
-
-# List of builtins function names that should not be used, separated by a comma
-bad-functions=map,filter,input
 
 # Good variable names which should always be accepted, separated by a comma
 good-names=i,j,k,ex,Run,_
 
 # Bad variable names which should always be refused, separated by a comma
 bad-names=foo,bar,baz,toto,tutu,tata
-
-# Colon-delimited sets of names that determine each other's naming style when
-# the name regexes allow several styles.
-name-group=
-
-# Include a hint for the correct naming format with invalid-name
-include-naming-hint=no
 
 # Regular expression matching correct function names
 function-rgx=[a-z_][a-z0-9_]{2,30}$
@@ -138,7 +120,7 @@ docstring-min-length=10
 [FORMAT]
 
 # Maximum number of characters on a single line.
-max-line-length=100
+max-line-length=80
 
 # Regexp for a line that is allowed to be longer than the limit.
 ignore-long-lines=^\s*(# )?<?https?://\S+>?$

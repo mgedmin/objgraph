@@ -29,7 +29,7 @@ Released under the MIT licence.
 __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008-2015 Marius Gedminas and contributors"
 __license__ = "MIT"
-__version__ = "1.9.0.dev0"
+__version__ = "2.0.0.dev0"
 __date__ = "2014-05-15"
 
 
@@ -226,8 +226,7 @@ def show_growth(limit=10, peak_stats=None, shortnames=True):
         if count > old_count:
             deltas[name] = count - old_count
             peak_stats[name] = count
-    deltas = sorted(deltas.items(), key=operator.itemgetter(1),
-                    reverse=True)
+    deltas = sorted(deltas.items(), key=operator.itemgetter(1), reverse=True)
     if limit:
         deltas = deltas[:limit]
     if deltas:
