@@ -29,7 +29,7 @@ Released under the MIT licence.
 __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008-2014 Marius Gedminas"
 __license__ = "MIT"
-__version__ = "1.8.2.dev0"
+__version__ = "1.9.0dev0"
 __date__ = "2014-05-15"
 
 
@@ -350,7 +350,7 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
 
 def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
                   highlight=None, filename=None, extra_info=None,
-                  refcounts=False, shortnames=True):
+                  refcounts=False, shortnames=True, output=None):
     """Generate an object reference graph ending at ``objs``.
 
     The graph will show you what objects refer to ``objs``, directly and
@@ -363,10 +363,13 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     file, whose extension indicates the desired output format; note
     that output to a specific format is entirely handled by GraphViz:
     if the desired format is not supported, you just get the .dot
-    file.  If ``filename`` is not specified, ``show_backrefs`` will
-    try to produce a .dot file and spawn a viewer (xdot).  If xdot is
+    file.  If ``filename`` and ``output`` is not specified, ``show_backrefs``
+    will try to produce a .dot file and spawn a viewer (xdot).  If xdot is
     not available, ``show_backrefs`` will convert the .dot file to a
     .png and print its name.
+
+    ``output`` if specified, the GraphViz output will be written to this
+    file object. ``output`` and ``filename`` should not both be specified.
 
     Use ``max_depth`` and ``too_many`` to limit the depth and breadth of the
     graph.
@@ -405,17 +408,20 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     .. versionchanged:: 1.8
        New parameter: ``shortnames``.
 
+    .. versionchanged:: 1.9
+       New parameter: ``output``.
+
     """
     show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
                filter=filter, too_many=too_many, highlight=highlight,
                edge_func=gc.get_referrers, swap_source_target=False,
-               filename=filename, extra_info=extra_info, refcounts=refcounts,
+               filename=filename, output=output, extra_info=extra_info, refcounts=refcounts,
                shortnames=shortnames)
 
 
 def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
               highlight=None, filename=None, extra_info=None,
-              refcounts=False, shortnames=True):
+              refcounts=False, shortnames=True, output=None):
     """Generate an object reference graph starting at ``objs``.
 
     The graph will show you what objects are reachable from ``objs``, directly
@@ -428,10 +434,13 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     file, whose extension indicates the desired output format; note
     that output to a specific format is entirely handled by GraphViz:
     if the desired format is not supported, you just get the .dot
-    file.  If ``filename`` is not specified, ``show_refs`` will
+    file.  If ``filename`` and ``output`` is not specified, ``show_refs`` will
     try to produce a .dot file and spawn a viewer (xdot).  If xdot is
     not available, ``show_refs`` will convert the .dot file to a
     .png and print its name.
+
+    ``output`` if specified, the GraphViz output will be written to this
+    file object. ``output`` and ``filename`` should not both be specified.
 
     Use ``max_depth`` and ``too_many`` to limit the depth and breadth of the
     graph.
@@ -467,12 +476,14 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     .. versionchanged:: 1.8
        New parameter: ``shortnames``.
 
+    .. versionchanged:: 1.9
+       New parameter: ``output``.
     """
     show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
                filter=filter, too_many=too_many, highlight=highlight,
                edge_func=gc.get_referents, swap_source_target=True,
                filename=filename, extra_info=extra_info, refcounts=refcounts,
-               shortnames=shortnames)
+               shortnames=shortnames, output=output)
 
 
 def show_chain(*chains, **kw):
@@ -494,13 +505,16 @@ def show_chain(*chains, **kw):
     symmetrical.
 
     You can specify ``highlight``, ``extra_info``, ``refcounts``,
-    ``shortnames`` or ``filename`` arguments like for :func:`show_backrefs` or
-    :func:`show_refs`.
+    ``shortnames``,``filename`` or ``output`` arguments like for
+    :func:`show_backrefs` or :func:`show_refs`.
 
     .. versionadded:: 1.5
 
     .. versionchanged:: 1.7
        New parameter: ``backrefs``.
+
+    .. versionchanged:: 1.9
+       New parameter: ``output``.
 
     """
     backrefs = kw.pop('backrefs', True)
@@ -578,10 +592,14 @@ def find_chain(obj, predicate, edge_func, max_depth=20, extra_ignore=()):
 def show_graph(objs, edge_func, swap_source_target,
                max_depth=3, extra_ignore=(), filter=None, too_many=10,
                highlight=None, filename=None, extra_info=None,
-               refcounts=False, shortnames=True):
+               refcounts=False, shortnames=True, output=None):
     if not isinstance(objs, (list, tuple)):
         objs = [objs]
-    if filename and filename.endswith('.dot'):
+    if filename and output:
+        raise ValueError('Cannot specify both output and filename.')
+    elif output:
+        f = output
+    elif filename and filename.endswith('.dot'):
         f = codecs.open(filename, 'w', encoding='utf-8')
         dot_filename = filename
     else:
@@ -677,6 +695,10 @@ def show_graph(objs, edge_func, swap_source_target,
             f.write('  too_many_%s[label="%s",shape=box,height=0.25,color=red,fillcolor="%g,%g,%g",fontsize=6];\n' % (obj_node_id(target), label, h, s, v))
             f.write('  too_many_%s[fontcolor=white];\n' % (obj_node_id(target)))
     f.write("}\n")
+    if output:
+        return
+    # The file should only be closed if this function was in charge of opening
+    # the file.
     f.close()
     print("Graph written to %s (%d nodes)" % (dot_filename, nodes))
     if filename and filename.endswith('.dot'):
