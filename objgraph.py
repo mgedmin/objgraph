@@ -68,12 +68,12 @@ def count(typename, objects=None):
 
     Example:
 
-      >>> count('dict')
-      42
-      >>> count('MyClass', get_leaking_objects())
-      3
-      >>> count('mymodule.MyClass')
-      2
+        >>> count('dict')
+        42
+        >>> count('MyClass', get_leaking_objects())
+        3
+        >>> count('mymodule.MyClass')
+        2
 
     Note that the GC does not track simple objects like int or str.
 
@@ -103,10 +103,10 @@ def typestats(objects=None, shortnames=True):
 
     Example:
 
-      >>> typestats()
-      {'list': 12041, 'tuple': 10245, ...}
-      >>> typestats(get_leaking_objects())
-      {'MemoryError': 1, 'tuple': 2795, 'RuntimeError': 1, 'list': 47, ...}
+        >>> typestats()
+        {'list': 12041, 'tuple': 10245, ...}
+        >>> typestats(get_leaking_objects())
+        {'MemoryError': 1, 'tuple': 2795, 'RuntimeError': 1, 'list': 47, ...}
 
     .. versionadded:: 1.1
 
@@ -142,8 +142,8 @@ def most_common_types(limit=10, objects=None, shortnames=True):
 
     Example:
 
-      >>> most_common_types(limit=2)
-      [('list', 12041), ('tuple', 10245)]
+        >>> most_common_types(limit=2)
+        [('list', 12041), ('tuple', 10245)]
 
     .. versionadded:: 1.4
 
@@ -168,12 +168,12 @@ def show_most_common_types(limit=10, objects=None, shortnames=True):
 
     Example:
 
-      >>> show_most_common_types(limit=5)
-      tuple            8959
-      function           2442
-      wrapper_descriptor     1048
-      dict             953
-      builtin_function_or_method 800
+        >>> show_most_common_types(limit=5)
+        tuple                      8959
+        function                   2442
+        wrapper_descriptor         1048
+        dict                       953
+        builtin_function_or_method 800
 
     .. versionadded:: 1.1
 
@@ -204,11 +204,11 @@ def show_growth(limit=10, peak_stats=None, shortnames=True):
 
     Example:
 
-      >>> objgraph.show_growth()
-      wrapper_descriptor     970     +14
-      tuple          12282     +10
-      dict          1922    +7
-      ...
+        >>> objgraph.show_growth()
+        wrapper_descriptor       970       +14
+        tuple                  12282       +10
+        dict                    1922       +7
+        ...
 
     .. versionadded:: 1.5
 
@@ -263,8 +263,8 @@ def by_type(typename, objects=None):
 
     Example:
 
-      >>> by_type('MyClass')
-      [<mymodule.MyClass object at 0x...>]
+        >>> by_type('MyClass')
+        [<mymodule.MyClass object at 0x...>]
 
     Note that the GC does not track simple objects like int or str.
 
@@ -289,8 +289,8 @@ def at(addr):
 
     The reverse of id(obj):
 
-      >>> at(id(obj)) is obj
-      True
+        >>> at(id(obj)) is obj
+        True
 
     Note that this function does not work on objects that are not tracked by
     the GC (e.g. ints or strings).
@@ -315,8 +315,8 @@ def find_ref_chain(obj, predicate, max_depth=20, extra_ignore=()):
 
     Example:
 
-      >>> find_chain(obj, lambda x: isinstance(x, MyClass))
-      [obj, ..., <MyClass object at ...>]
+        >>> find_chain(obj, lambda x: isinstance(x, MyClass))
+        [obj, ..., <MyClass object at ...>]
 
     Returns ``[obj]`` if such a chain could not be found.
 
@@ -340,8 +340,8 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
 
     Example:
 
-      >>> find_backref_chain(obj, is_proper_module)
-      [<module ...>, ..., obj]
+        >>> find_backref_chain(obj, is_proper_module)
+        [<module ...>, ..., obj]
 
     Returns ``[obj]`` if such a chain could not be found.
 
@@ -397,12 +397,12 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
 
     Examples:
 
-      >>> show_backrefs(obj)
-      >>> show_backrefs([obj1, obj2])
-      >>> show_backrefs(obj, max_depth=5)
-      >>> show_backrefs(obj, filter=lambda x: not inspect.isclass(x))
-      >>> show_backrefs(obj, highlight=inspect.isclass)
-      >>> show_backrefs(obj, extra_ignore=[id(locals())])
+        >>> show_backrefs(obj)
+        >>> show_backrefs([obj1, obj2])
+        >>> show_backrefs(obj, max_depth=5)
+        >>> show_backrefs(obj, filter=lambda x: not inspect.isclass(x))
+        >>> show_backrefs(obj, highlight=inspect.isclass)
+        >>> show_backrefs(obj, extra_ignore=[id(locals())])
 
     .. versionchanged:: 1.3
        New parameters: ``filename``, ``extra_info``.
@@ -462,12 +462,12 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
 
     Examples:
 
-      >>> show_refs(obj)
-      >>> show_refs([obj1, obj2])
-      >>> show_refs(obj, max_depth=5)
-      >>> show_refs(obj, filter=lambda x: not inspect.isclass(x))
-      >>> show_refs(obj, highlight=inspect.isclass)
-      >>> show_refs(obj, extra_ignore=[id(locals())])
+        >>> show_refs(obj)
+        >>> show_refs([obj1, obj2])
+        >>> show_refs(obj, max_depth=5)
+        >>> show_refs(obj, filter=lambda x: not inspect.isclass(x))
+        >>> show_refs(obj, highlight=inspect.isclass)
+        >>> show_refs(obj, extra_ignore=[id(locals())])
 
     .. versionadded:: 1.1
 
@@ -498,13 +498,13 @@ def show_chain(*chains, **kw):
     Useful in combination with :func:`find_ref_chain` or
     :func:`find_backref_chain`, e.g.
 
-      >>> show_chain(find_backref_chain(obj, is_proper_module))
+        >>> show_chain(find_backref_chain(obj, is_proper_module))
 
     You can specify if you want that chain traced backwards or forwards
     by passing a ``backrefs`` keyword argument, e.g.
 
-      >>> show_chain(find_ref_chain(obj, is_proper_module),
-      ...      backrefs=False)
+        >>> show_chain(find_ref_chain(obj, is_proper_module),
+        ...            backrefs=False)
 
     Ideally this shouldn't matter, but for some objects
     :func:`gc.get_referrers` and :func:`gc.get_referents` are not perfectly
@@ -551,7 +551,7 @@ def is_proper_module(obj):
     >>> is_proper_module(imp.new_module('foo'))
     False
 
-    .. versionadded:: 1.8.2
+    .. versionadded:: 1.8
     """
     return (inspect.ismodule(obj) and
             obj is sys.modules.get(getattr(obj, '__name__', None)))
