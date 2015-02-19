@@ -33,11 +33,11 @@ class Python25CompatibleTestCaseMixin:
 
 
 def empty_edge_function(obj):
-  return []
+    return []
 
 
 class TestObject:
-  pass
+    pass
 
 
 class ShowGraphTest(unittest.TestCase, Python25CompatibleTestCaseMixin):
@@ -54,9 +54,9 @@ class ShowGraphTest(unittest.TestCase, Python25CompatibleTestCaseMixin):
 
     def test_filename_and_output(self):
         output = StringIO()
-        self.assertRaises(TypeError,
-            show_graph([], empty_edge_function, False, filename='filename',
-                       output=output)
+        self.assertRaises(ValueError,
+            show_graph, [], empty_edge_function, False, filename='filename',
+            output=output)
 
 # Doc tests
 
@@ -278,7 +278,7 @@ def doctest_edge_label_long_type_names():
     """
 
 
-def suite():
+def test_suite():
     doctests = find_doctests()
     return unittest.TestSuite([
         unittest.defaultTestLoader.loadTestsFromName(__name__),
@@ -291,4 +291,4 @@ def suite():
 
 
 if __name__ == '__main__':
-    unittest.main(defaultTest='suite')
+    unittest.main(defaultTest='test_suite')
