@@ -413,7 +413,7 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     .. versionchanged:: 1.8
        New parameter: ``shortnames``.
 
-    .. versionchanged:: 1.9
+    .. versionchanged:: 2.0
        New parameter: ``output``.
 
     """
@@ -481,7 +481,7 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     .. versionchanged:: 1.8
        New parameter: ``shortnames``.
 
-    .. versionchanged:: 1.9
+    .. versionchanged:: 2.0
        New parameter: ``output``.
 
     """
@@ -519,7 +519,7 @@ def show_chain(*chains, **kw):
     .. versionchanged:: 1.7
        New parameter: ``backrefs``.
 
-    .. versionchanged:: 1.9
+    .. versionchanged:: 2.0
        New parameter: ``output``.
 
     """
