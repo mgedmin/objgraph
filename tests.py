@@ -2,29 +2,30 @@
 import doctest
 import gc                   # noqa
 import glob
+import logging
 import os
 import re
 import sys
 import shutil
+import string
+import subprocess
 import tempfile
 import unittest
-
-from objgraph import obj_node_id
-from objgraph import show_graph
 
 try:
     from cStringIO import StringIO
 except ImportError:
     from io import StringIO
 
+import objgraph
 
-class CompatibilityMixin:
+
+class CompatibilityMixin(object):
 
     # Python 2.7 .. 3.1 has assertRegexpMatches but not assertRegex
     # Python <= 2.6 has neither
     # Python >= 3.2 has both and emits deprecation warnings if you use
     # assertRegexpMatches.
-
     if not hasattr(unittest.TestCase, 'assertRegex'):
         if hasattr(unittest.TestCase, 'assertRegexpMatches'):
             # This is needed for Python 3.1: let's reuse the existing
@@ -36,40 +37,285 @@ class CompatibilityMixin:
                     expected_regexp = re.compile(expected_regexp)
                 if not expected_regexp.search(text):
                     msg = msg or "Regexp didn't match"
-                    msg = '%s: %r not found in %r' % (msg, expected_regexp.pattern, text)
+                    msg = '%s: %r not found in %r' % (msg,
+                                                      expected_regexp.pattern,
+                                                      text)
                     raise self.failureException(msg)
+    # Python 2.7 .. 3.1 has assertRaisesRegexpbut not assertRaisesRegex
+    # Python <= 2.6 has neither
+    # Python >= 3.2 has both and emits deprecation warnings if you use
+    # assertRaisesRegexp.
+    if not hasattr(unittest.TestCase, 'assertRaisesRegex'):
+        if hasattr(unittest.TestCase, 'assertRaisesRegexp'):
+            # This is needed for Python 3.1: let's reuse the existing
+            # function because our replacement doesn't work on Python 3
+            assertRaisesRegex = unittest.TestCase.assertRaisesRegexp
+        else:
+            def assertRaisesRegex(self, error, expected_regex,
+                                  call, *args, **kwargs):
+                try:
+                    call(*args, **kwargs)
+                except error:
+                    e = sys.exc_info()[1]
+                    self.assertRegex(e.args[0], expected_regex)
+
+def skipIf(condition, reason):
+    def wrapper(fn):
+        if condition:
+            def empty_test(case):
+                pass
+            return empty_test
+        return fn
+    return wrapper
+
+
+def format(text, **kwargs):
+    template = string.Template(text)
+    return template.substitute(kwargs)
 
 
 # Unit tests
+
+SINGLE_ELEMENT_OUTPUT = (
+    'digraph ObjectGraph {\n'
+    '  node[shape=box, style=filled, fillcolor=white];\n'
+    '  ${label_a}[label="TestObject\\nTestObject(A)"];\n'
+    '  ${label_a}[fontcolor=red];\n'
+    '  ${label_a}[fillcolor="0,0,1"];\n'
+    '}\n')
+
+
+TWO_ELEMENT_OUTPUT = (
+    'digraph ObjectGraph {\n'
+    '  node[shape=box, style=filled, fillcolor=white];\n'
+    '  ${label_a}[label="TestObject\\nTestObject(A)"];\n'
+    '  ${label_a}[fontcolor=red];\n'
+    '  ${label_a}[fillcolor="0,0,1"];\n'
+    '  ${label_b} -> ${label_a};\n'
+    '  ${label_b}[label="TestObject\\nTestObject(B)"];\n'
+    '  ${label_b}[fillcolor="0,0,0.766667"];\n'
+    '}\n')
 
 
 def empty_edge_function(obj):
     return []
 
 
-class TestObject:
-    pass
+class TestObject(object):
+    _objs = {}
+
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return 'TestObject(%s)' % self.name
+
+    @classmethod
+    def get(cls, name):
+        if name in cls._objs:
+            return cls._objs[name]
+        obj = TestObject(name)
+        cls._objs[name] = obj
+        return obj
 
 
-class ShowGraphTest(unittest.TestCase, CompatibilityMixin):
+def edge_function(chain_map):
+    """Given a mapping of src name -> dst name  or src name -> [dst names]
+    returns an edge_function."""
+    def helper(src):
+        if src.name not in chain_map:
+            return []
+        dst_names = chain_map[src.name]
+        if not isinstance(dst_names, (list, tuple)):
+            dst_names = [dst_names]
+        return [TestObject.get(dst_name) for dst_name in dst_names]
+    return helper
+
+
+class GarbageCollectedTestCase(unittest.TestCase):
+    """A base TestCase that garbage collects before running."""
+    def setUp(self):
+        gc.collect()
+
+
+class ShowGraphTest(CompatibilityMixin, GarbageCollectedTestCase):
     """Tests for the show_graph function."""
 
     def test_basic_file_output(self):
-        obj = TestObject()
+        obj = TestObject.get("A")
         output = StringIO()
-        show_graph([obj], empty_edge_function, False, output=output)
+        objgraph.show_graph([obj], empty_edge_function, False, output=output,
+                            shortnames=True)
         output_value = output.getvalue()
-        self.assertRegex(output_value, r'digraph ObjectGraph')
-        self.assertRegex(output_value, r'%s\[.*?\]' % obj_node_id(obj))
+        label = objgraph._obj_node_id(obj)
+        self.assertEqual(output_value,
+                         format(SINGLE_ELEMENT_OUTPUT,
+                                label_a=label))
+
+    def test_simple_chain(self):
+        edge_fn = edge_function({'A' : 'B'})
+        output = StringIO()
+        objgraph.show_graph([TestObject.get("A")], edge_fn, False, output=output,
+                            shortnames=True)
+        output_value = output.getvalue()
+        label_a = objgraph._obj_node_id(TestObject.get("A"))
+        label_b = objgraph._obj_node_id(TestObject.get("B"))
+        self.assertEqual(output_value,
+                         format(TWO_ELEMENT_OUTPUT,
+                                label_a=label_a,
+                                label_b=label_b))
 
     def test_filename_and_output(self):
-        output = StringIO()
-        self.assertRaises(ValueError,
-            show_graph, [], empty_edge_function, False, filename='filename',
-            output=output)
+        self.assertRaisesRegex(ValueError,
+            'Cannot specify both output and filename',
+            objgraph.show_graph, [], empty_edge_function, False,
+            filename='filename', output=StringIO())
+
+    def test_missing_dot_programs(self):
+        _program_in_path = objgraph._program_in_path
+        def mock_program_in_path(expected):
+            def helper(program):
+                self.assertEqual(expected, program)
+                return False
+            return helper
+
+        try:
+            # This will fail because dot doesn't exist.
+            objgraph._program_in_path = mock_program_in_path('dot')
+            self.assertRaisesRegex(ValueError, 'Output format not supported',
+                objgraph.show_graph, [], empty_edge_function, False,
+                filename='foo.png')
+
+            # This will fail because xdot doesn't exist.
+            objgraph._program_in_path = mock_program_in_path('xdot')
+            self.assertRaisesRegex(ValueError, 'Output format not supported',
+                objgraph.show_graph, [], empty_edge_function, False)
+        finally:
+            objgraph._program_in_path = _program_in_path
+
+
+    def test_invalid_file_format(self):
+        tmp = tempfile.NamedTemporaryFile(suffix='.blah', prefix='tmp-objgraph')
+        self.assertRaisesRegex(ValueError, 'Output format not supported',
+            objgraph.show_graph, [], empty_edge_function, False,
+            filename=tmp.name)
+
+    def test_tries_xdot(self):
+        _Popen = subprocess.Popen
+        _program_in_path = objgraph._program_in_path
+        def mock_Popen(cmd, close_fds=None):
+            self.assertEqual('xdot', cmd[0])
+            self.assertTrue(close_fds)
+            return
+        def mock_program_in_path(cmd):
+            return cmd == 'xdot'
+        subprocess.Popen = mock_Popen
+        objgraph._program_in_path = mock_program_in_path
+        try:
+            objgraph.show_graph([], empty_edge_function, False)
+        finally:
+            subprocess.Popen = _Popen
+            objgraph._program_in_path = _program_in_path
+
+
+class FindChainTest(GarbageCollectedTestCase):
+    """Tests for the find_chain function."""
+
+    def test_no_chain(self):
+        a = object()
+        self.assertEqual([a],
+                         objgraph.find_chain(a,
+                                             lambda x: False,
+                                             gc.get_referrers))
+
+
+class CountTest(GarbageCollectedTestCase):
+    """Tests for the count function."""
+
+    def test_long_type_names(self):
+        x = type('MyClass', (), {'__module__': 'mymodule'})()
+        y = type('MyClass', (), {'__module__': 'other'})()
+        self.assertEqual(2, objgraph.count('MyClass'))
+        self.assertEqual(1, objgraph.count('mymodule.MyClass'))
+
+
+class TypestatsTest(GarbageCollectedTestCase):
+    """Tests for the typestats function."""
+
+    def test_long_type_names(self):
+        x = type('MyClass', (), {'__module__': 'mymodule'})()
+        stats = objgraph.typestats(shortnames=False)
+        self.assertEqual(1, stats['mymodule.MyClass'])
+
+
+class ByTypeTest(GarbageCollectedTestCase):
+    """Tests for the by_test function."""
+
+    def test_long_type_names(self):
+        x = type('MyClass', (), {'__module__': 'mymodule'})()
+        self.assertEqual([x], objgraph.by_type('mymodule.MyClass'))
+
+
+class StringRepresentationTest(CompatibilityMixin,
+                               GarbageCollectedTestCase):
+    """Tests for the string representation of objects and edges."""
+
+    def test_obj_label_long_type_name(self):
+        x = type('MyClass', (), {'__module__': 'mymodule'})()
+
+        self.assertRegex(
+            objgraph._obj_label(x, shortnames=False),
+            'mymodule\.MyClass\\\\n<mymodule\.MyClass object at .*')
+
+    def test_long_typename_with_no_module(self):
+        x = type('MyClass', (), {'__module__': None})()
+        self.assertEqual('MyClass', objgraph._long_typename(x))
+
+    def test_safe_repr(self):
+        class MyClass(object):
+            def __repr__(self):
+                return 1/0
+        self.assertEqual('(unrepresentable)', objgraph._safe_repr(MyClass()))
+
+
+    @skipIf(sys.version_info[0] > 2, "Python 3 has no unbound methods")
+    def test_short_repr_unbound_method(self):
+        class MyClass(object):
+            def a_method(self):
+                pass
+
+        self.assertEqual('a_method', objgraph._short_repr(MyClass.a_method))
+
+    def test_gradient_empty(self):
+        self.assertEqual((0.1, 0.2, 0.3),
+                         objgraph._gradient((0.1, 0.2, 0.3),
+                                            (0.2, 0.3, 0.4),
+                                            0, 0))
+
+
+    @skipIf(sys.version_info[0] > 2, "Python 3 has no unbound methods")
+    @skipIf(sys.version_info[:2] < (2, 6),
+            "Python 2.5 and older has no __func__")
+    def test_edge_label_unbound_method(self):
+        class MyClass(object):
+            def a_method(self):
+                pass
+        self.assertEqual(' [label="__func__",weight=10]',
+                         objgraph._edge_label(MyClass.a_method,
+                                              MyClass.a_method.__func__))
+
+
+    def test_edge_label_long_type_names(self):
+        x = type('MyClass', (), {'__module__': 'mymodule'})()
+        d = {x: 1}
+
+        self.assertRegex(
+            objgraph._edge_label(d, 1, shortnames=False),
+            ' [label="mymodule\.MyClass\\n<mymodule\.MyClass object at .*"]')
 
 
 # Doctests
+
 
 NODES_VARY = doctest.register_optionflag('NODES_VARY')
 RANDOM_OUTPUT = doctest.register_optionflag('RANDOM_OUTPUT')
@@ -84,7 +330,7 @@ class RandomOutputChecker(doctest.OutputChecker):
 
 
 class IgnoreNodeCountChecker(RandomOutputChecker):
-    _r = re.compile('\(\d+ nodes\)$', re.MULTILINE)
+    _r = re.compile(r'\(\d+ nodes\)$', re.MULTILINE)
 
     def check_output(self, want, got, optionflags):
         if optionflags & NODES_VARY:
@@ -92,16 +338,18 @@ class IgnoreNodeCountChecker(RandomOutputChecker):
             got = self._r.sub('(X nodes)', got)
         return RandomOutputChecker.check_output(self, want, got, optionflags)
 
+class PrintHandler(logging.Handler):
+    def emit(self, log):
+        print(log.getMessage())
 
-def skipIf(condition, reason):
-    def wrapper(fn):
-        if condition:
-            fn.__doc__ = 'Skipped because %s' % reason
-        return fn
-    return wrapper
+_print_handler = PrintHandler()
+_logger = logging.getLogger('objgraph')
 
 
 def setUp(test):
+    # Add a special handler to make the docs tests nicer.
+    _logger.setLevel(logging.INFO)
+    _logger.addHandler(_print_handler)
     test.tmpdir = tempfile.mkdtemp(prefix='test-objgraph-')
     test.prevdir = os.getcwd()
     test.prevtempdir = tempfile.tempdir
@@ -118,6 +366,7 @@ def tearDown(test):
     tempfile.tempdir = test.prevtempdir
     os.chdir(test.prevdir)
     shutil.rmtree(test.tmpdir)
+    _logger.removeHandler(_print_handler)
 
 
 def find_doctests():
@@ -126,7 +375,6 @@ def find_doctests():
         # Skip uncollectable.txt on Python 3.4 and newer
         doctests.discard(os.path.join('docs', 'uncollectable.txt'))
     return sorted(doctests)
-
 
 def doctest_setup_py_works():
     """Test that setup.py works
@@ -139,152 +387,6 @@ def doctest_setup_py_works():
         Draws Python object reference graphs with graphviz
 
         >>> sys.argv = orig_argv
-
-    """
-
-
-def doctest_count_long_type_names():
-    """Test for count
-
-        >>> _ = gc.collect()
-        >>> x = type('MyClass', (), {'__module__': 'mymodule'})()
-        >>> y = type('MyClass', (), {'__module__': 'other'})()
-
-        >>> from objgraph import count
-        >>> count('MyClass')
-        2
-        >>> count('mymodule.MyClass')
-        1
-
-    """
-
-
-def doctest_typestats_long_type_names():
-    """Test for typestats
-
-        >>> _ = gc.collect()
-        >>> x = type('MyClass', (), {'__module__': 'mymodule'})()
-
-        >>> from objgraph import typestats
-        >>> stats = typestats(shortnames=False)
-        >>> stats['mymodule.MyClass']
-        1
-
-    """
-
-
-def doctest_by_type_long_type_names():
-    """Test for by_type
-
-        >>> x = type('MyClass', (), {'__module__': 'mymodule'})()
-
-        >>> from objgraph import by_type
-        >>> by_type('mymodule.MyClass') == [x]
-        True
-
-    """
-
-
-def doctest_find_chain_no_chain():
-    """Test for find_chain
-
-        >>> from objgraph import find_chain
-        >>> a = object()
-        >>> find_chain(a, lambda x: False, gc.get_referrers) == [a]
-        True
-
-    """
-
-
-def doctest_obj_label_long_type_names():
-    r"""Test for obj_label
-
-        >>> x = type('MyClass', (), {'__module__': 'mymodule'})()
-
-        >>> from objgraph import obj_label
-        >>> obj_label(x, shortnames=False)  # doctest: +ELLIPSIS
-        'mymodule.MyClass\\n<mymodule.MyClass object at ...'
-
-    """
-
-
-def doctest_long_typename_with_no_module():
-    r"""Test for long_typename
-
-        >>> x = type('MyClass', (), {'__module__': None})()
-
-        >>> from objgraph import long_typename
-        >>> long_typename(x)
-        'MyClass'
-
-    """
-
-
-def doctest_safe_repr_unsafe():
-    r"""Test for long_typename
-
-        >>> class MyClass(object):
-        ...     def __repr__(self):
-        ...         return 1/0
-        >>> x = MyClass()
-
-        >>> from objgraph import safe_repr
-        >>> safe_repr(x)
-        '(unrepresentable)'
-
-    """
-
-
-@skipIf(sys.version_info[0] > 2, "Python 3 has no unbound methods")
-def doctest_short_repr_unbound_method():
-    r"""Test for long_typename
-
-        >>> class MyClass(object):
-        ...     def a_method(self):
-        ...         pass
-
-        >>> from objgraph import short_repr
-        >>> short_repr(MyClass.a_method)
-        'a_method'
-
-    """
-
-
-def doctest_gradient_empty():
-    """Test for gradient
-
-        >>> from objgraph import gradient
-        >>> gradient((0.1, 0.2, 0.3), (0.2, 0.3, 0.4), 0, 0) == (0.1, 0.2, 0.3)
-        True
-
-    """
-
-
-@skipIf(sys.version_info[0] > 2, "Python 3 has no unbound methods")
-@skipIf(sys.version_info[:2] < (2, 6), "Python 2.5 and older has no __func__")
-def doctest_edge_label_unbound_method():
-    r"""Test for edge_label
-
-        >>> class MyClass(object):
-        ...     def a_method(self):
-        ...         pass
-
-        >>> from objgraph import edge_label
-        >>> edge_label(MyClass.a_method, MyClass.a_method.__func__)
-        ' [label="__func__",weight=10]'
-
-    """
-
-
-def doctest_edge_label_long_type_names():
-    r"""Test for edge_label
-
-        >>> x = type('MyClass', (), {'__module__': 'mymodule'})()
-        >>> d = {x: 1}
-
-        >>> from objgraph import edge_label
-        >>> edge_label(d, 1, shortnames=False)  # doctest: +ELLIPSIS
-        ' [label="mymodule.MyClass\\n<mymodule.MyClass object at ..."]'
 
     """
 

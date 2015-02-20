@@ -3,8 +3,13 @@ Changes
 
 .. currentmodule:: objgraph
 
-1.9.0 (unreleased)
+2.0.0 (unreleased)
 ------------------
+
+- Renamed internal helper functions to be non-public.
+
+- Use logging for all informational output (everything except 
+  :func:`show_most_common_types` and :func:`show_growth`).
 
 - :func:`show_ref` and :func:`show_backref` now accept a file-like object as an
   alternative to a filename.
