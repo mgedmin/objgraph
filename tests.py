@@ -8,6 +8,7 @@ import re
 import sys
 import shutil
 import string
+import subprocess
 import tempfile
 import unittest
 
@@ -36,9 +37,27 @@ class CompatibilityMixin(object):
                     expected_regexp = re.compile(expected_regexp)
                 if not expected_regexp.search(text):
                     msg = msg or "Regexp didn't match"
-                    msg = '%s: %r not found in %r' % (msg, expected_regexp.pattern, text)
+                    msg = '%s: %r not found in %r' % (msg,
+                                                      expected_regexp.pattern,
+                                                      text)
                     raise self.failureException(msg)
-
+    # Python 2.7 .. 3.1 has assertRaisesRegexpbut not assertRaisesRegex
+    # Python <= 2.6 has neither
+    # Python >= 3.2 has both and emits deprecation warnings if you use
+    # assertRaisesRegexp.
+    if not hasattr(unittest.TestCase, 'assertRaisesRegex'):
+        if hasattr(unittest.TestCase, 'assertRaisesRegexp'):
+            # This is needed for Python 3.1: let's reuse the existing
+            # function because our replacement doesn't work on Python 3
+            assertRaisesRegex = unittest.TestCase.assertRaisesRegexp
+        else:
+            def assertRaisesRegex(self, error, expected_regex,
+                                  call, *args, **kwargs):
+                try:
+                    call(*args, **kwargs)
+                except error:
+                    e = sys.exc_info()[1]
+                    self.assertRegex(e.args[0], expected_regex)
 
 def skipIf(condition, reason):
     def wrapper(fn):
@@ -119,7 +138,7 @@ class GarbageCollectedTestCase(unittest.TestCase):
         gc.collect()
 
 
-class ShowGraphTest(GarbageCollectedTestCase):
+class ShowGraphTest(CompatibilityMixin, GarbageCollectedTestCase):
     """Tests for the show_graph function."""
 
     def test_basic_file_output(self):
@@ -147,10 +166,56 @@ class ShowGraphTest(GarbageCollectedTestCase):
                                 label_b=label_b))
 
     def test_filename_and_output(self):
-        output = StringIO()
-        self.assertRaises(ValueError, objgraph.show_graph, [],
-                          empty_edge_function, False,
-                          filename='filename', output=output)
+        self.assertRaisesRegex(ValueError,
+            'Cannot specify both output and filename',
+            objgraph.show_graph, [], empty_edge_function, False,
+            filename='filename', output=StringIO())
+
+    def test_missing_dot_programs(self):
+        _program_in_path = objgraph._program_in_path
+        def mock_program_in_path(expected):
+            def helper(program):
+                self.assertEqual(expected, program)
+                return False
+            return helper
+
+        try:
+            # This will fail because dot doesn't exist.
+            objgraph._program_in_path = mock_program_in_path('dot')
+            self.assertRaisesRegex(ValueError, 'Output format not supported',
+                objgraph.show_graph, [], empty_edge_function, False,
+                filename='foo.png')
+
+            # This will fail because xdot doesn't exist.
+            objgraph._program_in_path = mock_program_in_path('xdot')
+            self.assertRaisesRegex(ValueError, 'Output format not supported',
+                objgraph.show_graph, [], empty_edge_function, False)
+        finally:
+            objgraph._program_in_path = _program_in_path
+
+
+    def test_invalid_file_format(self):
+        tmp = tempfile.NamedTemporaryFile(suffix='.blah', prefix='tmp-objgraph')
+        self.assertRaisesRegex(ValueError, 'Output format not supported',
+            objgraph.show_graph, [], empty_edge_function, False,
+            filename=tmp.name)
+
+    def test_tries_xdot(self):
+        _Popen = subprocess.Popen
+        _program_in_path = objgraph._program_in_path
+        def mock_Popen(cmd, close_fds=None):
+            self.assertEqual('xdot', cmd[0])
+            self.assertTrue(close_fds)
+            return
+        def mock_program_in_path(cmd):
+            return cmd == 'xdot'
+        subprocess.Popen = mock_Popen
+        objgraph._program_in_path = mock_program_in_path
+        try:
+            objgraph.show_graph([], empty_edge_function, False)
+        finally:
+            subprocess.Popen = _Popen
+            objgraph._program_in_path = _program_in_path
 
 
 class FindChainTest(GarbageCollectedTestCase):
@@ -191,8 +256,8 @@ class ByTypeTest(GarbageCollectedTestCase):
         self.assertEqual([x], objgraph.by_type('mymodule.MyClass'))
 
 
-class StringRepresentationTest(GarbageCollectedTestCase,
-                               CompatibilityMixin):
+class StringRepresentationTest(CompatibilityMixin,
+                               GarbageCollectedTestCase):
     """Tests for the string representation of objects and edges."""
 
     def test_obj_label_long_type_name(self):
@@ -273,11 +338,9 @@ class IgnoreNodeCountChecker(RandomOutputChecker):
             got = self._r.sub('(X nodes)', got)
         return RandomOutputChecker.check_output(self, want, got, optionflags)
 
-
 class PrintHandler(logging.Handler):
     def emit(self, log):
         print(log.getMessage())
-
 
 _print_handler = PrintHandler()
 _logger = logging.getLogger('objgraph')
@@ -285,7 +348,6 @@ _logger = logging.getLogger('objgraph')
 
 def setUp(test):
     # Add a special handler to make the docs tests nicer.
-
     _logger.setLevel(logging.INFO)
     _logger.addHandler(_print_handler)
     test.tmpdir = tempfile.mkdtemp(prefix='test-objgraph-')

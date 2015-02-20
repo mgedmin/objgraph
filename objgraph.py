@@ -625,6 +625,7 @@ def show_graph(objs, edge_func, swap_source_target,
 
     See :func:`show_refs` or :func:`show_backrefs` for more information.
     """
+    dot_filename = None
     if filename and output:
         raise ValueError('Cannot specify both output and filename.')
     elif filename and filename.endswith('.dot'):
@@ -641,12 +642,12 @@ def show_graph(objs, edge_func, swap_source_target,
             import io
             output = io.TextIOWrapper(output.detach(), 'utf-8')
 
-    nodes = _build_graph(objs, edge_func, swap_source_target, output,
-                         max_depth=max_depth, extra_ignore=extra_ignore,
-                         filter=filter, too_many=too_many, highlight=highlight,
-                         extra_info=extra_info, refcounts=refcounts,
-                         shortnames=shortnames)
-    if not filename or not dot_filename:
+    nodes = _build_dot(objs, edge_func, swap_source_target, output,
+                       max_depth=max_depth, extra_ignore=extra_ignore,
+                       filter=filter, too_many=too_many, highlight=highlight,
+                       extra_info=extra_info, refcounts=refcounts,
+                       shortnames=shortnames)
+    if not filename and not dot_filename:
         return
     # The file should only be closed if this function was in charge of opening
     # the file.
@@ -655,30 +656,32 @@ def show_graph(objs, edge_func, swap_source_target,
     if filename and filename.endswith('.dot'):
         # nothing else to do, the user asked for a .dot file
         return
-    if not filename and _program_in_path('xdot'):
-        LOG.info('Spawning graph viewer (xdot)')
-        subprocess.Popen(['xdot', dot_filename], close_fds=True)
-    elif dot_filename and _program_in_path('dot'):
-        if not filename:
-            LOG.warn('Graph viewer (xdot) not found, generating a png instead')
-            filename = dot_filename[:-4] + '.png'
-        _, ext = os.path.splitext(filename)
-        f = open(filename, 'wb')
-        dot = subprocess.Popen(['dot', ('-T' + ext[1:]), dot_filename],
-                               stdout=f, close_fds=False)
-        dot.wait()
-        if dot.returncode != 0:
-            LOG.error('dot failed to generate "%s" image:'
-                      ' output format not supported?', filename)
-        f.close()
-        LOG.info('Image generated as %s', filename)
-    else:
-        if filename:
-            LOG.info('Graph viewer (xdot) and image renderer (dot) not found,'
-                     ' not doing anything else')
+    elif filename:
+        if _program_in_path('dot'):
+            _, ext = os.path.splitext(filename)
+            f = open(filename, 'wb')
+            dot = subprocess.Popen(['dot', ('-T' + ext[1:]), dot_filename],
+                                   stdout=f, close_fds=False)
+            dot.wait()
+            if dot.returncode != 0:
+                LOG.error('dot failed to generate "%s" image:'
+                          ' output format not supported?', filename)
+                raise ValueError('Output format not supported.')
+            f.close()
+            LOG.info('Image generated as %s', filename)
         else:
-            LOG.info('Unrecognized file type (%s), not doing anything else',
-                     filename)
+            LOG.error('Requesting a non-DOT file requires the dot program.'
+                      ' Outputing as file instead.')
+            raise ValueError('Output format not supported.')
+    else:
+        if _program_in_path('xdot'):
+            LOG.info('Spawning graph viewer (xdot)')
+            subprocess.Popen(['xdot', dot_filename], close_fds=True)
+        else:
+            LOG.error('Neither output nor filename specified, graph viewer '
+                      '(xdot) should be installed to display the graph.')
+            raise ValueError('Output format not supported.')
+
 
 def _output_node(output, obj, depth, max_depth, highlight,
                  extra_info, refcounts, shortnames):
@@ -728,10 +731,9 @@ def _output_skipped_node(output, obj, skipped, depth, max_depth,
                  % (node_id, label, hue, sat, val))
     output.write('  too_many_%s[fontcolor=white];\n' % node_id)
 
-def _build_graph(objs, edge_func, swap_source_target, output,
-                 max_depth=3, extra_ignore=(), filter=None, too_many=10,
-                 highlight=None, extra_info=None,
-                 refcounts=False, shortnames=True):
+def _build_dot(objs, edge_func, swap_source_target, output, max_depth=3,
+               extra_ignore=(), filter=None, too_many=10, highlight=None,
+               extra_info=None, refcounts=False, shortnames=True):
     # Returns the number of nodes created.
     if not isinstance(objs, (list, tuple)):
         objs = [objs]
