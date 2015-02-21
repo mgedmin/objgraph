@@ -35,7 +35,9 @@ class CompatibilityMixin:
                     expected_regexp = re.compile(expected_regexp)
                 if not expected_regexp.search(text):
                     msg = msg or "Regexp didn't match"
-                    msg = '%s: %r not found in %r' % (msg, expected_regexp.pattern, text)
+                    msg = '%s: %r not found in %r' % (msg,
+                                                      expected_regexp.pattern,
+                                                      text)
                     raise self.failureException(msg)
 
 
@@ -64,9 +66,9 @@ class ShowGraphTest(unittest.TestCase, CompatibilityMixin):
 
     def test_filename_and_output(self):
         output = StringIO()
-        self.assertRaises(ValueError,
-            objgraph._show_graph, [], empty_edge_function, False,
-            filename='filename', output=output)
+        self.assertRaises(ValueError, objgraph._show_graph, [],
+                          empty_edge_function, False, filename='filename',
+                          output=output)
 
 
 # Doctests
@@ -254,7 +256,8 @@ def doctest_gradient_empty():
     """Test for gradient
 
         >>> from objgraph import _gradient
-        >>> _gradient((0.1, 0.2, 0.3), (0.2, 0.3, 0.4), 0, 0) == (0.1, 0.2, 0.3)
+        >>> (_gradient((0.1, 0.2, 0.3), (0.2, 0.3, 0.4), 0, 0)
+             == (0.1, 0.2, 0.3))
         True
 
     """
