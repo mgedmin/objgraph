@@ -9,8 +9,7 @@ import shutil
 import tempfile
 import unittest
 
-from objgraph import obj_node_id
-from objgraph import show_graph
+import objgraph
 
 try:
     from cStringIO import StringIO
@@ -57,16 +56,17 @@ class ShowGraphTest(unittest.TestCase, CompatibilityMixin):
     def test_basic_file_output(self):
         obj = TestObject()
         output = StringIO()
-        show_graph([obj], empty_edge_function, False, output=output)
+        objgraph._show_graph([obj], empty_edge_function, False, output=output)
         output_value = output.getvalue()
         self.assertRegex(output_value, r'digraph ObjectGraph')
-        self.assertRegex(output_value, r'%s\[.*?\]' % obj_node_id(obj))
+        self.assertRegex(output_value,
+                         r'%s\[.*?\]' % objgraph._obj_node_id(obj))
 
     def test_filename_and_output(self):
         output = StringIO()
         self.assertRaises(ValueError,
-            show_graph, [], empty_edge_function, False, filename='filename',
-            output=output)
+            objgraph._show_graph, [], empty_edge_function, False,
+            filename='filename', output=output)
 
 
 # Doctests
@@ -188,9 +188,9 @@ def doctest_by_type_long_type_names():
 def doctest_find_chain_no_chain():
     """Test for find_chain
 
-        >>> from objgraph import find_chain
+        >>> from objgraph import _find_chain
         >>> a = object()
-        >>> find_chain(a, lambda x: False, gc.get_referrers) == [a]
+        >>> _find_chain(a, lambda x: False, gc.get_referrers) == [a]
         True
 
     """
@@ -201,8 +201,8 @@ def doctest_obj_label_long_type_names():
 
         >>> x = type('MyClass', (), {'__module__': 'mymodule'})()
 
-        >>> from objgraph import obj_label
-        >>> obj_label(x, shortnames=False)  # doctest: +ELLIPSIS
+        >>> from objgraph import _obj_label
+        >>> _obj_label(x, shortnames=False)  # doctest: +ELLIPSIS
         'mymodule.MyClass\\n<mymodule.MyClass object at ...'
 
     """
@@ -213,8 +213,8 @@ def doctest_long_typename_with_no_module():
 
         >>> x = type('MyClass', (), {'__module__': None})()
 
-        >>> from objgraph import long_typename
-        >>> long_typename(x)
+        >>> from objgraph import _long_typename
+        >>> _long_typename(x)
         'MyClass'
 
     """
@@ -228,8 +228,8 @@ def doctest_safe_repr_unsafe():
         ...         return 1/0
         >>> x = MyClass()
 
-        >>> from objgraph import safe_repr
-        >>> safe_repr(x)
+        >>> from objgraph import _safe_repr
+        >>> _safe_repr(x)
         '(unrepresentable)'
 
     """
@@ -243,8 +243,8 @@ def doctest_short_repr_unbound_method():
         ...     def a_method(self):
         ...         pass
 
-        >>> from objgraph import short_repr
-        >>> short_repr(MyClass.a_method)
+        >>> from objgraph import _short_repr
+        >>> _short_repr(MyClass.a_method)
         'a_method'
 
     """
@@ -253,8 +253,8 @@ def doctest_short_repr_unbound_method():
 def doctest_gradient_empty():
     """Test for gradient
 
-        >>> from objgraph import gradient
-        >>> gradient((0.1, 0.2, 0.3), (0.2, 0.3, 0.4), 0, 0) == (0.1, 0.2, 0.3)
+        >>> from objgraph import _gradient
+        >>> _gradient((0.1, 0.2, 0.3), (0.2, 0.3, 0.4), 0, 0) == (0.1, 0.2, 0.3)
         True
 
     """
@@ -269,8 +269,8 @@ def doctest_edge_label_unbound_method():
         ...     def a_method(self):
         ...         pass
 
-        >>> from objgraph import edge_label
-        >>> edge_label(MyClass.a_method, MyClass.a_method.__func__)
+        >>> from objgraph import _edge_label
+        >>> _edge_label(MyClass.a_method, MyClass.a_method.__func__)
         ' [label="__func__",weight=10]'
 
     """
@@ -282,8 +282,8 @@ def doctest_edge_label_long_type_names():
         >>> x = type('MyClass', (), {'__module__': 'mymodule'})()
         >>> d = {x: 1}
 
-        >>> from objgraph import edge_label
-        >>> edge_label(d, 1, shortnames=False)  # doctest: +ELLIPSIS
+        >>> from objgraph import _edge_label
+        >>> _edge_label(d, 1, shortnames=False)  # doctest: +ELLIPSIS
         ' [label="mymodule.MyClass\\n<mymodule.MyClass object at ..."]'
 
     """
