@@ -31,7 +31,7 @@ class CompatibilityMixin:
             assertRegex = unittest.TestCase.assertRegexpMatches
         else:
             def assertRegex(self, text, expected_regexp, msg=None):
-                if isinstance(expected_regexp, basestring):
+                if isinstance(expected_regexp, basestring):  # noqa
                     expected_regexp = re.compile(expected_regexp)
                 if not expected_regexp.search(text):
                     msg = msg or "Regexp didn't match"

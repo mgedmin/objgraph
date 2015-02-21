@@ -63,7 +63,7 @@ coverage:
 
 .PHONY: lint
 lint:
-	flake8 objgraph.py tests.py
+	flake8
 
 .PHONY: dist
 dist:
