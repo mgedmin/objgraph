@@ -257,7 +257,7 @@ def doctest_gradient_empty():
 
         >>> from objgraph import _gradient
         >>> (_gradient((0.1, 0.2, 0.3), (0.2, 0.3, 0.4), 0, 0)
-             == (0.1, 0.2, 0.3))
+        ...  == (0.1, 0.2, 0.3))
         True
 
     """
