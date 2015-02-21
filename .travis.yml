@@ -8,7 +8,9 @@ python:
 install:
     - sudo apt-get install graphviz || sudo apt-get update && sudo apt-get install graphviz
     - pip install coverage coveralls
+    - pip install flake8
     - pip install -e .
+before_script: "flake8 objgraph.py tests.py"
 script:
     - coverage run --source=objgraph tests.py
 after_success:
