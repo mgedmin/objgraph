@@ -3,11 +3,16 @@ Changes
 
 .. currentmodule:: objgraph
 
-1.9.0 (unreleased)
+2.0.0 (unreleased)
 ------------------
 
 - :func:`show_ref` and :func:`show_backref` now accept a file-like object as an
   alternative to a filename.
+
+- Made internal helper methods private. This includes :func:`find_chain`,
+  :func:`show_graph`, :func:`obj_node_id`, :func:`obj_label`, :func:`quote`,
+  :func:`long_typename`, :func:`safe_repr`, :func:`short_repr`, 
+  :func:`gradient`, :func:`edge_label`, and :func:`_program_in_path`.
 
 
 1.8.1 (2014-05-15)
