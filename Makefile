@@ -61,6 +61,11 @@ coverage:
 	PYTHONPATH=.:$$PYTHONPATH coverage run --source=objgraph tests.py
 	coverage report
 
+.PHONY: lint
+lint:
+	flake8 --exclude=docs/conf.py --ignore=E226
+	flake8 --exclude=docs/conf.py --doctests --ignore=E226,F821
+
 .PHONY: dist
 dist:
 	$(PYTHON) setup.py sdist

@@ -1,5 +1,10 @@
 #!/usr/bin/python
-import codecs, os, re, sys, unittest, doctest
+import codecs
+import doctest
+import os
+import re
+import sys
+import unittest
 
 try:
     from setuptools import setup
@@ -29,7 +34,8 @@ def read(filename):
 def unsphinx(text):
     # remove Sphinx extensions used in CHANGES.rst from reStructuredText
     # so that it can be handled by plain docutils
-    return text.replace(':func:', '').replace('.. currentmodule:: objgraph', '')
+    return (text.replace(':func:', '')
+            .replace('.. currentmodule:: objgraph', ''))
 
 
 def get_version():
