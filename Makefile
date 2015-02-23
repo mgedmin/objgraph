@@ -64,7 +64,7 @@ coverage:
 .PHONY: lint
 lint:
 	tox -e flake
-	tox -e flake_partial_docs
+	tox -e flake_docs
 
 .PHONY: dist
 dist:
