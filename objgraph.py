@@ -201,7 +201,7 @@ def show_growth(limit=10, peak_stats={}, shortnames=True):
 
     Example:
 
-        >>> objgraph.show_growth()
+        >>> show_growth()
         wrapper_descriptor       970       +14
         tuple                  12282       +10
         dict                    1922        +7
@@ -625,7 +625,7 @@ def _show_graph(objs, edge_func, swap_source_target,
     ignore.add(id(ignore))
     ignore.add(id(sys._getframe()))   # this function
     ignore.add(id(sys._getframe().f_locals))
-    ignore.add(id(sys._getframe(1)))  # show_refs/show_backrefs, most likely
+    ignore.add(id(sys._getframe(1)))  # show_refs/show_backrefs
     ignore.add(id(sys._getframe(1).f_locals))
     for obj in objs:
         f.write('  %s[fontcolor=red];\n' % (_obj_node_id(obj)))
@@ -834,8 +834,8 @@ def _gradient(start_color, end_color, depth, max_depth):
 
 
 def _edge_label(source, target, shortnames=True):
-    if (isinstance(target, dict)
-            and target is getattr(source, '__dict__', None)):
+    if (isinstance(target, dict) and
+            target is getattr(source, '__dict__', None)):
         return ' [label="__dict__",weight=10]'
     if isinstance(source, types.FrameType):
         if target is source.f_locals:
