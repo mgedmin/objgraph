@@ -7,7 +7,7 @@ python:
     - 3.4
 install:
     - sudo apt-get install graphviz || sudo apt-get update && sudo apt-get install graphviz
-    - pip install coverage coveralls flake8 -e .
+    - pip install tox coverage coveralls flake8 -e .
 before_script: 
     - make lint
 script:
