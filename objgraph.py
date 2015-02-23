@@ -734,7 +734,7 @@ def _show_graph(objs, edge_func, swap_source_target,
         dot.wait()
         if dot.returncode != 0:
             # XXX: shouldn't this go to stderr or a log?
-            print('output format not supported')
+            print('dot failed to generate "%s".' % ext)
         f.close()
         print("Image generated as %s" % filename)
     else:
