@@ -729,12 +729,13 @@ def _show_graph(objs, edge_func, swap_source_target,
             filename = dot_filename[:-4] + '.png'
         stem, ext = os.path.splitext(filename)
         f = open(filename, 'wb')
-        dot = subprocess.Popen(['dot', ('-T' + ext[1:]), dot_filename],
-                               stdout=f, close_fds=False)
+        cmd = ['dot', ('-T' + ext[1:]), dot_filename]
+        dot = subprocess.Popen(cmd, stdout=f, close_fds=False)
         dot.wait()
         if dot.returncode != 0:
             # XXX: shouldn't this go to stderr or a log?
-            print('dot failed to generate "%s".' % ext)
+            print('dot failed (exit code %d) while executing "%s"'
+                  % (dot.returncode, ' '.join(cmd)))
         f.close()
         print("Image generated as %s" % filename)
     else:
