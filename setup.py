@@ -34,8 +34,8 @@ def read(filename):
 def unsphinx(text):
     # remove Sphinx extensions used in CHANGES.rst from reStructuredText
     # so that it can be handled by plain docutils
-    return text.replace(':func:', '').replace('.. currentmodule:: objgraph',
-                                              '')
+    return (text.replace(':func:', '')
+            .replace('.. currentmodule:: objgraph', ''))
 
 
 def get_version():

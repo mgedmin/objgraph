@@ -734,14 +734,13 @@ def _show_graph(objs, edge_func, swap_source_target,
         dot.wait()
         if dot.returncode != 0:
             # XXX: shouldn't this go to stderr or a log?
-            print('dot failed to generate "%s" image:',
-                  'output format not supported?')
+            print('output format not supported')
         f.close()
         print("Image generated as %s" % filename)
     else:
         if filename:
             print("Graph viewer (xdot) and image renderer (dot) not found,"
-                  "not doing anything else")
+                  " not doing anything else")
         else:
             print("Unrecognized file type (%s), not doing anything else"
                   % filename)
@@ -835,9 +834,8 @@ def _gradient(start_color, end_color, depth, max_depth):
 
 
 def _edge_label(source, target, shortnames=True):
-    if isinstance(target, dict) and target is getattr(source,
-                                                      '__dict__',
-                                                      None):
+    if (isinstance(target, dict)
+            and target is getattr(source, '__dict__', None)):
         return ' [label="__dict__",weight=10]'
     if isinstance(source, types.FrameType):
         if target is source.f_locals:
