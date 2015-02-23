@@ -63,8 +63,8 @@ coverage:
 
 .PHONY: lint
 lint:
-	tox -e flake
-	tox -e flake_docs
+	flake8 --exclude=docs/conf.py --ignore=E226
+	flake8 --exclude=docs/conf.py --doctests --ignore=E226,F821
 
 .PHONY: dist
 dist:
