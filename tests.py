@@ -221,7 +221,7 @@ def doctest_long_typename_with_no_module():
 
 
 def doctest_safe_repr_unsafe():
-    r"""Test for long_typename
+    r"""Test for safe_repr
 
         >>> class MyClass(object):
         ...     def __repr__(self):
@@ -237,7 +237,7 @@ def doctest_safe_repr_unsafe():
 
 @skipIf(sys.version_info[0] > 2, "Python 3 has no unbound methods")
 def doctest_short_repr_unbound_method():
-    r"""Test for long_typename
+    r"""Test for short_repr
 
         >>> class MyClass(object):
         ...     def a_method(self):
@@ -251,7 +251,7 @@ def doctest_short_repr_unbound_method():
 
 @skipIf(sys.version_info[0] > 2, "Python 3 has no old-style classes")
 def doctest_short_typename():
-    r"""Test for long_typename
+    r"""Test for short_typename
 
         >>> class OldClass:
         ...     pass
