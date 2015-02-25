@@ -44,6 +44,7 @@ import subprocess
 import tempfile
 import sys
 import itertools
+import types
 
 
 try:
@@ -757,18 +758,19 @@ def _quote(s):
              .replace("\0", "\\\\0"))
 
 
+def _get_obj_type(obj):
+    objtype = type(obj)
+    if type(obj) == types.InstanceType:
+        objtype = obj.__class__
+    return objtype
+
+
 def _short_typename(obj):
-    try:
-        return obj.__class__.__name__
-    except:
-        return type(obj).__name__
+    return _get_obj_type(obj).__name__
 
 
 def _long_typename(obj):
-    try:
-        objtype = obj.__class__
-    except:
-        objtype = type(obj)
+    objtype =_get_obj_type(obj)
     name = objtype.__name__
     module = getattr(objtype, '__module__', None)
     if module:

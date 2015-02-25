@@ -249,6 +249,25 @@ def doctest_short_repr_unbound_method():
 
     """
 
+@skipIf(sys.version_info[0] > 2, "Python 3 has no old-style classes")
+def doctest_short_typename():
+    r"""Test for long_typename
+
+        >>> class OldClass:
+        ...     pass
+        >>> class NewClass(object):
+        ...     pass
+
+        >>> from objgraph import _short_typename
+        >>> _short_typename(OldClass())
+        'OldClass'
+        >>> _short_typename(NewClass())
+        'NewClass'
+        >>> _short_typename({})
+        'dict'
+
+    """
+
 
 def doctest_gradient_empty():
     """Test for gradient
