@@ -14,6 +14,12 @@ Changes
   :func:`long_typename`, :func:`safe_repr`, :func:`short_repr`, 
   :func:`gradient`, :func:`edge_label`, and :func:`_program_in_path`.
 
+- Correctly determine the name of old-style classes in :func:`count`,
+  :func:`by_type`, and graph drawing functions.
+
+  Fixes `issue 16 <https://github.com/mgedmin/objgraph/pull/16>`_.  Contributed
+  by Mike Lambert.
+
 
 1.8.1 (2014-05-15)
 ------------------
