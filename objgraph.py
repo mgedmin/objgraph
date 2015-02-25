@@ -44,7 +44,12 @@ import subprocess
 import tempfile
 import sys
 import itertools
-import types
+
+try:
+    from types import InstanceType
+except ImportError:
+    # Python 3.x compatibility
+    InstanceType = None
 
 
 try:
@@ -760,7 +765,7 @@ def _quote(s):
 
 def _get_obj_type(obj):
     objtype = type(obj)
-    if type(obj) == types.InstanceType:
+    if type(obj) == InstanceType:
         objtype = obj.__class__
     return objtype
 
