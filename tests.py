@@ -249,6 +249,7 @@ def doctest_short_repr_unbound_method():
 
     """
 
+
 @skipIf(sys.version_info[0] > 2, "Python 3 has no old-style classes")
 def doctest_short_typename():
     r"""Test for short_typename
