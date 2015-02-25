@@ -86,7 +86,7 @@ def count(typename, objects=None):
     if '.' in typename:
         return sum(1 for o in objects if _long_typename(o) == typename)
     else:
-        return sum(1 for o in objects if type(o).__name__ == typename)
+        return sum(1 for o in objects if _short_typename(o) == typename)
 
 
 def typestats(objects=None, shortnames=True):
@@ -276,7 +276,7 @@ def by_type(typename, objects=None):
     if '.' in typename:
         return [o for o in objects if _long_typename(o) == typename]
     else:
-        return [o for o in objects if type(o).__name__ == typename]
+        return [o for o in objects if _short_typename(o) == typename]
 
 
 def at(addr):
@@ -734,7 +734,7 @@ def _obj_node_id(obj):
 
 def _obj_label(obj, extra_info=None, refcounts=False, shortnames=True):
     if shortnames:
-        label = [type(obj).__name__]
+        label = [_short_typename(obj)]
     else:
         label = [_long_typename(obj)]
     if refcounts:
@@ -758,11 +758,17 @@ def _quote(s):
 
 
 def _short_typename(obj):
-    return type(obj).__name__
+    try:
+        return obj.__class__.__name__
+    except:
+        return type(obj).__name__
 
 
 def _long_typename(obj):
-    objtype = type(obj)
+    try:
+        objtype = obj.__class__
+    except:
+        objtype = type(obj)
     name = objtype.__name__
     module = getattr(objtype, '__module__', None)
     if module:
@@ -846,7 +852,7 @@ def _edge_label(source, target, shortnames=True):
                     return ' [label="%s",weight=2]' % _quote(k)
                 else:
                     if shortnames:
-                        tn = type(k).__name__
+                        tn = _short_typename(k)
                     else:
                         tn = _long_typename(k)
                     return ' [label="%s"]' % _quote(tn + "\n" + _safe_repr(k))
