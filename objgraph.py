@@ -26,12 +26,6 @@ Released under the MIT licence.
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-__author__ = "Marius Gedminas (marius@gedmin.as)"
-__copyright__ = "Copyright (c) 2008-2015 Marius Gedminas and contributors"
-__license__ = "MIT"
-__version__ = "2.0.0.dev0"
-__date__ = "2014-05-15"
-
 
 import codecs
 import gc
@@ -50,6 +44,13 @@ try:
 except ImportError:
     # Python 3.x compatibility
     InstanceType = None
+
+
+__author__ = "Marius Gedminas (marius@gedmin.as)"
+__copyright__ = "Copyright (c) 2008-2015 Marius Gedminas and contributors"
+__license__ = "MIT"
+__version__ = "2.0.0.dev0"
+__date__ = "2014-05-15"
 
 
 try:
@@ -206,7 +207,7 @@ def show_growth(limit=10, peak_stats={}, shortnames=True):
 
     Example:
 
-        >>> objgraph.show_growth()
+        >>> show_growth()
         wrapper_descriptor       970       +14
         tuple                  12282       +10
         dict                    1922        +7
@@ -256,7 +257,7 @@ def get_leaking_objects(objects=None):
         # this then is our set of objects without referrers
         return [i for i in objects if id(i) in ids]
     finally:
-        objects = i = None # clear cyclic references to frame
+        objects = i = None  # clear cyclic references to frame
 
 
 def by_type(typename, objects=None):
@@ -421,8 +422,8 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     _show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
                 filter=filter, too_many=too_many, highlight=highlight,
                 edge_func=gc.get_referrers, swap_source_target=False,
-                filename=filename, output=output, extra_info=extra_info, refcounts=refcounts,
-                shortnames=shortnames)
+                filename=filename, output=output, extra_info=extra_info,
+                refcounts=refcounts, shortnames=shortnames)
 
 
 def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
@@ -524,7 +525,8 @@ def show_chain(*chains, **kw):
 
     """
     backrefs = kw.pop('backrefs', True)
-    chains = [chain for chain in chains if chain] # remove empty ones
+    chains = [chain for chain in chains if chain]  # remove empty ones
+
     def in_chains(x, ids=set(map(id, itertools.chain(*chains)))):
         return id(x) in ids
     max_depth = max(map(len, chains)) - 1
@@ -570,8 +572,8 @@ def _find_chain(obj, predicate, edge_func, max_depth=20, extra_ignore=()):
     ignore.add(id(depth))
     ignore.add(id(parent))
     ignore.add(id(ignore))
-    ignore.add(id(sys._getframe()))  # this function
-    ignore.add(id(sys._getframe(1))) # find_chain/find_backref_chain, most likely
+    ignore.add(id(sys._getframe()))   # this function
+    ignore.add(id(sys._getframe(1)))  # find_chain/find_backref_chain
     gc.collect()
     while queue:
         target = queue.pop(0)
@@ -592,13 +594,13 @@ def _find_chain(obj, predicate, edge_func, max_depth=20, extra_ignore=()):
                     depth[id(source)] = tdepth + 1
                     parent[id(source)] = target
                     queue.append(source)
-    return [obj] # not found
+    return [obj]  # not found
 
 
 def _show_graph(objs, edge_func, swap_source_target,
-               max_depth=3, extra_ignore=(), filter=None, too_many=10,
-               highlight=None, filename=None, extra_info=None,
-               refcounts=False, shortnames=True, output=None):
+                max_depth=3, extra_ignore=(), filter=None, too_many=10,
+                highlight=None, filename=None, extra_info=None,
+                refcounts=False, shortnames=True, output=None):
     if not isinstance(objs, (list, tuple)):
         objs = [objs]
     if filename and output:
@@ -627,9 +629,9 @@ def _show_graph(objs, edge_func, swap_source_target,
     ignore.add(id(queue))
     ignore.add(id(depth))
     ignore.add(id(ignore))
-    ignore.add(id(sys._getframe()))  # this function
+    ignore.add(id(sys._getframe()))   # this function
     ignore.add(id(sys._getframe().f_locals))
-    ignore.add(id(sys._getframe(1))) # show_refs/show_backrefs, most likely
+    ignore.add(id(sys._getframe(1)))  # show_refs/show_backrefs
     ignore.add(id(sys._getframe(1).f_locals))
     for obj in objs:
         f.write('  %s[fontcolor=red];\n' % (_obj_node_id(obj)))
@@ -642,7 +644,9 @@ def _show_graph(objs, edge_func, swap_source_target,
         nodes += 1
         target = queue.pop(0)
         tdepth = depth[id(target)]
-        f.write('  %s[label="%s"];\n' % (_obj_node_id(target), _obj_label(target, extra_info, refcounts, shortnames)))
+        f.write('  %s[label="%s"];\n' % (_obj_node_id(target),
+                                         _obj_label(target, extra_info,
+                                                    refcounts, shortnames)))
         h, s, v = _gradient((0, 0, 1), (0, 0, .3), tdepth, max_depth)
         if inspect.ismodule(target):
             h = .3
@@ -651,12 +655,17 @@ def _show_graph(objs, edge_func, swap_source_target,
             h = .6
             s = .6
             v = 0.5 + v * 0.5
-        f.write('  %s[fillcolor="%g,%g,%g"];\n' % (_obj_node_id(target), h, s, v))
+        f.write('  %s[fillcolor="%g,%g,%g"];\n'
+                % (_obj_node_id(target), h, s, v))
         if v < 0.5:
             f.write('  %s[fontcolor=white];\n' % (_obj_node_id(target)))
         if hasattr(getattr(target, '__class__', None), '__del__'):
-            f.write("  %s->%s_has_a_del[color=red,style=dotted,len=0.25,weight=10];\n" % (_obj_node_id(target), _obj_node_id(target)))
-            f.write('  %s_has_a_del[label="__del__",shape=doublecircle,height=0.25,color=red,fillcolor="0,.5,1",fontsize=6];\n' % (_obj_node_id(target)))
+            f.write('  %s->%s_has_a_del[color=red,style=dotted,'
+                    'len=0.25,weight=10];\n' % (_obj_node_id(target),
+                                                _obj_node_id(target)))
+            f.write('  %s_has_a_del[label="__del__",shape=doublecircle,'
+                    'height=0.25,color=red,fillcolor="0,.5,1",fontsize=6];\n'
+                    % (_obj_node_id(target)))
         if tdepth >= max_depth:
             continue
         if is_proper_module(target) and not swap_source_target:
@@ -682,7 +691,8 @@ def _show_graph(objs, edge_func, swap_source_target,
             else:
                 srcnode, tgtnode = source, target
             elabel = _edge_label(srcnode, tgtnode, shortnames)
-            f.write('  %s -> %s%s;\n' % (_obj_node_id(srcnode), _obj_node_id(tgtnode), elabel))
+            f.write('  %s -> %s%s;\n' % (_obj_node_id(srcnode),
+                                         _obj_node_id(tgtnode), elabel))
             if id(source) not in depth:
                 depth[id(source)] = tdepth + 1
                 queue.append(source)
@@ -693,13 +703,19 @@ def _show_graph(objs, edge_func, swap_source_target,
             h, s, v = _gradient((0, 1, 1), (0, 1, .3), tdepth + 1, max_depth)
             if swap_source_target:
                 label = "%d more references" % skipped
-                edge = "%s->too_many_%s" % (_obj_node_id(target), _obj_node_id(target))
+                edge = "%s->too_many_%s" % (_obj_node_id(target),
+                                            _obj_node_id(target))
             else:
                 label = "%d more backreferences" % skipped
-                edge = "too_many_%s->%s" % (_obj_node_id(target), _obj_node_id(target))
-            f.write('  %s[color=red,style=dotted,len=0.25,weight=10];\n' % edge)
-            f.write('  too_many_%s[label="%s",shape=box,height=0.25,color=red,fillcolor="%g,%g,%g",fontsize=6];\n' % (_obj_node_id(target), label, h, s, v))
-            f.write('  too_many_%s[fontcolor=white];\n' % (_obj_node_id(target)))
+                edge = "too_many_%s->%s" % (_obj_node_id(target),
+                                            _obj_node_id(target))
+            f.write('  %s[color=red,style=dotted,len=0.25,weight=10];\n'
+                    % edge)
+            f.write('  too_many_%s[label="%s",shape=box,height=0.25,'
+                    'color=red,fillcolor="%g,%g,%g",fontsize=6];\n'
+                    % (_obj_node_id(target), label, h, s, v))
+            f.write('  too_many_%s[fontcolor=white];\n'
+                    % (_obj_node_id(target)))
     f.write("}\n")
     if output:
         return
@@ -719,19 +735,22 @@ def _show_graph(objs, edge_func, swap_source_target,
             filename = dot_filename[:-4] + '.png'
         stem, ext = os.path.splitext(filename)
         f = open(filename, 'wb')
-        dot = subprocess.Popen(['dot', ('-T' + ext[1:]), dot_filename],
-                               stdout=f, close_fds=False)
+        cmd = ['dot', ('-T' + ext[1:]), dot_filename]
+        dot = subprocess.Popen(cmd, stdout=f, close_fds=False)
         dot.wait()
         if dot.returncode != 0:
             # XXX: shouldn't this go to stderr or a log?
-            print("dot failed to generate '%s' image: output format not supported?")
+            print('dot failed (exit code %d) while executing "%s"'
+                  % (dot.returncode, ' '.join(cmd)))
         f.close()
         print("Image generated as %s" % filename)
     else:
         if filename:
-            print("Graph viewer (xdot) and image renderer (dot) not found, not doing anything else")
+            print("Graph viewer (xdot) and image renderer (dot) not found,"
+                  " not doing anything else")
         else:
-            print("Unrecognized file type (%s), not doing anything else" % filename)
+            print("Unrecognized file type (%s), not doing anything else"
+                  % filename)
 
 
 def _obj_node_id(obj):
@@ -775,7 +794,7 @@ def _short_typename(obj):
 
 
 def _long_typename(obj):
-    objtype =_get_obj_type(obj)
+    objtype = _get_obj_type(obj)
     name = objtype.__name__
     module = getattr(objtype, '__module__', None)
     if module:
@@ -829,7 +848,8 @@ def _gradient(start_color, end_color, depth, max_depth):
 
 
 def _edge_label(source, target, shortnames=True):
-    if isinstance(target, dict) and target is getattr(source, '__dict__', None):
+    if (isinstance(target, dict) and
+            target is getattr(source, '__dict__', None)):
         return ' [label="__dict__",weight=10]'
     if isinstance(source, types.FrameType):
         if target is source.f_locals:
