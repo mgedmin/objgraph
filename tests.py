@@ -152,6 +152,20 @@ class ShowGraphTest(unittest.TestCase):
                                 label_a=label_a,
                                 label_b=label_b))
 
+    def test_cull_func(self):
+        edge_fn = edge_function({'A': 'B', 'B': 'C'})
+        output = StringIO()
+        objgraph._show_graph([TestObject.get("A")], edge_fn, False,
+                             output=output, shortnames=True,
+                             cull_func=lambda obj: obj.name == 'B')
+        output_value = output.getvalue()
+        label_a = objgraph._obj_node_id(TestObject.get("A"))
+        label_b = objgraph._obj_node_id(TestObject.get("B"))
+        self.assertEqual(output_value,
+                         format(TWO_ELEMENT_OUTPUT,
+                                label_a=label_a,
+                                label_b=label_b))
+
 
 class FindChainTest(GarbageCollectedMixin, unittest.TestCase):
     """Tests for the find_chain function."""

@@ -419,11 +419,16 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
        New parameter: ``output``.
 
     """
+    # For show_backrefs(), it makes sense to stop when reaching a
+    # module because you'll end up in sys.modules and explode the
+    # graph with useless clutter.  That's why we're specifying
+    # cull_func here, but not in show_graph().
     _show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
                 filter=filter, too_many=too_many, highlight=highlight,
                 edge_func=gc.get_referrers, swap_source_target=False,
                 filename=filename, output=output, extra_info=extra_info,
-                refcounts=refcounts, shortnames=shortnames)
+                refcounts=refcounts, shortnames=shortnames,
+                cull_func=is_proper_module)
 
 
 def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
@@ -600,7 +605,8 @@ def _find_chain(obj, predicate, edge_func, max_depth=20, extra_ignore=()):
 def _show_graph(objs, edge_func, swap_source_target,
                 max_depth=3, extra_ignore=(), filter=None, too_many=10,
                 highlight=None, filename=None, extra_info=None,
-                refcounts=False, shortnames=True, output=None):
+                refcounts=False, shortnames=True, output=None,
+                cull_func=None):
     if not isinstance(objs, (list, tuple)):
         objs = [objs]
     if filename and output:
@@ -642,6 +648,9 @@ def _show_graph(objs, edge_func, swap_source_target,
     nodes = 0
     while queue:
         nodes += 1
+        # The names "source" and "target" are reversed here because
+        # originally there was just show_backrefs() and we were
+        # traversing the reference graph backwards.
         target = queue.pop(0)
         tdepth = depth[id(target)]
         f.write('  %s[label="%s"];\n' % (_obj_node_id(target),
@@ -668,11 +677,7 @@ def _show_graph(objs, edge_func, swap_source_target,
                     % (_obj_node_id(target)))
         if tdepth >= max_depth:
             continue
-        if is_proper_module(target) and not swap_source_target:
-            # For show_backrefs(), it makes sense to stop when reaching a
-            # module because you'll end up in sys.modules and explode the
-            # graph with useless clutter.  For show_refs(), it makes sense
-            # to continue.
+        if cull_func is not None and cull_func(target):
             continue
         neighbours = edge_func(target)
         ignore.add(id(neighbours))
