@@ -58,7 +58,8 @@ preview-pypi-description:
 
 .PHONY: coverage
 coverage:
-	PYTHONPATH=.:$$PYTHONPATH coverage run --source=objgraph tests.py
+	coverage run --source=objgraph tests.py
+	python3 -m coverage run -a --source=objgraph tests.py
 	coverage report
 
 .PHONY: lint
