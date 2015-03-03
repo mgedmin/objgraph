@@ -10,10 +10,10 @@ VCS_COMMIT_AND_PUSH = git commit -av -m "Post-release version bump" && git push 
 
 SUPPORTED_PYTHON_VERSIONS = 2.4 2.5 2.6 2.7 3.1 3.2 3.3 3.4
 
-SPHINXOPTS    =
-SPHINXBUILD   = sphinx-build
-BUILDDIR      = docs/_build
-ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(SPHINXOPTS) docs/
+SPHINXOPTS      =
+SPHINXBUILD     = sphinx-build
+SPHINXBUILDDIR  = docs/_build
+ALLSPHINXOPTS   = -d $(SPHINXBUILDDIR)/doctrees $(SPHINXOPTS) docs/
 
 
 .PHONY: default
@@ -26,13 +26,13 @@ images:
 
 .PHONY: docs
 docs:
-	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
+	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(SPHINXBUILDDIR)/html
 	@echo
-	@echo "Now look at $(BUILDDIR)/html/index.html"
+	@echo "Now look at $(SPHINXBUILDDIR)/html/index.html"
 
 .PHONY: clean
 clean:
-	-rm -rf $(BUILDDIR)/*
+	-rm -rf $(SPHINXBUILDDIR)/* build
 
 .PHONY: test check
 test check:
