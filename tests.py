@@ -18,14 +18,19 @@ except ImportError:
     from io import StringIO
 
 
-def skipIf(condition, reason):
-    def wrapper(fn):
-        if condition:
-            def empty_test(case):
-                pass
-            return empty_test
-        return fn
-    return wrapper
+try:
+    from unittest import skipIf
+except ImportError:
+    def skipIf(condition, reason):
+        def wrapper(fn):
+            if condition:
+                def empty_test(case):
+                    pass
+                empty_test.__doc__ = '%s skipped because %s' % (
+                    fn.__name__, reason)
+                return empty_test
+            return fn
+        return wrapper
 
 
 def format(text, **kwargs):
