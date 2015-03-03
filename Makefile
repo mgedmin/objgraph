@@ -64,8 +64,8 @@ coverage:
 
 .PHONY: lint
 lint:
-	flake8 --exclude=docs/conf.py --ignore=E226
-	flake8 --exclude=docs/conf.py --doctests --ignore=E226,F821
+	flake8 --exclude=build,docs/conf.py --ignore=E226
+	flake8 --exclude=build,docs/conf.py --doctests --ignore=E226,F821
 
 .PHONY: dist
 dist:
