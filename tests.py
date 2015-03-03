@@ -1,13 +1,14 @@
 #!/usr/bin/python
 import doctest
-import gc                   # noqa
+import gc
 import glob
 import os
 import re
-import sys
 import shutil
 import string
+import sys
 import tempfile
+import textwrap
 import unittest
 
 import objgraph
@@ -71,23 +72,27 @@ class GarbageCollectedMixin(object):
 
 # Unit tests
 
-SINGLE_ELEMENT_OUTPUT = ('digraph ObjectGraph {\n'
-                         '  node[shape=box, style=filled, fillcolor=white];\n'
-                         '  ${label_a}[fontcolor=red];\n'
-                         '  ${label_a}[label="TestObject\\nTestObject(A)"];\n'
-                         '  ${label_a}[fillcolor="0,0,1"];\n'
-                         '}\n')
+SINGLE_ELEMENT_OUTPUT = textwrap.dedent('''\
+    digraph ObjectGraph {
+      node[shape=box, style=filled, fillcolor=white];
+      ${label_a}[fontcolor=red];
+      ${label_a}[label="TestObject\\nTestObject(A)"];
+      ${label_a}[fillcolor="0,0,1"];
+    }
+''')
 
 
-TWO_ELEMENT_OUTPUT = ('digraph ObjectGraph {\n'
-                      '  node[shape=box, style=filled, fillcolor=white];\n'
-                      '  ${label_a}[fontcolor=red];\n'
-                      '  ${label_a}[label="TestObject\\nTestObject(A)"];\n'
-                      '  ${label_a}[fillcolor="0,0,1"];\n'
-                      '  ${label_b} -> ${label_a};\n'
-                      '  ${label_b}[label="TestObject\\nTestObject(B)"];\n'
-                      '  ${label_b}[fillcolor="0,0,0.766667"];\n'
-                      '}\n')
+TWO_ELEMENT_OUTPUT = textwrap.dedent('''\
+    digraph ObjectGraph {
+      node[shape=box, style=filled, fillcolor=white];
+      ${label_a}[fontcolor=red];
+      ${label_a}[label="TestObject\\nTestObject(A)"];
+      ${label_a}[fillcolor="0,0,1"];
+      ${label_b} -> ${label_a};
+      ${label_b}[label="TestObject\\nTestObject(B)"];
+      ${label_b}[fillcolor="0,0,0.766667"];
+    }
+''')
 
 
 class TestObject:
