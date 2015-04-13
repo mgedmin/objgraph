@@ -1,10 +1,10 @@
 Python Object Graphs
 ====================
 
-.. image:: https://travis-ci.org/mgedmin/objgraph.png?branch=master
+.. image:: https://travis-ci.org/mgedmin/objgraph.svg?branch=master
    :target: https://travis-ci.org/mgedmin/objgraph
 
-.. image:: https://coveralls.io/repos/mgedmin/objgraph/badge.png?branch=master
+.. image:: https://coveralls.io/repos/mgedmin/objgraph/badge.svg?branch=master
    :target: https://coveralls.io/r/mgedmin/objgraph?branch=master
 
 
