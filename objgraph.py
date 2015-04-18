@@ -751,9 +751,8 @@ def _present_graph(dot_filename, filename=None):
             print("Graph viewer (xdot) not found, generating a png instead")
             filename = dot_filename[:-4] + '.png'
         stem, ext = os.path.splitext(filename)
-        f = open(filename, 'wb')
-        cmd = ['dot', ('-T' + ext[1:]), dot_filename]
-        dot = subprocess.Popen(cmd, stdout=f, close_fds=False)
+        cmd = ['dot', '-T' + ext[1:], '-o' + filename, dot_filename]
+        dot = subprocess.Popen(cmd, close_fds=False)
         dot.wait()
         if dot.returncode != 0:
             # XXX: shouldn't this go to stderr or a log?
@@ -761,7 +760,6 @@ def _present_graph(dot_filename, filename=None):
                   % (dot.returncode, ' '.join(cmd)))
         else:
             print("Image generated as %s" % filename)
-        f.close()
     else:
         if not filename:
             print("Graph viewer (xdot) and image renderer (dot) not found,"

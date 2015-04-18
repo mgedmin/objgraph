@@ -306,24 +306,20 @@ class StubSubprocess(object):
 
     should_fail = False
 
-    def Popen(self, args, stdout=None, close_fds=False):
-        return StubPopen(args, stdout=stdout, close_fds=close_fds,
+    def Popen(self, args, close_fds=False):
+        return StubPopen(args, close_fds=close_fds,
                          should_fail=self.should_fail)
 
 
 class StubPopen(object):
 
-    def __init__(self, args, stdout=None, close_fds=False,
-                 should_fail=False):
+    def __init__(self, args, close_fds=False, should_fail=False):
         print("subprocess.Popen(%s)" % repr(args))
         self.args = args
-        self.stdout = stdout
         self.should_fail = should_fail
 
     def wait(self):
         self.returncode = int(self.should_fail)
-        if self.stdout:
-            self.stdout.write(b'stdout of ' + self.args[0].encode())
 
 
 class PresentGraphTest(CaptureMixin, TemporaryDirectoryMixin,
@@ -352,18 +348,17 @@ class PresentGraphTest(CaptureMixin, TemporaryDirectoryMixin,
         self.programsInPath(['dot'])
         objgraph._present_graph('foo.dot', 'bar.png')
         self.assertOutput("""
-            subprocess.Popen(['dot', '-Tpng', 'foo.dot'])
+            subprocess.Popen(['dot', '-Tpng', '-obar.png', 'foo.dot'])
             Image generated as bar.png
         """)
-        self.assertTrue(os.path.exists('bar.png'))
 
     def test_present_png_failure(self):
         self.programsInPath(['dot'])
         objgraph.subprocess.should_fail = True
-        objgraph._present_graph('foo.dot', 'bar.png')
+        objgraph._present_graph('f.dot', 'b.png')
         self.assertOutput("""
-            subprocess.Popen(['dot', '-Tpng', 'foo.dot'])
-            dot failed (exit code 1) while executing "dot -Tpng foo.dot"
+            subprocess.Popen(['dot', '-Tpng', '-ob.png', 'f.dot'])
+            dot failed (exit code 1) while executing "dot -Tpng -ob.png f.dot"
         """)
 
     def test_present_png_no_dot(self):
@@ -387,10 +382,9 @@ class PresentGraphTest(CaptureMixin, TemporaryDirectoryMixin,
         objgraph._present_graph('foo.dot')
         self.assertOutput("""
             Graph viewer (xdot) not found, generating a png instead
-            subprocess.Popen(['dot', '-Tpng', 'foo.dot'])
+            subprocess.Popen(['dot', '-Tpng', '-ofoo.png', 'foo.dot'])
             Image generated as foo.png
         """)
-        self.assertTrue(os.path.exists('foo.png'))
 
     def test_present_no_xdot_and_no_not(self):
         self.programsInPath([])
