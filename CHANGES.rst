@@ -3,7 +3,7 @@ Changes
 
 .. currentmodule:: objgraph
 
-2.0.0 (unreleased)
+2.0.0 (2015-04-18)
 ------------------
 
 - :func:`show_ref` and :func:`show_backref` now accept a file-like object as an

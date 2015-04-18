@@ -3,8 +3,7 @@ Tools for drawing Python object reference graphs with graphviz.
 
 You can find documentation online at http://mg.pov.lt/objgraph/
 
-Copyright (c) 2008-2014 Marius Gedminas <marius@pov.lt>
-Copyright (c) 2010 Stefano Rivera <stefano@rivera.za.net>
+Copyright (c) 2008-2015 Marius Gedminas <marius@pov.lt> and contributors
 
 Released under the MIT licence.
 """
@@ -49,8 +48,8 @@ except ImportError:
 __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008-2015 Marius Gedminas and contributors"
 __license__ = "MIT"
-__version__ = "2.0.0.dev0"
-__date__ = "2014-05-15"
+__version__ = "2.0.0"
+__date__ = "2015-04-14"
 
 
 try:
