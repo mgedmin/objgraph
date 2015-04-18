@@ -3,9 +3,18 @@ Python Object Graphs
 
 .. image:: https://travis-ci.org/mgedmin/objgraph.svg?branch=master
    :target: https://travis-ci.org/mgedmin/objgraph
+   :alt: Build Status
 
 .. image:: https://coveralls.io/repos/mgedmin/objgraph/badge.svg?branch=master
    :target: https://coveralls.io/r/mgedmin/objgraph?branch=master
+   :alt: Test Coverage
+
+.. image:: https://pypip.in/version/objgraph/badge.svg?style=flat
+   :target: https://pypi.python.org/pypi/objgraph
+
+.. image:: https://readthedocs.org/projects/objgraph/badge/?version=latest
+   :target: https://readthedocs.org/projects/objgraph/?badge=latest
+   :alt: Documentation Status
 
 
 ``objgraph`` is a module that lets you visually explore Python object graphs.
