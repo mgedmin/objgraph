@@ -67,7 +67,40 @@ class GarbageCollectedMixin(object):
     """A mixin for test cases that garbage collects before running."""
 
     def setUp(self):
+        super(GarbageCollectedMixin, self).setUp()
         gc.collect()
+
+
+class CaptureMixin(object):
+    """A mixing that captures sys.stdout"""
+
+    def setUp(self):
+        super(CaptureMixin, self).setUp()
+        self.real_stdout = sys.stdout
+        sys.stdout = StringIO()
+
+    def tearDown(self):
+        sys.stdout = self.real_stdout
+        super(CaptureMixin, self).tearDown()
+
+    def assertOutput(self, output):
+        self.assertEqual(sys.stdout.getvalue(),
+                         textwrap.dedent(output.lstrip('\n')))
+
+
+class TemporaryDirectoryMixin(object):
+    """A mixin that sets up a temporary directory"""
+
+    def setUp(self):
+        super(TemporaryDirectoryMixin, self).setUp()
+        self.prevdir = os.getcwd()
+        self.tmpdir = tempfile.mkdtemp(prefix='test-objgraph-')
+        os.chdir(self.tmpdir)
+
+    def tearDown(self):
+        os.chdir(self.prevdir)
+        shutil.rmtree(self.tmpdir)
+        super(TemporaryDirectoryMixin, self).tearDown()
 
 
 # Unit tests
@@ -267,6 +300,103 @@ class StringRepresentationTest(GarbageCollectedMixin,
         self.assertRegex(
             objgraph._edge_label(d, 1, shortnames=False),
             ' [label="mymodule\.MyClass\\n<mymodule\.MyClass object at .*"]')
+
+
+class StubSubprocess(object):
+
+    should_fail = False
+
+    def Popen(self, args, stdout=None, close_fds=False):
+        return StubPopen(args, stdout=stdout, close_fds=close_fds,
+                         should_fail=self.should_fail)
+
+
+class StubPopen(object):
+
+    def __init__(self, args, stdout=None, close_fds=False,
+                 should_fail=False):
+        print("subprocess.Popen(%s)" % repr(args))
+        self.args = args
+        self.stdout = stdout
+        self.should_fail = should_fail
+
+    def wait(self):
+        self.returncode = int(self.should_fail)
+        if self.stdout:
+            self.stdout.write(b'stdout of ' + self.args[0].encode())
+
+
+class PresentGraphTest(CaptureMixin, TemporaryDirectoryMixin,
+                       unittest.TestCase):
+
+    def setUp(self):
+        super(PresentGraphTest, self).setUp()
+        self.orig_subprocess = objgraph.subprocess
+        self.orig_program_in_path = objgraph._program_in_path
+        objgraph.subprocess = StubSubprocess()
+        self.programsInPath([])
+
+    def tearDown(self):
+        objgraph._program_in_path = self.orig_program_in_path
+        objgraph.subprocess = self.orig_subprocess
+        super(PresentGraphTest, self).tearDown()
+
+    def programsInPath(self, programs):
+        objgraph._program_in_path = set(programs).__contains__
+
+    def test_present_dot(self):
+        objgraph._present_graph('foo.dot', 'foo.dot')
+        self.assertOutput("")
+
+    def test_present_png(self):
+        self.programsInPath(['dot'])
+        objgraph._present_graph('foo.dot', 'bar.png')
+        self.assertOutput("""
+            subprocess.Popen(['dot', '-Tpng', 'foo.dot'])
+            Image generated as bar.png
+        """)
+        self.assertTrue(os.path.exists('bar.png'))
+
+    def test_present_png_failure(self):
+        self.programsInPath(['dot'])
+        objgraph.subprocess.should_fail = True
+        objgraph._present_graph('foo.dot', 'bar.png')
+        self.assertOutput("""
+            subprocess.Popen(['dot', '-Tpng', 'foo.dot'])
+            dot failed (exit code 1) while executing "dot -Tpng foo.dot"
+        """)
+
+    def test_present_png_no_dot(self):
+        self.programsInPath([])
+        objgraph._present_graph('foo.dot', 'bar.png')
+        self.assertOutput("""
+            Image renderer (dot) not found, not doing anything else
+        """)
+        self.assertFalse(os.path.exists('bar.png'))
+
+    def test_present_xdot(self):
+        self.programsInPath(['xdot'])
+        objgraph._present_graph('foo.dot')
+        self.assertOutput("""
+            Spawning graph viewer (xdot)
+            subprocess.Popen(['xdot', 'foo.dot'])
+        """)
+
+    def test_present_no_xdot(self):
+        self.programsInPath(['dot'])
+        objgraph._present_graph('foo.dot')
+        self.assertOutput("""
+            Graph viewer (xdot) not found, generating a png instead
+            subprocess.Popen(['dot', '-Tpng', 'foo.dot'])
+            Image generated as foo.png
+        """)
+        self.assertTrue(os.path.exists('foo.png'))
+
+    def test_present_no_xdot_and_no_not(self):
+        self.programsInPath([])
+        objgraph._present_graph('foo.dot')
+        self.assertOutput("Graph viewer (xdot) and image renderer (dot)"
+                          " not found, not doing anything else\n")
 
 
 # Doctests

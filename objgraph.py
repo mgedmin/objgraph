@@ -727,8 +727,21 @@ def _show_graph(objs, edge_func, swap_source_target,
     # the file.
     f.close()
     print("Graph written to %s (%d nodes)" % (dot_filename, nodes))
-    if filename and filename.endswith('.dot'):
-        # nothing else to do, the user asked for a .dot file
+    _present_graph(dot_filename, filename)
+
+
+def _present_graph(dot_filename, filename=None):
+    """Present a .dot file to the user in the requested fashion.
+
+    If ``filename`` is provided, runs ``dot`` to convert the .dot file
+    into the desired format, determined by the filename extension.
+
+    If ``filename`` is not provided, tries to launch ``xdot``, a
+    graphical .dot file viewer.  If ``xdot`` is not present on the system,
+    converts the graph to a PNG.
+    """
+    if filename == dot_filename:
+        # nothing to do, the user asked for a .dot file and got it
         return
     if not filename and _program_in_path('xdot'):
         print("Spawning graph viewer (xdot)")
@@ -746,15 +759,15 @@ def _show_graph(objs, edge_func, swap_source_target,
             # XXX: shouldn't this go to stderr or a log?
             print('dot failed (exit code %d) while executing "%s"'
                   % (dot.returncode, ' '.join(cmd)))
+        else:
+            print("Image generated as %s" % filename)
         f.close()
-        print("Image generated as %s" % filename)
     else:
-        if filename:
+        if not filename:
             print("Graph viewer (xdot) and image renderer (dot) not found,"
                   " not doing anything else")
         else:
-            print("Unrecognized file type (%s), not doing anything else"
-                  % filename)
+            print("Image renderer (dot) not found, not doing anything else")
 
 
 def _obj_node_id(obj):
@@ -894,6 +907,7 @@ _is_identifier = re.compile('[a-zA-Z_][a-zA-Z_0-9]*$').match
 
 
 def _program_in_path(program):
+    # XXX: Consider using distutils.spawn.find_executable or shutil.which
     path = os.environ.get("PATH", os.defpath).split(os.pathsep)
     path = [os.path.join(dir, program) for dir in path]
     path = [True for file in path
