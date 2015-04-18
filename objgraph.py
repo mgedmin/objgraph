@@ -548,12 +548,12 @@ def is_proper_module(obj):
 
     That is, if ``obj`` is a module that is in ``sys.modules``.
 
-    >>> import imp
+    >>> import types
     >>> is_proper_module([])
     False
-    >>> is_proper_module(imp)
+    >>> is_proper_module(types)
     True
-    >>> is_proper_module(imp.new_module('foo'))
+    >>> is_proper_module(types.ModuleType('foo'))
     False
 
     .. versionadded:: 1.8
