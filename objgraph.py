@@ -48,8 +48,8 @@ except ImportError:
 __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008-2015 Marius Gedminas and contributors"
 __license__ = "MIT"
-__version__ = "2.0.0"
-__date__ = "2015-04-14"
+__version__ = "2.0.1.dev0"
+__date__ = "2015-04-18"
 
 
 try:
