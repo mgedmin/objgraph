@@ -10,8 +10,8 @@ Changes
 2.0.0 (2015-04-18)
 ------------------
 
-- :func:`show_ref` and :func:`show_backref` now accept a file-like object as an
-  alternative to a filename.
+- :func:`show_refs` and :func:`show_backrefs` now accept a file-like object
+  (via the new ``output`` argument) as an alternative to a filename.
 
 - Made internal helper methods private. This includes :func:`find_chain`,
   :func:`show_graph`, :func:`obj_node_id`, :func:`obj_label`, :func:`quote`,
