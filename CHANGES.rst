@@ -3,7 +3,7 @@ Changes
 
 .. currentmodule:: objgraph
 
-2.0.1 (unreleased)
+2.0.1 (2015-07-28)
 ------------------
 
 - Avoid creating reference cycles between the stack frame and the local
