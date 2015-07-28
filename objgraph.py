@@ -124,15 +124,18 @@ def typestats(objects=None, shortnames=True):
     """
     if objects is None:
         objects = gc.get_objects()
-    if shortnames:
-        typename = _short_typename
-    else:
-        typename = _long_typename
-    stats = {}
-    for o in objects:
-        n = typename(o)
-        stats[n] = stats.get(n, 0) + 1
-    return stats
+    try:
+        if shortnames:
+            typename = _short_typename
+        else:
+            typename = _long_typename
+        stats = {}
+        for o in objects:
+            n = typename(o)
+            stats[n] = stats.get(n, 0) + 1
+        return stats
+    finally:
+        del objects  # clear cyclic references to frame
 
 
 def most_common_types(limit=10, objects=None, shortnames=True):

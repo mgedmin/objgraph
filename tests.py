@@ -251,6 +251,15 @@ class TypestatsTest(GarbageCollectedMixin, unittest.TestCase):
         stats = objgraph.typestats(shortnames=False)
         self.assertEqual(1, stats['mymodule.MyClass'])
 
+    def test_no_new_reference_cycles(self):
+        # Similar to https://github.com/mgedmin/objgraph/pull/22 but for
+        # typestats()
+        gc.disable()
+        x = type('MyClass', (), {})()
+        self.assertEqual(len(gc.get_referrers(x)), 1)
+        objgraph.typestats()
+        self.assertEqual(len(gc.get_referrers(x)), 1)
+
 
 class ByTypeTest(GarbageCollectedMixin, unittest.TestCase):
     """Tests for the by_test function."""
