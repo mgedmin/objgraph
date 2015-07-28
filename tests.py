@@ -242,9 +242,25 @@ class TypestatsTest(GarbageCollectedMixin, unittest.TestCase):
 class ByTypeTest(GarbageCollectedMixin, unittest.TestCase):
     """Tests for the by_test function."""
 
+    def tearDown(self):
+        gc.enable()
+
     def test_long_type_names(self):
         x = type('MyClass', (), {'__module__': 'mymodule'})()
         self.assertEqual([x], objgraph.by_type('mymodule.MyClass'))
+
+    def test_new_garbage(self):
+        # Regression test for https://github.com/mgedmin/objgraph/pull/22
+        gc.disable()
+        x = type('MyClass', (), {})()
+        res = objgraph.by_type('MyClass')
+        self.assertEqual(res, [x])
+        # referrers we expect:
+        # 1. this stack frame
+        # 2. the `res` list
+        # referrers we don't want:
+        # the ``objects`` list in the now-dead stack frame of objgraph.by_type
+        self.assertEqual(len(gc.get_referrers(res[0])), 2)
 
 
 class StringRepresentationTest(GarbageCollectedMixin,
