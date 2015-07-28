@@ -6,6 +6,13 @@ Changes
 2.0.1 (unreleased)
 ------------------
 
+- Avoid creating reference cycles between the stack frame and the local
+  ``objects`` variable in :func:`by_type`, :func:`count`, and
+  :func:`typestats`.
+
+  Fixes `issue 22 <https://github.com/mgedmin/objgraph/pull/22>`_.  Contributed
+  by Erik Bray.
+
 
 2.0.0 (2015-04-18)
 ------------------
