@@ -70,6 +70,10 @@ class GarbageCollectedMixin(object):
         super(GarbageCollectedMixin, self).setUp()
         gc.collect()
 
+    def tearDown(self):
+        super(GarbageCollectedMixin, self).tearDown()
+        gc.enable()
+
 
 class CaptureMixin(object):
     """A mixing that captures sys.stdout"""
@@ -229,6 +233,15 @@ class CountTest(GarbageCollectedMixin, unittest.TestCase):
         self.assertEqual(2, objgraph.count('MyClass'))
         self.assertEqual(1, objgraph.count('mymodule.MyClass'))
 
+    def test_no_new_reference_cycles(self):
+        # Similar to https://github.com/mgedmin/objgraph/pull/22 but for
+        # count()
+        gc.disable()
+        x = type('MyClass', (), {})()
+        self.assertEqual(len(gc.get_referrers(x)), 1)
+        objgraph.count('MyClass')
+        self.assertEqual(len(gc.get_referrers(x)), 1)
+
 
 class TypestatsTest(GarbageCollectedMixin, unittest.TestCase):
     """Tests for the typestats function."""
@@ -241,9 +254,6 @@ class TypestatsTest(GarbageCollectedMixin, unittest.TestCase):
 
 class ByTypeTest(GarbageCollectedMixin, unittest.TestCase):
     """Tests for the by_test function."""
-
-    def tearDown(self):
-        gc.enable()
 
     def test_long_type_names(self):
         x = type('MyClass', (), {'__module__': 'mymodule'})()

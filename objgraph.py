@@ -89,10 +89,13 @@ def count(typename, objects=None):
     """
     if objects is None:
         objects = gc.get_objects()
-    if '.' in typename:
-        return sum(1 for o in objects if _long_typename(o) == typename)
-    else:
-        return sum(1 for o in objects if _short_typename(o) == typename)
+    try:
+        if '.' in typename:
+            return sum(1 for o in objects if _long_typename(o) == typename)
+        else:
+            return sum(1 for o in objects if _short_typename(o) == typename)
+    finally:
+        del objects  # clear cyclic references to frame
 
 
 def typestats(objects=None, shortnames=True):
