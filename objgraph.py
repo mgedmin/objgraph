@@ -280,9 +280,12 @@ def by_type(typename, objects=None):
     if objects is None:
         objects = gc.get_objects()
     if '.' in typename:
-        return [o for o in objects if _long_typename(o) == typename]
+        ret = [o for o in objects if _long_typename(o) == typename]
     else:
-        return [o for o in objects if _short_typename(o) == typename]
+        ret = [o for o in objects if _short_typename(o) == typename]
+
+    del objects
+    return ret
 
 
 def at(addr):
