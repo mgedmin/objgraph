@@ -256,7 +256,7 @@ def get_leaking_objects(objects=None):
         # this then is our set of objects without referrers
         return [i for i in objects if id(i) in ids]
     finally:
-        objects = i = None  # clear cyclic references to frame
+        del objects, i  # clear cyclic references to frame
 
 
 def by_type(typename, objects=None):
@@ -279,13 +279,13 @@ def by_type(typename, objects=None):
     """
     if objects is None:
         objects = gc.get_objects()
-    if '.' in typename:
-        ret = [o for o in objects if _long_typename(o) == typename]
-    else:
-        ret = [o for o in objects if _short_typename(o) == typename]
-
-    del objects
-    return ret
+    try:
+        if '.' in typename:
+            return [o for o in objects if _long_typename(o) == typename]
+        else:
+            return [o for o in objects if _short_typename(o) == typename]
+    finally:
+        del objects  # clear cyclic references to frame
 
 
 def at(addr):
