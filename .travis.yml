@@ -6,6 +6,7 @@ python:
     - 3.2
     - 3.3
     - 3.4
+    - 3.5
 install:
     - sudo apt-get install graphviz || sudo apt-get update && sudo apt-get install graphviz
     - pip install coverage coveralls flake8 -e .
