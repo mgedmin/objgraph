@@ -1,5 +1,5 @@
 language: python
-sudo: required
+sudo: false
 python:
     - 2.6
     - 2.7
@@ -7,8 +7,11 @@ python:
     - 3.3
     - 3.4
     - 3.5
+addons:
+  apt:
+    packages:
+      - graphviz
 install:
-    - sudo apt-get install graphviz || sudo apt-get update && sudo apt-get install graphviz
     - pip install coverage coveralls flake8 -e .
 before_script: 
     - make lint
