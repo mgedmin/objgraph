@@ -13,6 +13,7 @@ addons:
       - graphviz
 install:
     - pip install coverage coveralls flake8 -e .
+    - if [ $TRAVIS_PYTHON_VERSION = 3.2 ]; then pip install 'coverage<4.0'; fi
 before_script: 
     - make lint
 script:
