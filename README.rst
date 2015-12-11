@@ -5,12 +5,13 @@ Python Object Graphs
    :target: https://travis-ci.org/mgedmin/objgraph
    :alt: Build Status
 
+.. image:: https://ci.appveyor.com/api/projects/status/github/mgedmin/objgraph?branch=master&svg=true
+   :target: https://ci.appveyor.com/project/mgedmin/objgraph
+   :alt: Build Status (Windows)
+
 .. image:: https://coveralls.io/repos/mgedmin/objgraph/badge.svg?branch=master
    :target: https://coveralls.io/r/mgedmin/objgraph?branch=master
    :alt: Test Coverage
-
-.. image:: https://pypip.in/version/objgraph/badge.svg?style=flat
-   :target: https://pypi.python.org/pypi/objgraph
 
 .. image:: https://readthedocs.org/projects/objgraph/badge/?version=latest
    :target: https://readthedocs.org/projects/objgraph/?badge=latest
