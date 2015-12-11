@@ -17,7 +17,7 @@ install:
   - "set PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - python --version
   - pip install tox
-  - choco install graphviz
+  - choco install graphviz.portable
   - dot -V
 
 build: off
