@@ -169,7 +169,11 @@ def most_common_types(limit=10, objects=None, shortnames=True):
     return stats
 
 
-def show_most_common_types(limit=10, objects=None, shortnames=True):
+def show_most_common_types(
+        limit=10,
+        objects=None,
+        shortnames=True,
+        file=sys.stdout):
     """Print the table of types of most common instances.
 
     The caveats documented in :func:`typestats` apply.
@@ -195,10 +199,10 @@ def show_most_common_types(limit=10, objects=None, shortnames=True):
     stats = most_common_types(limit, objects, shortnames=shortnames)
     width = max(len(name) for name, count in stats)
     for name, count in stats:
-        print('%-*s %i' % (width, name, count))
+        file.write('%-*s %i\n' % (width, name, count))
 
 
-def show_growth(limit=10, peak_stats={}, shortnames=True):
+def show_growth(limit=10, peak_stats={}, shortnames=True, file=sys.stdout):
     """Show the increase in peak object counts since last call.
 
     Limits the output to ``limit`` largest deltas.  You may set ``limit`` to
@@ -239,7 +243,7 @@ def show_growth(limit=10, peak_stats={}, shortnames=True):
     if deltas:
         width = max(len(name) for name, count in deltas)
         for name, delta in deltas:
-            print('%-*s%9d %+9d' % (width, name, stats[name], delta))
+            file.write('%-*s%9d %+9d\n' % (width, name, stats[name], delta))
 
 
 def get_leaking_objects(objects=None):
