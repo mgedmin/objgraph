@@ -15,9 +15,9 @@ Statistics
 
 .. autofunction:: most_common_types([limit=10, objects, shortnames=True])
 
-.. autofunction:: show_most_common_types([limit=10, objects, shortnames=True])
+.. autofunction:: show_most_common_types([limit=10, objects, shortnames=True, file=sys.stdout])
 
-.. autofunction:: show_growth([limit=10, peak_stats={}, shortnames=True])
+.. autofunction:: show_growth([limit=10, peak_stats={}, shortnames=True, file=sys.stdout])
 
 
 Locating and Filtering Objects

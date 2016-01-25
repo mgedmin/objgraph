@@ -46,10 +46,10 @@ except ImportError:
 
 
 __author__ = "Marius Gedminas (marius@gedmin.as)"
-__copyright__ = "Copyright (c) 2008-2015 Marius Gedminas and contributors"
+__copyright__ = "Copyright (c) 2008-2016 Marius Gedminas and contributors"
 __license__ = "MIT"
-__version__ = "2.0.2.dev0"
-__date__ = "2015-07-28"
+__version__ = "2.1.0.dev0"
+__date__ = "2016-01-25"
 
 
 try:
@@ -195,6 +195,9 @@ def show_most_common_types(
     .. versionchanged:: 1.8
        New parameter: ``shortnames``.
 
+    .. versionchanged:: 2.1
+       New parameter: ``file``.
+
     """
     stats = most_common_types(limit, objects, shortnames=shortnames)
     width = max(len(name) for name, count in stats)
@@ -226,6 +229,9 @@ def show_growth(limit=10, peak_stats={}, shortnames=True, file=sys.stdout):
 
     .. versionchanged:: 1.8
        New parameter: ``shortnames``.
+
+    .. versionchanged:: 2.1
+       New parameter: ``file``.
 
     """
     gc.collect()

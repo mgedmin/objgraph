@@ -3,8 +3,14 @@ Changes
 
 .. currentmodule:: objgraph
 
-2.0.2 (unreleased)
+2.1.0 (unreleased)
 ------------------
+
+- :func:`show_most_common_types` and :func:`show_growth` now accept a ``file``
+  argument if you want to redirect the output elsewhere.
+
+  Fixes `issue 24 <https://github.com/mgedmin/objgraph/pull/24>`_.  Contributed
+  by "d-sun-d".
 
 
 2.0.1 (2015-07-28)
