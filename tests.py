@@ -9,7 +9,13 @@ import string
 import sys
 import tempfile
 import textwrap
+import types
 import unittest
+
+try:
+    from unittest import mock
+except ImportError:
+    import mock
 
 import objgraph
 
@@ -303,6 +309,49 @@ class StringRepresentationTest(GarbageCollectedMixin,
             def __repr__(self):
                 return 1/0
         self.assertEqual('(unrepresentable)', objgraph._safe_repr(MyClass()))
+
+    def test_short_repr_mocked_instance_method(self):
+        class MyClass(object):
+            def my_method(self):
+                pass
+
+        my_mock = mock.create_autospec(MyClass)
+        self.assertRegex(objgraph._short_repr(my_mock.my_method), '<MagicMock')
+
+    def test_short_repr_mocked_instance_method_bound(self):
+        class MyClass(object):
+            def my_method(self):
+                pass
+
+        mock_method = mock.Mock()
+
+        obj = MyClass()
+        with mock.patch.object(obj, 'my_method',
+                               types.MethodType(mock_method, obj)):
+            self.assertRegex(objgraph._short_repr(obj.my_method), '<Mock')
+
+    def test_short_repr_mocked_name(self):
+        self.assertRegex(objgraph._short_repr(mock.Mock(__name__=mock.Mock())),
+                         '<Mock')
+
+    def test_short_repr_magic_mocked_name(self):
+        self.assertRegex(objgraph._short_repr(mock.Mock(
+            __name__=mock.MagicMock())), '<Mock')
+
+    def test_short_repr_mock_with_spec(self):
+        self.assertRegex(objgraph._short_repr(mock.Mock(spec=list)), '<Mock')
+
+    def test_short_repr_mocked_instance_method_bound_with_mocked_name(self):
+        class MyClass(object):
+            def my_method(self):
+                pass
+
+        mock_method = mock.Mock(__name__=mock.MagicMock())
+
+        obj = MyClass()
+        with mock.patch.object(obj, 'my_method',
+                               types.MethodType(mock_method, obj)):
+            self.assertRegex(objgraph._short_repr(obj.my_method), '<Mock')
 
     @skipIf(sys.version_info[0] > 2, "Python 3 has no unbound methods")
     def test_short_repr_unbound_method(self):
