@@ -108,4 +108,5 @@ setup(name='objgraph',
           'Programming Language :: Python :: 3.5',
       ],
       py_modules=['objgraph'],
+      tests_require=['mock'],
       **setuptools_options)

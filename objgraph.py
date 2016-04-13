@@ -65,6 +65,17 @@ except AttributeError:
     iteritems = dict.items
 
 
+def _isinstance(object, classinfo):
+    """Return whether an object is an instance of a class or of a subclass
+    thereof.
+
+    Differs from the builtin isinstance() implementation in that it does not
+    depend on the ``__class__`` attribute which is proxied by
+    mock.Mock(spec=...).
+    """
+    return issubclass(type(object), classinfo)
+
+
 def count(typename, objects=None):
     """Count objects tracked by the garbage collector with a given class name.
 
@@ -638,7 +649,7 @@ def _show_graph(objs, edge_func, swap_source_target,
                 highlight=None, filename=None, extra_info=None,
                 refcounts=False, shortnames=True, output=None,
                 cull_func=None):
-    if not isinstance(objs, (list, tuple)):
+    if not _isinstance(objs, (list, tuple)):
         objs = [objs]
     if filename and output:
         raise ValueError('Cannot specify both output and filename.')
@@ -857,26 +868,31 @@ def _safe_repr(obj):
         return '(unrepresentable)'
 
 
-def _short_repr(obj):
-    if isinstance(obj, (type, types.ModuleType, types.BuiltinMethodType,
-                        types.BuiltinFunctionType)):
-        return obj.__name__
-    if isinstance(obj, types.MethodType):
-        try:
-            if obj.__self__ is not None:
-                return obj.__func__.__name__ + ' (bound)'
-            else:
-                return obj.__func__.__name__
-        except AttributeError:  # pragma: nocover
-            # Python < 2.6 compatibility
-            if obj.im_self is not None:
-                return obj.im_func.__name__ + ' (bound)'
-            else:
-                return obj.im_func.__name__
+def _name_or_repr(value):
+    try:
+        result = value.__name__
+    except AttributeError:
+        result = repr(value)[:40]
 
-    if isinstance(obj, types.FrameType):
+    if _isinstance(result, basestring):
+        return result
+    else:
+        return repr(value)[:40]
+
+
+def _short_repr(obj):
+    if _isinstance(obj, (type, types.ModuleType, types.BuiltinMethodType,
+                         types.BuiltinFunctionType)):
+        return _name_or_repr(obj)
+    if _isinstance(obj, types.MethodType):
+        name = _name_or_repr(obj.__func__)
+        if obj.__self__:
+            return name + ' (bound)'
+        else:
+            return name
+    if _isinstance(obj, types.FrameType):
         return '%s:%s' % (obj.f_code.co_filename, obj.f_lineno)
-    if isinstance(obj, (tuple, list, dict, set)):
+    if _isinstance(obj, (tuple, list, dict, set)):
         return '%d items' % len(obj)
     return repr(obj)[:40]
 
@@ -895,15 +911,15 @@ def _gradient(start_color, end_color, depth, max_depth):
 
 
 def _edge_label(source, target, shortnames=True):
-    if (isinstance(target, dict) and
+    if (_isinstance(target, dict) and
             target is getattr(source, '__dict__', None)):
         return ' [label="__dict__",weight=10]'
-    if isinstance(source, types.FrameType):
+    if _isinstance(source, types.FrameType):
         if target is source.f_locals:
             return ' [label="f_locals",weight=10]'
         if target is source.f_globals:
             return ' [label="f_globals",weight=10]'
-    if isinstance(source, types.MethodType):
+    if _isinstance(source, types.MethodType):
         try:
             if target is source.__self__:
                 return ' [label="__self__",weight=10]'
@@ -915,14 +931,14 @@ def _edge_label(source, target, shortnames=True):
                 return ' [label="im_self",weight=10]'
             if target is source.im_func:
                 return ' [label="im_func",weight=10]'
-    if isinstance(source, types.FunctionType):
+    if _isinstance(source, types.FunctionType):
         for k in dir(source):
             if target is getattr(source, k):
                 return ' [label="%s",weight=10]' % _quote(k)
-    if isinstance(source, dict):
+    if _isinstance(source, dict):
         for k, v in iteritems(source):
             if v is target:
-                if isinstance(k, basestring) and _is_identifier(k):
+                if _isinstance(k, basestring) and _is_identifier(k):
                     return ' [label="%s",weight=2]' % _quote(k)
                 else:
                     if shortnames:
