@@ -3,7 +3,7 @@ Changes
 
 .. currentmodule:: objgraph
 
-2.1.0 (unreleased)
+3.0.0 (2016-04-13)
 ------------------
 
 - :func:`show_most_common_types` and :func:`show_growth` now accept a ``file``
@@ -17,6 +17,12 @@ Changes
 
   Contributed by Andrew Shannon Brown in `PR 26
   <https://github.com/mgedmin/objgraph/pull/26>`_.
+
+- Drop support for Python 2.4, 2.5, and 2.6.
+
+- Drop support for Python 3.1 and 3.2.
+
+- Add support for Python 3.5.
 
 
 2.0.1 (2015-07-28)
