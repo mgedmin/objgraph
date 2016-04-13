@@ -66,8 +66,7 @@ except AttributeError:
 
 
 def _isinstance(object, classinfo):
-    """Return whether an object is an instance of a class or of a subclass
-    thereof.
+    """Return whether an object is an instance of a class or its subclass.
 
     Differs from the builtin isinstance() implementation in that it does not
     depend on the ``__class__`` attribute which is proxied by
