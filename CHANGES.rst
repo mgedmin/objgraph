@@ -12,6 +12,12 @@ Changes
   Fixes `issue 24 <https://github.com/mgedmin/objgraph/pull/24>`_.  Contributed
   by "d-sun-d".
 
+- Don't trust ``__class__`` to be accurate and ``__name__`` to be a string.
+  Fixes errors in some convoluted corner cases when mocks are involved.
+
+  Contributed by Andrew Shannon Brown in `PR 26
+  <https://github.com/mgedmin/objgraph/pull/26>`_.
+
 
 2.0.1 (2015-07-28)
 ------------------
