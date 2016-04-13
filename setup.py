@@ -54,13 +54,6 @@ def get_description():
     readme = read('README.rst')
     changelog = read('CHANGES.rst')
     description = unsphinx(readme + '\n\n\n' + changelog)
-    if '--unicode-description' in sys.argv:
-        sys.argv.remove('--unicode-description')
-    else:
-        # can't use u'' literals, this is supposed to work on both Py2 and Py3
-        description = description.replace('Kristj%sn' % unichr(0xe1),
-                                          'Kristjan')
-        description = description.encode('ascii', 'replace').decode('ascii')
     return description
 
 
