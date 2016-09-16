@@ -488,7 +488,7 @@ class RandomOutputChecker(doctest.OutputChecker):
 
     def check_output(self, want, got, optionflags):
         if optionflags & RANDOM_OUTPUT:
-            return True
+            return got != ""
         return doctest.OutputChecker.check_output(self, want, got, optionflags)
 
 

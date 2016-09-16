@@ -6,6 +6,11 @@ Changes
 3.0.1 (unreleased)
 ------------------
 
+- The ``file`` argument of :func:`show_most_common_types` and
+  :func:`show_growth` now defaults to ``None`` instead of ``sys.stdout``.
+  ``None`` is interpreted to be the same as ``sys.stdout``, which means
+  the right stdout will be used if you change it at runtime (which happens,
+  in doctests).
 
 
 3.0.0 (2016-04-13)

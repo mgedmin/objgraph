@@ -49,7 +49,7 @@ __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008-2016 Marius Gedminas and contributors"
 __license__ = "MIT"
 __version__ = "3.0.1.dev0"
-__date__ = "2016-04-13"
+__date__ = "2016-09-16"
 
 
 try:
@@ -196,7 +196,7 @@ def show_most_common_types(
         limit=10,
         objects=None,
         shortnames=True,
-        file=sys.stdout):
+        file=None):
     """Print the table of types of most common instances.
 
     The caveats documented in :func:`typestats` apply.
@@ -218,17 +218,19 @@ def show_most_common_types(
     .. versionchanged:: 1.8
        New parameter: ``shortnames``.
 
-    .. versionchanged:: 2.1
+    .. versionchanged:: 3.0
        New parameter: ``file``.
 
     """
+    if file is None:
+        file = sys.stdout
     stats = most_common_types(limit, objects, shortnames=shortnames)
     width = max(len(name) for name, count in stats)
     for name, count in stats:
         file.write('%-*s %i\n' % (width, name, count))
 
 
-def show_growth(limit=10, peak_stats={}, shortnames=True, file=sys.stdout):
+def show_growth(limit=10, peak_stats={}, shortnames=True, file=None):
     """Show the increase in peak object counts since last call.
 
     Limits the output to ``limit`` largest deltas.  You may set ``limit`` to
@@ -270,6 +272,8 @@ def show_growth(limit=10, peak_stats={}, shortnames=True, file=sys.stdout):
     if limit:
         deltas = deltas[:limit]
     if deltas:
+        if file is None:
+            file = sys.stdout
         width = max(len(name) for name, count in deltas)
         for name, delta in deltas:
             file.write('%-*s%9d %+9d\n' % (width, name, stats[name], delta))
