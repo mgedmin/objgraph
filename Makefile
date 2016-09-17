@@ -131,7 +131,7 @@ release: releasechecklist config-imgdiff
 	@echo
 	@echo "then either revert or commit the new images and run"
 	@echo
-	@echo "  rm -rf dist && $(PYTHON) setup.py sdist && twine upload dist/* && $(VCS_TAG) `$(PYTHON) setup.py --version`"
+	@echo "  rm -rf dist && $(PYTHON) setup.py sdist bdist_wheel && twine upload dist/* && $(VCS_TAG) `$(PYTHON) setup.py --version`"
 	@echo "  make publish-docs"
 	@echo
 	@echo "Please increment the version number in $(FILE_WITH_VERSION)"

@@ -3,7 +3,7 @@ Changes
 
 .. currentmodule:: objgraph
 
-3.0.1 (unreleased)
+3.0.1 (2016-09-17)
 ------------------
 
 - The ``file`` argument of :func:`show_most_common_types` and

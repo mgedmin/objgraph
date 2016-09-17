@@ -10,3 +10,6 @@ include docs/_static/*.css
 include .gitignore
 include .gitattributes
 include *.yml
+
+# added by check_manifest.py
+include *.txt
