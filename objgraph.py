@@ -483,11 +483,11 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     # graph with useless clutter.  That's why we're specifying
     # cull_func here, but not in show_graph().
     return _show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
-                filter=filter, too_many=too_many, highlight=highlight,
-                edge_func=gc.get_referrers, swap_source_target=False,
-                filename=filename, output=output, extra_info=extra_info,
-                refcounts=refcounts, shortnames=shortnames,
-                cull_func=is_proper_module)
+                       filter=filter, too_many=too_many, highlight=highlight,
+                       edge_func=gc.get_referrers, swap_source_target=False,
+                       filename=filename, output=output, extra_info=extra_info,
+                       refcounts=refcounts, shortnames=shortnames,
+                       cull_func=is_proper_module)
 
 
 def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
@@ -551,10 +551,11 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
        New parameter: ``output``.
     """
     return _show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
-                filter=filter, too_many=too_many, highlight=highlight,
-                edge_func=gc.get_referents, swap_source_target=True,
-                filename=filename, extra_info=extra_info, refcounts=refcounts,
-                shortnames=shortnames, output=output)
+                       filter=filter, too_many=too_many, highlight=highlight,
+                       edge_func=gc.get_referents, swap_source_target=True,
+                       filename=filename, extra_info=extra_info,
+                       refcounts=refcounts, shortnames=shortnames,
+                       output=output)
 
 
 def show_chain(*chains, **kw):
@@ -794,8 +795,8 @@ def _show_graph(objs, edge_func, swap_source_target,
     if is_interactive:
         return graphviz.Source(f.getvalue())
     else:
-        # The file should only be closed if this function was in charge of opening
-        # the file.
+        # The file should only be closed if this function was in charge of
+        # opening the file.
         f.close()
         print("Graph written to %s (%d nodes)" % (dot_filename, nodes))
         _present_graph(dot_filename, filename)
