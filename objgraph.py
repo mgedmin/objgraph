@@ -39,6 +39,12 @@ import sys
 import itertools
 
 try:
+    # Python 2.x compatibility
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
+try:
     from types import InstanceType
 except ImportError:
     # Python 3.x compatibility
@@ -63,6 +69,14 @@ try:
 except AttributeError:
     # Python 3.x compatibility
     iteritems = dict.items
+
+IS_INTERACTIVE = False
+try:
+    import graphviz
+    if get_ipython().__class__.__name__ != 'TerminalInteractiveShell':
+        IS_INTERACTIVE = True
+except (NameError, ImportError):
+    pass
 
 
 def _isinstance(object, classinfo):
@@ -468,12 +482,12 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     # module because you'll end up in sys.modules and explode the
     # graph with useless clutter.  That's why we're specifying
     # cull_func here, but not in show_graph().
-    _show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
-                filter=filter, too_many=too_many, highlight=highlight,
-                edge_func=gc.get_referrers, swap_source_target=False,
-                filename=filename, output=output, extra_info=extra_info,
-                refcounts=refcounts, shortnames=shortnames,
-                cull_func=is_proper_module)
+    return _show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
+                       filter=filter, too_many=too_many, highlight=highlight,
+                       edge_func=gc.get_referrers, swap_source_target=False,
+                       filename=filename, output=output, extra_info=extra_info,
+                       refcounts=refcounts, shortnames=shortnames,
+                       cull_func=is_proper_module)
 
 
 def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
@@ -536,11 +550,12 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     .. versionchanged:: 2.0
        New parameter: ``output``.
     """
-    _show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
-                filter=filter, too_many=too_many, highlight=highlight,
-                edge_func=gc.get_referents, swap_source_target=True,
-                filename=filename, extra_info=extra_info, refcounts=refcounts,
-                shortnames=shortnames, output=output)
+    return _show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
+                       filter=filter, too_many=too_many, highlight=highlight,
+                       edge_func=gc.get_referents, swap_source_target=True,
+                       filename=filename, extra_info=extra_info,
+                       refcounts=refcounts, shortnames=shortnames,
+                       output=output)
 
 
 def show_chain(*chains, **kw):
@@ -654,6 +669,8 @@ def _show_graph(objs, edge_func, swap_source_target,
                 cull_func=None):
     if not _isinstance(objs, (list, tuple)):
         objs = [objs]
+
+    is_interactive = False
     if filename and output:
         raise ValueError('Cannot specify both output and filename.')
     elif output:
@@ -661,6 +678,9 @@ def _show_graph(objs, edge_func, swap_source_target,
     elif filename and filename.endswith('.dot'):
         f = codecs.open(filename, 'w', encoding='utf-8')
         dot_filename = filename
+    elif IS_INTERACTIVE:
+        is_interactive = True
+        f = StringIO()
     else:
         fd, dot_filename = tempfile.mkstemp(prefix='objgraph-',
                                             suffix='.dot', text=True)
@@ -767,13 +787,18 @@ def _show_graph(objs, edge_func, swap_source_target,
             f.write('  too_many_%s[fontcolor=white];\n'
                     % (_obj_node_id(target)))
     f.write("}\n")
+
     if output:
         return
-    # The file should only be closed if this function was in charge of opening
-    # the file.
-    f.close()
-    print("Graph written to %s (%d nodes)" % (dot_filename, nodes))
-    _present_graph(dot_filename, filename)
+
+    if is_interactive:
+        return graphviz.Source(f.getvalue())
+    else:
+        # The file should only be closed if this function was in charge of
+        # opening the file.
+        f.close()
+        print("Graph written to %s (%d nodes)" % (dot_filename, nodes))
+        _present_graph(dot_filename, filename)
 
 
 def _present_graph(dot_filename, filename=None):
