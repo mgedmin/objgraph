@@ -219,6 +219,14 @@ class ShowGraphTest(unittest.TestCase):
                                 label_a=label_a,
                                 label_b=label_b))
 
+    @mock.patch('objgraph.IS_INTERACTIVE', True)
+    @mock.patch('objgraph.graphviz', create=True)
+    def test_ipython(self, mock_graphviz):
+        mock_graphviz.Source = lambda x: x
+        res = objgraph._show_graph([TestObject.get("A")], edge_function(),
+                                   False)
+        self.assertTrue(res.startswith('digraph'))
+
 
 class FindChainTest(GarbageCollectedMixin, unittest.TestCase):
     """Tests for the find_chain function."""

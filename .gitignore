@@ -11,3 +11,4 @@ __pycache__/
 .tox/
 .toxbox/
 *.py[co]
+.cache
