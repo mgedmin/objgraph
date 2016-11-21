@@ -71,7 +71,7 @@ except AttributeError:
     iteritems = dict.items
 
 IS_INTERACTIVE = False
-try: # pragma: nocover
+try:  # pragma: nocover
     import graphviz
     if get_ipython().__class__.__name__ != 'TerminalInteractiveShell':
         IS_INTERACTIVE = True
