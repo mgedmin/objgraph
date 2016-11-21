@@ -70,13 +70,13 @@ except AttributeError:
     # Python 3.x compatibility
     iteritems = dict.items
 
+IS_INTERACTIVE = False
 try:
-    __IPYTHON__
     import graphviz
+    if get_ipython().__class__.__name__ != 'TerminalInteractiveShell':
+        IS_INTERACTIVE = True
 except (NameError, ImportError):
-    IS_INTERACTIVE = False
-else:
-    IS_INTERACTIVE = True
+    pass
 
 
 def _isinstance(object, classinfo):
