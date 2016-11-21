@@ -678,19 +678,18 @@ def _show_graph(objs, edge_func, swap_source_target,
     elif filename and filename.endswith('.dot'):
         f = codecs.open(filename, 'w', encoding='utf-8')
         dot_filename = filename
+    elif IS_INTERACTIVE:
+        is_interactive = True
+        f = StringIO()
     else:
-        if IS_INTERACTIVE:
-            is_interactive = True
-            f = StringIO()
-        else:
-            fd, dot_filename = tempfile.mkstemp(prefix='objgraph-',
-                                                suffix='.dot', text=True)
-            f = os.fdopen(fd, "w")
-            if getattr(f, 'encoding', None):
-                # Python 3 will wrap the file in the user's preferred encoding
-                # Re-wrap it for utf-8
-                import io
-                f = io.TextIOWrapper(f.detach(), 'utf-8')
+        fd, dot_filename = tempfile.mkstemp(prefix='objgraph-',
+                                            suffix='.dot', text=True)
+        f = os.fdopen(fd, "w")
+        if getattr(f, 'encoding', None):
+            # Python 3 will wrap the file in the user's preferred encoding
+            # Re-wrap it for utf-8
+            import io
+            f = io.TextIOWrapper(f.detach(), 'utf-8')
     f.write('digraph ObjectGraph {\n'
             '  node[shape=box, style=filled, fillcolor=white];\n')
     queue = []
