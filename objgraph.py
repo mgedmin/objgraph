@@ -54,8 +54,8 @@ except ImportError:
 __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008-2016 Marius Gedminas and contributors"
 __license__ = "MIT"
-__version__ = "3.0.2.dev0"
-__date__ = "2016-09-17"
+__version__ = "3.1.0.dev0"
+__date__ = "2016-11-21"
 
 
 try:
@@ -429,8 +429,9 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     file, whose extension indicates the desired output format; note
     that output to a specific format is entirely handled by GraphViz:
     if the desired format is not supported, you just get the .dot
-    file.  If ``filename`` and ``output`` is not specified, ``show_backrefs``
-    will try to produce a .dot file and spawn a viewer (xdot).  If xdot is
+    file.  If ``filename`` and ``output`` are not specified, ``show_backrefs``
+    will try to display the graph inline (if you're using IPython), otherwise
+    it'll try to produce a .dot file and spawn a viewer (xdot).  If xdot is
     not available, ``show_backrefs`` will convert the .dot file to a
     .png and print its name.
 
@@ -506,6 +507,7 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     that output to a specific format is entirely handled by GraphViz:
     if the desired format is not supported, you just get the .dot
     file.  If ``filename`` and ``output`` is not specified, ``show_refs`` will
+    try to display the graph inline (if you're using IPython), otherwise it'll
     try to produce a .dot file and spawn a viewer (xdot).  If xdot is
     not available, ``show_refs`` will convert the .dot file to a
     .png and print its name.

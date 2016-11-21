@@ -3,10 +3,11 @@ Changes
 
 .. currentmodule:: objgraph
 
-3.0.2 (unreleased)
+3.1.0 (unreleased)
 ------------------
 
-- No changes yet.
+- Support displaying graphs inline in IPython (`issue 28
+  <https://github.com/mgedmin/objgraph/pull/28>`).
 
 
 3.0.1 (2016-09-17)
