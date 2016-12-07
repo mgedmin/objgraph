@@ -31,7 +31,7 @@ def unsphinx(text):
 
 
 def get_version():
-    r = re.compile('^__version__ = "(.+)"$')
+    r = re.compile('''^__version__ = ["'](.+)["']$''')
     for line in read('objgraph.py').splitlines():
         m = r.match(line)
         if m:

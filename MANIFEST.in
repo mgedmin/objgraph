@@ -13,3 +13,6 @@ include *.yml
 
 # added by check_manifest.py
 include *.txt
+
+# added by check_manifest.py
+include LICENSE

@@ -3,7 +3,7 @@ Changes
 
 .. currentmodule:: objgraph
 
-3.1.0 (unreleased)
+3.1.0 (2016-12-07)
 ------------------
 
 - Support displaying graphs inline in IPython/Jupyter notebooks (`issue 28
