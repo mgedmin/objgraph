@@ -9,8 +9,6 @@ Changes
 - Support displaying graphs inline in IPython/Jupyter notebooks (`issue 28
   <https://github.com/mgedmin/objgraph/pull/28>`).
 
-  To enable it you'll need to ``pip install graphviz``.
-
 
 3.0.1 (2016-09-17)
 ------------------

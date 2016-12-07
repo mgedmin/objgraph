@@ -6,15 +6,7 @@ import re
 import sys
 import unittest
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
-    setuptools_options = {}
-else:
-    setuptools_options = dict(
-        test_suite='tests.test_suite',
-    )
+from setuptools import setup
 
 try:
     unichr
@@ -96,5 +88,8 @@ setup(name='objgraph',
           'Programming Language :: Python :: 3.5',
       ],
       py_modules=['objgraph'],
+      install_requires=[
+          'graphviz',  # just for ipython support currently
+      ],
       tests_require=['mock'],
-      **setuptools_options)
+      test_suite='tests.test_suite')
