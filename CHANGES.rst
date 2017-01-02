@@ -6,7 +6,7 @@ Changes
 3.1.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add support for Python 3.6.
 
 
 3.1.0 (2016-12-07)
