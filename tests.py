@@ -252,7 +252,6 @@ class CountTest(GarbageCollectedMixin, unittest.TestCase):
         # count()
         gc.disable()
         x = type('MyClass', (), {})()
-        locals()  # otherwise Python 3.7 optimizes the stack frame away
         self.assertEqual(len(gc.get_referrers(x)), 1)
         objgraph.count('MyClass')
         self.assertEqual(len(gc.get_referrers(x)), 1)
@@ -271,7 +270,6 @@ class TypestatsTest(GarbageCollectedMixin, unittest.TestCase):
         # typestats()
         gc.disable()
         x = type('MyClass', (), {})()
-        locals()  # otherwise Python 3.7 optimizes the stack frame away
         self.assertEqual(len(gc.get_referrers(x)), 1)
         objgraph.typestats()
         self.assertEqual(len(gc.get_referrers(x)), 1)
@@ -295,7 +293,6 @@ class ByTypeTest(GarbageCollectedMixin, unittest.TestCase):
         # 2. the `res` list
         # referrers we don't want:
         # the ``objects`` list in the now-dead stack frame of objgraph.by_type
-        locals()  # otherwise Python 3.7 optimizes the stack frame away
         self.assertEqual(len(gc.get_referrers(res[0])), 2)
 
 
