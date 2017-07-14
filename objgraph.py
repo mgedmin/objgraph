@@ -579,7 +579,7 @@ def show_chain(*chains, **kw):
     symmetrical.
 
     You can specify ``highlight``, ``extra_info``, ``refcounts``,
-    ``shortnames``,``filename`` or ``output`` arguments like for
+    ``shortnames``, ``filename`` or ``output`` arguments like for
     :func:`show_backrefs` or :func:`show_refs`.
 
     .. versionadded:: 1.5
