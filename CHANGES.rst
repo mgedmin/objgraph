@@ -8,6 +8,8 @@ Changes
 
 - Add support for Python 3.6.
 
+- Replace bare ``except:`` in ``safe_repr()`` with ``except Exception:``.
+
 
 3.1.0 (2016-12-07)
 ------------------

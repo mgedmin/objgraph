@@ -894,7 +894,7 @@ def _long_typename(obj):
 def _safe_repr(obj):
     try:
         return _short_repr(obj)
-    except:
+    except Exception:
         return '(unrepresentable)'
 
 
