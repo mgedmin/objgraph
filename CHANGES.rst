@@ -3,7 +3,7 @@ Changes
 
 .. currentmodule:: objgraph
 
-3.1.1 (unreleased)
+3.1.1 (2017-10-30)
 ------------------
 
 - Add support for Python 3.6.
@@ -150,7 +150,7 @@ Changes
 - New ``backrefs`` argument for :func:`show_chain`.
 
 - New function: :func:`get_leaking_objects`, based on `a blog post by
-  Kristján Valur
+  KristjÃ¡n Valur
   <http://blog.ccpgames.com/kristjan/2010/12/08/finding-c-reference-leaks-using-the-gc-module/>`_.
 
 - New ``objects`` argument for :func:`count`, :func:`typestats`,

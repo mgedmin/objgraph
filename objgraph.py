@@ -52,10 +52,10 @@ except ImportError:
 
 
 __author__ = "Marius Gedminas (marius@gedmin.as)"
-__copyright__ = "Copyright (c) 2008-2016 Marius Gedminas and contributors"
+__copyright__ = "Copyright (c) 2008-2017 Marius Gedminas and contributors"
 __license__ = "MIT"
-__version__ = '3.1.1.dev0'
-__date__ = "2016-11-21"
+__version__ = '3.1.1'
+__date__ = "2017-10-30"
 
 
 try:
