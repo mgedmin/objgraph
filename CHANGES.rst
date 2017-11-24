@@ -156,8 +156,8 @@ Changes
 - New ``backrefs`` argument for :func:`show_chain`.
 
 - New function: :func:`get_leaking_objects`, based on `a blog post by
-  KristjÃ¡n Valur
-  <http://blog.ccpgames.com/kristjan/2010/12/08/finding-c-reference-leaks-using-the-gc-module/>`_.
+  Kristján Valur
+  <https://cosmicpercolator.com/2010/12/08/finding-c-reference-leaks-using-the-gc-module/>`_.
 
 - New ``objects`` argument for :func:`count`, :func:`typestats`,
   :func:`most_common_types`, :func:`show_most_common_types`, and
