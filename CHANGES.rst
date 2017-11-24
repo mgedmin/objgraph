@@ -100,7 +100,7 @@ Changes
 
 - Moved to GitHub.
 
-- Python 3.4 support (`LP#1270872 <http://launchpad.net/bugs/1270872>`_).
+- Python 3.4 support (`LP#1270872 <https://launchpad.net/bugs/1270872>`_).
 
 - New function: :func:`is_proper_module`.
 
@@ -142,7 +142,7 @@ Changes
 - Bugfix: setup.py was broken on Python 3.x
 
 - Bugfix: dot.exe/xdot.exe were not found on Windows (`LP#767239
-  <http://launchpad.net/bugs/767239>`_).
+  <https://launchpad.net/bugs/767239>`_).
 
 - Documentation updates: document the forgotten :func:`find_ref_chain`,
   update :func:`show_chain` prototype.
@@ -179,7 +179,7 @@ Changes
 ------------------
 
 - Python 3 support, thanks to Stefano Rivera (fixes `LP#687601
-  <http://launchpad.net/bugs/687601>`_).
+  <https://launchpad.net/bugs/687601>`_).
 
 - Removed weird weakref special-casing.
 
@@ -188,7 +188,7 @@ Changes
 ------------------
 
 - Avoid test failures in uncollectable-garbage.txt (fixes `LP#686731
-  <http://launchpad.net/bugs/686731>`_).
+  <https://launchpad.net/bugs/686731>`_).
 
 - Added HACKING.txt (later renamed to HACKING.rst).
 
@@ -197,7 +197,7 @@ Changes
 ------------------
 
 - Show frame objects as well (fixes `LP#361704
-  <http://launchpad.net/bugs/361704>`_).
+  <https://launchpad.net/bugs/361704>`_).
 
 - New functions: :func:`show_growth`, :func:`show_chain`.
 
@@ -215,7 +215,7 @@ Changes
 
 - Option to show reference counts in :func:`show_refs`/:func:`show_backrefs`.
 
-- Add `Sphinx <http://pypi.python.org/pypi/Sphinx>`_ documentation and a PyPI
+- Add `Sphinx <https://pypi.python.org/pypi/Sphinx>`_ documentation and a PyPI
   long description.
 
 
@@ -232,7 +232,7 @@ Changes
 ------------------
 
 - Rebuild an sdist with no missing files (fixes `LP#606604
-  <http://launchpad.net/bugs/606604>`_).
+  <https://launchpad.net/bugs/606604>`_).
 
 - Added MANIFEST.in and a Makefile to check that setup.py sdist generates
   source distributions with no files missing.
@@ -243,21 +243,21 @@ Changes
 
 - Highlight objects with a ``__del__`` method.
 
-- Fixes `LP#483411 <http://launchpad.net/bugs/483411>`_: suggest always passing
+- Fixes `LP#483411 <https://launchpad.net/bugs/483411>`_: suggest always passing
   ``[obj]`` to :func:`show_refs`, :func:`show_backrefs`, since obj might be a
   list/tuple.
 
-- Fixes `LP#514422 <http://launchpad.net/bugs/514422>`_: :func:`show_refs`,
+- Fixes `LP#514422 <https://launchpad.net/bugs/514422>`_: :func:`show_refs`,
   :func:`show_backrefs` don't create files in the current working directory any
   more.  Instead they accept a filename argument, which can be a .dot file or a
   .png file.  If None or not specified, those functions will try to spawn xdot
   as before.
 
 - New extra_info argument to graph-generating functions (patch by Thouis Jones,
-  `LP#558914 <http://launchpad.net/bugs/558914>`_).
+  `LP#558914 <https://launchpad.net/bugs/558914>`_).
 
 - setup.py should work with distutils now (`LP#604430
-  <http://launchpad.net/bugs/604430>`_, thanks to Randy Heydon).
+  <https://launchpad.net/bugs/604430>`_, thanks to Randy Heydon).
 
 
 1.2 (2009-03-25)
@@ -277,7 +277,7 @@ Changes
 
 - Object boxes are less crammed with useless information (such as IDs).
 
-- Spawns `xdot <http://pypi.python.org/pypi/xdot>`_ if it is available.
+- Spawns `xdot <https://pypi.python.org/pypi/xdot>`_ if it is available.
 
 
 1.0 (2008-06-14)

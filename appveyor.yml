@@ -2,7 +2,7 @@ version: build-{build}-{branch}
 
 environment:
   matrix:
-    # http://www.appveyor.com/docs/installed-software#python lists available
+    # https://www.appveyor.com/docs/installed-software#python lists available
     # versions
     - PYTHON: "C:\\Python27"
     - PYTHON: "C:\\Python33"

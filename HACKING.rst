@@ -15,7 +15,7 @@ The test suite is mostly smoke tests (i.e. crashes will be noticed, subtly
 wrong output will be missed).  I hope to improve that in the future, but don't
 hold your breath.  Most of the testing is done manually or semi-automatically,
 e.g. by running ``make images`` and eyeballing the results (`imgdiff
-<http://pypi.python.org/pypi/imgdiff>`_ is handy there).
+<https://pypi.python.org/pypi/imgdiff>`_ is handy there).
 
 
 Sending me patches
@@ -37,7 +37,7 @@ You can run the test suite for all supported Python versions with ::
 
   make test-all-pythons
 
-or with `detox <http://pypi.python.org/pypi/detox>`_ (which will be faster,
+or with `detox <https://pypi.python.org/pypi/detox>`_ (which will be faster,
 since it runs the tests in parallel).
 
 If a test fails, often the easiest way to debug is is to compare the output
@@ -62,18 +62,14 @@ Test coverage
 -------------
 
 As I mentioned, the tests are mostly smoke tests, and even then they're
-incomplete.  Install `coverage <http://pypi.python.org/pypi/coverage>`_
+incomplete.  Install `coverage <https://pypi.python.org/pypi/coverage>`_
 to see how incomplete they are with ::
 
   make coverage
 
-I use a `vim plugin <http://mg.pov.lt/vim/plugin/py-coverage-highlight.vim>`_
+I use a `vim plugin <https://github.com/mgedmin/coverage-highlight.vim/>`_
 to higlight lines not covered by tests while I edit ::
 
-  mkdir -p ~/.vim/plugin
-  cd ~/.vim/plugin
-  wget http://mg.pov.lt/vim/plugin/py-coverage-highlight.vim
-  cd ...
   make coverage
   vim objgraph.py
     :HighlightCoverage
@@ -97,7 +93,7 @@ Please ``git checkout --`` the png files that haven't changed significantly.
 (Many of the images include things like memory addresses which tend to change
 from run to run.)
 
-`imgdiff <http://pypi.python.org/pypi/imgdiff>`_ is useful for comparing the
+`imgdiff <https://pypi.python.org/pypi/imgdiff>`_ is useful for comparing the
 images with their older versions::
 
   git config diff.imgdiff.command 'f() { imgdiff $1 $2; }; f'
@@ -112,7 +108,7 @@ like::
 When you add a new doctest file, remember to include it in ``docs/index.txt``.
 
 When you add a new function, make sure it has a `PEP-257
-<http://www.python.org/dev/peps/pep-0257/>`_-compliant docstring and
+<https://www.python.org/dev/peps/pep-0257/>`_-compliant docstring and
 add the appropriate autodoc directive to ``objgraph.txt``.
 
 I insist on one departure from PEP-257: the closing ``"""`` should *not* be
@@ -142,7 +138,7 @@ this::
 
        """
 
-I find `restview <http://pypi.python.org/pypi/restview>`_ very handy for
+I find `restview <https://pypi.python.org/pypi/restview>`_ very handy for
 documentation writing: it lets me see how the text looks by pressing Ctrl-R
 in a browser window, without having to re-run any documentation building
 commands.  The downside is that ``restview`` doesn't support Sphinx extensions
@@ -177,7 +173,7 @@ Avoiding incomplete releases
 ----------------------------
 
 It is important to keep `MANIFEST.in
-<http://docs.python.org/distutils/sourcedist.html#manifest-template>`_ up to
+<https://docs.python.org/distutils/sourcedist.html#manifest-template>`_ up to
 date so that source tarballs generated with ``python setup.py sdist`` aren't
 missing any files, even if you don't have the right setuptools version control
 plugins installed.  You can run ::

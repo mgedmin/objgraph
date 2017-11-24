@@ -124,8 +124,8 @@ It is perhaps surprising to find :mod:`linecache` at the end of that chain
 :func:`computate_something` and its cache dictionary -- are in there.
 
 There are other tools, perhaps better suited for memory leak hunting:
-`heapy <http://pypi.python.org/pypi/guppy>`_,
-`Dozer <http://pypi.python.org/pypi/Dozer>`_.
+`heapy <https://pypi.python.org/pypi/guppy>`_,
+`Dozer <https://pypi.python.org/pypi/Dozer>`_.
 
 
 .. _leaking-objects:

@@ -20,10 +20,10 @@ Python Object Graphs
 
 ``objgraph`` is a module that lets you visually explore Python object graphs.
 
-You'll need `graphviz <http://www.graphviz.org/>`_ if you want to draw
+You'll need `graphviz <https://www.graphviz.org/>`_ if you want to draw
 the pretty graphs.
 
-I recommend `xdot <http://pypi.python.org/pypi/xdot>`_ for interactive use.
+I recommend `xdot <https://pypi.python.org/pypi/xdot>`_ for interactive use.
 ``pip install xdot`` should suffice; objgraph will automatically look for it
 in your ``PATH``.
 
@@ -32,9 +32,9 @@ Installation and Documentation
 ------------------------------
 
 ``pip install objgraph`` or `download it from PyPI
-<http://pypi.python.org/pypi/objgraph>`_.
+<https://pypi.python.org/pypi/objgraph>`_.
 
-Documentation lives at http://mg.pov.lt/objgraph.
+Documentation lives at https://mg.pov.lt/objgraph.
 
 
 .. _history:
@@ -47,11 +47,11 @@ was hunting for memory leaks in a Python program.  The whole story -- with
 illustrated examples -- is in this series of blog posts:
 
 * `Hunting memory leaks in Python
-  <http://mg.pov.lt/blog/hunting-python-memleaks.html>`_
+  <https://mg.pov.lt/blog/hunting-python-memleaks.html>`_
 * `Python object graphs
-  <http://mg.pov.lt/blog/python-object-graphs.html>`_
+  <https://mg.pov.lt/blog/python-object-graphs.html>`_
 * `Object graphs with graphviz
-  <http://mg.pov.lt/blog/object-graphs-with-graphviz.html>`_
+  <https://mg.pov.lt/blog/object-graphs-with-graphviz.html>`_
 
 
 .. _devel:
