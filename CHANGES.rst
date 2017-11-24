@@ -6,7 +6,7 @@ Changes
 3.1.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Correct UTF-8 mojibake in the changelog and switch all links to HTTPS.
 
 
 3.1.1 (2017-10-30)
