@@ -3,7 +3,7 @@ Changes
 
 .. currentmodule:: objgraph
 
-3.1.2 (unreleased)
+3.1.2 (2017-11-27)
 ------------------
 
 - Correct UTF-8 mojibake in the changelog and switch all links to HTTPS.
