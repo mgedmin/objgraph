@@ -135,7 +135,7 @@ def count(typename, objects=None):
         del objects  # clear cyclic references to frame
 
 
-def typestats(objects=None, shortnames=True):
+def typestats(objects=None, shortnames=True, filter=None):
     """Count the number of instances for each type tracked by the GC.
 
     Note that the GC does not track simple objects like int or str.
@@ -168,6 +168,8 @@ def typestats(objects=None, shortnames=True):
             typename = _long_typename
         stats = {}
         for o in objects:
+            if filter and not filter(o):
+                continue
             n = typename(o)
             stats[n] = stats.get(n, 0) + 1
         return stats
@@ -175,7 +177,7 @@ def typestats(objects=None, shortnames=True):
         del objects  # clear cyclic references to frame
 
 
-def most_common_types(limit=10, objects=None, shortnames=True):
+def most_common_types(limit=10, objects=None, shortnames=True, filter=None):
     """Count the names of types with the most instances.
 
     Returns a list of (type_name, count), sorted most-frequent-first.
@@ -199,7 +201,7 @@ def most_common_types(limit=10, objects=None, shortnames=True):
        New parameter: ``shortnames``.
 
     """
-    stats = sorted(typestats(objects, shortnames=shortnames).items(),
+    stats = sorted(typestats(objects, shortnames=shortnames, filter=filter).items(),
                    key=operator.itemgetter(1), reverse=True)
     if limit:
         stats = stats[:limit]
@@ -210,7 +212,8 @@ def show_most_common_types(
         limit=10,
         objects=None,
         shortnames=True,
-        file=None):
+        file=None,
+        filter=None):
     """Print the table of types of most common instances.
 
     The caveats documented in :func:`typestats` apply.
@@ -238,13 +241,13 @@ def show_most_common_types(
     """
     if file is None:
         file = sys.stdout
-    stats = most_common_types(limit, objects, shortnames=shortnames)
+    stats = most_common_types(limit, objects, shortnames=shortnames, filter=filter)
     width = max(len(name) for name, count in stats)
     for name, count in stats:
         file.write('%-*s %i\n' % (width, name, count))
 
 
-def show_growth(limit=10, peak_stats={}, shortnames=True, file=None):
+def show_growth(limit=10, peak_stats={}, shortnames=True, file=None, filter=None):
     """Show the increase in peak object counts since last call.
 
     Limits the output to ``limit`` largest deltas.  You may set ``limit`` to
@@ -274,7 +277,7 @@ def show_growth(limit=10, peak_stats={}, shortnames=True, file=None):
 
     """
     gc.collect()
-    stats = typestats(shortnames=shortnames)
+    stats = typestats(shortnames=shortnames, filter=filter)
     deltas = {}
     for name, count in iteritems(stats):
         old_count = peak_stats.get(name, 0)
@@ -920,6 +923,8 @@ def _short_repr(obj):
             return name + ' (bound)'
         else:
             return name
+    if _isinstance(obj, types.LambdaType):
+        return 'lambda: %s:%s' % (os.path.basename(obj.func_code.co_filename), obj.func_code.co_firstlineno)
     if _isinstance(obj, types.FrameType):
         return '%s:%s' % (obj.f_code.co_filename, obj.f_lineno)
     if _isinstance(obj, (tuple, list, dict, set)):
