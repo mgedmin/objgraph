@@ -280,8 +280,9 @@ class TypestatsTest(GarbageCollectedMixin, unittest.TestCase):
         objgraph.typestats()
         self.assertEqual(len(gc.get_referrers(x)), 1)
 
+
 class TypestatsFilterArguTest(GarbageCollectedMixin, unittest.TestCase):
-    """Tests for the typestats function, especially for augument 
+    """Tests for the typestats function, especially for augument
     ``fiter`` which is added at version 3.1.3"""
 
     def test_without_filter(self):
@@ -297,9 +298,11 @@ class TypestatsFilterArguTest(GarbageCollectedMixin, unittest.TestCase):
         x, y = MyClass(), MyClass()
         x.magic_attr = True
         y.magic_attr = False
-        stats = objgraph.typestats(shortnames=False, 
+        stats = objgraph.typestats(
+            shortnames=False,
             filter=lambda e: hasattr(e, 'magic_attr') and e.magic_attr)
         self.assertEqual(1, stats['mymodule.MyClass'])
+
 
 class ByTypeTest(GarbageCollectedMixin, unittest.TestCase):
     """Tests for the by_test function."""
@@ -420,10 +423,10 @@ class StringRepresentationTest(GarbageCollectedMixin,
             ' [label="mymodule\.MyClass\\n<mymodule\.MyClass object at .*"]')
 
     def test_short_repr_lambda(self):
-        f = lambda x: x
+        f = lambda x: x  # noqa
         lambda_lineno = sys._getframe().f_lineno - 1
         self.assertEqual('lambda: tests.py:%s' % lambda_lineno,
-                        objgraph._short_repr(f))
+                         objgraph._short_repr(f))
 
 
 class StubSubprocess(object):

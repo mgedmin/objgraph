@@ -161,7 +161,7 @@ def typestats(objects=None, shortnames=True, filter=None):
        New parameter: ``shortnames``.
 
     .. versionchanged:: 3.1.3
-       New parameter: ``filter``.    
+       New parameter: ``filter``.
 
     """
     if objects is None:
@@ -208,12 +208,12 @@ def most_common_types(limit=10, objects=None, shortnames=True, filter=None):
        New parameter: ``shortnames``.
 
     .. versionchanged:: 3.1.3
-       New parameter: ``filter``.    
+       New parameter: ``filter``.
 
     """
     stats = sorted(
-            typestats(objects, shortnames=shortnames, filter=filter).items(),
-            key=operator.itemgetter(1), reverse=True)
+        typestats(objects, shortnames=shortnames, filter=filter).items(),
+        key=operator.itemgetter(1), reverse=True)
     if limit:
         stats = stats[:limit]
     return stats
@@ -258,7 +258,7 @@ def show_most_common_types(
     if file is None:
         file = sys.stdout
     stats = most_common_types(limit, objects, shortnames=shortnames,
-                            filter=filter)
+                              filter=filter)
     width = max(len(name) for name, count in stats)
     for name, count in stats:
         file.write('%-*s %i\n' % (width, name, count))
@@ -948,7 +948,7 @@ def _short_repr(obj):
             return name
     if _isinstance(obj, types.LambdaType):
         return 'lambda: %s:%s' % (os.path.basename(obj.__code__.co_filename),
-                                obj.__code__.co_firstlineno)
+                                  obj.__code__.co_firstlineno)
     if _isinstance(obj, types.FrameType):
         return '%s:%s' % (obj.f_code.co_filename, obj.f_lineno)
     if _isinstance(obj, (tuple, list, dict, set)):
