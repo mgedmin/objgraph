@@ -947,8 +947,8 @@ def _short_repr(obj):
         else:
             return name
     if _isinstance(obj, types.LambdaType):
-        return 'lambda: %s:%s' % (os.path.basename(obj.func_code.co_filename),
-                                obj.func_code.co_firstlineno)
+        return 'lambda: %s:%s' % (os.path.basename(obj.__code__.co_filename),
+                                obj.__code__.co_firstlineno)
     if _isinstance(obj, types.FrameType):
         return '%s:%s' % (obj.f_code.co_filename, obj.f_lineno)
     if _isinstance(obj, (tuple, list, dict, set)):
