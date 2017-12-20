@@ -143,7 +143,9 @@ def typestats(objects=None, shortnames=True, filter=None):
     Note that classes with the same name but defined in different modules
     will be lumped together if ``shortnames`` is True.
 
-    Use ``filter`` (a predicate) to remove undesired objects.
+    If ``filter` is specified, it should be a function taking one argument and
+    returning a boolean. Objects for which ``filter(obj)`` returns ``False``
+    will be ignored.
 
     Example:
 
@@ -190,7 +192,9 @@ def most_common_types(limit=10, objects=None, shortnames=True, filter=None):
     Limits the return value to at most ``limit`` items.  You may set ``limit``
     to None to avoid that.
 
-    Use ``filter`` (a predicate) to remove undesired objects.
+    If ``filter` is specified, it should be a function taking one argument and
+    returning a boolean. Objects for which ``filter(obj)`` returns ``False``
+    will be ignored.
 
     The caveats documented in :func:`typestats` apply.
 
@@ -227,7 +231,9 @@ def show_most_common_types(
         filter=None):
     """Print the table of types of most common instances.
 
-    Use ``filter`` (a predicate) to remove undesired objects.
+    If ``filter` is specified, it should be a function taking one argument and
+    returning a boolean. Objects for which ``filter(obj)`` returns ``False``
+    will be ignored.
 
     The caveats documented in :func:`typestats` apply.
 
@@ -275,7 +281,9 @@ def show_growth(limit=10, peak_stats={}, shortnames=True, file=None,
     seen peak object counts.  Usually you don't need to pay attention to this
     argument.
 
-    Use ``filter`` (a predicate) to remove undesired objects from counting.
+    If ``filter` is specified, it should be a function taking one argument and
+    returning a boolean. Objects for which ``filter(obj)`` returns ``False``
+    will be ignored.
 
     The caveats documented in :func:`typestats` apply.
 

@@ -1,21 +1,15 @@
 Changes
 =======
 
-- New ``filter`` argument for :func:`typestats`, :func:`most_common_types`,
-  :func:`show_most_common_types`, :func:`show_growth`.
-
-- Show lambda function more human-readble with change to :func:`_short_repr`
-
-
-3.1.3 (unreleased)(2017-12-19)
-------------------
-
 .. currentmodule:: objgraph
 
 3.1.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- New ``filter`` argument for :func:`typestats`, :func:`most_common_types`,
+  :func:`show_most_common_types`, :func:`show_growth`.
+
+- Show lambda function more human-readble with change to :func:`_short_repr`
 
 
 3.1.2 (2017-11-27)

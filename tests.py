@@ -283,7 +283,7 @@ class TypestatsTest(GarbageCollectedMixin, unittest.TestCase):
 
 class TypestatsFilterArguTest(GarbageCollectedMixin, unittest.TestCase):
     """Tests for the typestats function, especially for augument
-    ``fiter`` which is added at version 3.1.3"""
+    ``filter`` which is added at version 3.1.3"""
 
     def test_without_filter(self):
         MyClass = type('MyClass', (), {'__module__': 'mymodule'})  # noqa
@@ -300,7 +300,7 @@ class TypestatsFilterArguTest(GarbageCollectedMixin, unittest.TestCase):
         y.magic_attr = False
         stats = objgraph.typestats(
             shortnames=False,
-            filter=lambda e: hasattr(e, 'magic_attr') and e.magic_attr)
+            filter=lambda e: isinstance(e, MyClass) and e.magic_attr)
         self.assertEqual(1, stats['mymodule.MyClass'])
 
 
