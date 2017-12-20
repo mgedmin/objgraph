@@ -135,13 +135,17 @@ def count(typename, objects=None):
         del objects  # clear cyclic references to frame
 
 
-def typestats(objects=None, shortnames=True):
+def typestats(objects=None, shortnames=True, filter=None):
     """Count the number of instances for each type tracked by the GC.
 
     Note that the GC does not track simple objects like int or str.
 
     Note that classes with the same name but defined in different modules
     will be lumped together if ``shortnames`` is True.
+
+    If ``filter` is specified, it should be a function taking one argument and
+    returning a boolean. Objects for which ``filter(obj)`` returns ``False``
+    will be ignored.
 
     Example:
 
@@ -158,6 +162,9 @@ def typestats(objects=None, shortnames=True):
     .. versionchanged:: 1.8
        New parameter: ``shortnames``.
 
+    .. versionchanged:: 3.1.3
+       New parameter: ``filter``.
+
     """
     if objects is None:
         objects = gc.get_objects()
@@ -168,6 +175,8 @@ def typestats(objects=None, shortnames=True):
             typename = _long_typename
         stats = {}
         for o in objects:
+            if filter and not filter(o):
+                continue
             n = typename(o)
             stats[n] = stats.get(n, 0) + 1
         return stats
@@ -175,13 +184,17 @@ def typestats(objects=None, shortnames=True):
         del objects  # clear cyclic references to frame
 
 
-def most_common_types(limit=10, objects=None, shortnames=True):
+def most_common_types(limit=10, objects=None, shortnames=True, filter=None):
     """Count the names of types with the most instances.
 
     Returns a list of (type_name, count), sorted most-frequent-first.
 
     Limits the return value to at most ``limit`` items.  You may set ``limit``
     to None to avoid that.
+
+    If ``filter` is specified, it should be a function taking one argument and
+    returning a boolean. Objects for which ``filter(obj)`` returns ``False``
+    will be ignored.
 
     The caveats documented in :func:`typestats` apply.
 
@@ -198,9 +211,13 @@ def most_common_types(limit=10, objects=None, shortnames=True):
     .. versionchanged:: 1.8
        New parameter: ``shortnames``.
 
+    .. versionchanged:: 3.1.3
+       New parameter: ``filter``.
+
     """
-    stats = sorted(typestats(objects, shortnames=shortnames).items(),
-                   key=operator.itemgetter(1), reverse=True)
+    stats = sorted(
+        typestats(objects, shortnames=shortnames, filter=filter).items(),
+        key=operator.itemgetter(1), reverse=True)
     if limit:
         stats = stats[:limit]
     return stats
@@ -210,8 +227,13 @@ def show_most_common_types(
         limit=10,
         objects=None,
         shortnames=True,
-        file=None):
+        file=None,
+        filter=None):
     """Print the table of types of most common instances.
+
+    If ``filter` is specified, it should be a function taking one argument and
+    returning a boolean. Objects for which ``filter(obj)`` returns ``False``
+    will be ignored.
 
     The caveats documented in :func:`typestats` apply.
 
@@ -235,16 +257,21 @@ def show_most_common_types(
     .. versionchanged:: 3.0
        New parameter: ``file``.
 
+    .. versionchanged:: 3.1.3
+       New parameter: ``filter``.
+
     """
     if file is None:
         file = sys.stdout
-    stats = most_common_types(limit, objects, shortnames=shortnames)
+    stats = most_common_types(limit, objects, shortnames=shortnames,
+                              filter=filter)
     width = max(len(name) for name, count in stats)
     for name, count in stats:
         file.write('%-*s %i\n' % (width, name, count))
 
 
-def show_growth(limit=10, peak_stats={}, shortnames=True, file=None):
+def show_growth(limit=10, peak_stats={}, shortnames=True, file=None,
+                filter=None):
     """Show the increase in peak object counts since last call.
 
     Limits the output to ``limit`` largest deltas.  You may set ``limit`` to
@@ -253,6 +280,10 @@ def show_growth(limit=10, peak_stats={}, shortnames=True, file=None):
     Uses and updates ``peak_stats``, a dictionary from type names to previously
     seen peak object counts.  Usually you don't need to pay attention to this
     argument.
+
+    If ``filter` is specified, it should be a function taking one argument and
+    returning a boolean. Objects for which ``filter(obj)`` returns ``False``
+    will be ignored.
 
     The caveats documented in :func:`typestats` apply.
 
@@ -272,9 +303,12 @@ def show_growth(limit=10, peak_stats={}, shortnames=True, file=None):
     .. versionchanged:: 2.1
        New parameter: ``file``.
 
+    .. versionchanged:: 3.1.3
+       New parameter: ``filter``.
+
     """
     gc.collect()
-    stats = typestats(shortnames=shortnames)
+    stats = typestats(shortnames=shortnames, filter=filter)
     deltas = {}
     for name, count in iteritems(stats):
         old_count = peak_stats.get(name, 0)
@@ -920,6 +954,9 @@ def _short_repr(obj):
             return name + ' (bound)'
         else:
             return name
+    if _isinstance(obj, types.LambdaType):
+        return 'lambda: %s:%s' % (os.path.basename(obj.__code__.co_filename),
+                                  obj.__code__.co_firstlineno)
     if _isinstance(obj, types.FrameType):
         return '%s:%s' % (obj.f_code.co_filename, obj.f_lineno)
     if _isinstance(obj, (tuple, list, dict, set)):
