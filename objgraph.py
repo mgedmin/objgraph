@@ -54,7 +54,7 @@ except ImportError:
 __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008-2017 Marius Gedminas and contributors"
 __license__ = "MIT"
-__version__ = '3.1.3.dev0'
+__version__ = '3.2.0'
 __date__ = "2017-10-30"
 
 

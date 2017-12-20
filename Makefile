@@ -87,7 +87,7 @@ define release_recipe =
 	@echo
 	@echo "about now.  Then sanity-check the images with"
 	@echo
-	@echo "  $(VCS_DIFF_IMAGES)"
+	@echo "  make imgdiff"
 	@echo
 	@echo "then either revert or commit the new images and run"
 	@echo

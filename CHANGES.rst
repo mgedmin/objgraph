@@ -3,13 +3,13 @@ Changes
 
 .. currentmodule:: objgraph
 
-3.1.3 (unreleased)
+3.2.0 (2017-12-20)
 ------------------
 
 - New ``filter`` argument for :func:`typestats`, :func:`most_common_types`,
   :func:`show_most_common_types`, :func:`show_growth`.
 
-- Show lambda function more human-readble with change to :func:`_short_repr`
+- Show lambda functions in a more human-friendly way.
 
 
 3.1.2 (2017-11-27)
