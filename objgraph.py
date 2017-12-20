@@ -954,7 +954,8 @@ def _short_repr(obj):
             return name + ' (bound)'
         else:
             return name
-    if _isinstance(obj, types.LambdaType):
+    # NB: types.LambdaType is an alias for types.FunctionType!
+    if _isinstance(obj, types.LambdaType) and obj.__name__ == '<lambda>':
         return 'lambda: %s:%s' % (os.path.basename(obj.__code__.co_filename),
                                   obj.__code__.co_firstlineno)
     if _isinstance(obj, types.FrameType):

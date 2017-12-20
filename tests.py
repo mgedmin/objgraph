@@ -428,6 +428,14 @@ class StringRepresentationTest(GarbageCollectedMixin,
         self.assertEqual('lambda: tests.py:%s' % lambda_lineno,
                          objgraph._short_repr(f))
 
+    def test_short_repr_function(self):
+        self.assertRegex(objgraph._short_repr(sample_func),
+                         'function sample_func at .*')
+
+
+def sample_func():
+    pass
+
 
 class StubSubprocess(object):
 
