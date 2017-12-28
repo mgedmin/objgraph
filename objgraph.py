@@ -270,9 +270,11 @@ def show_most_common_types(
         file.write('%-*s %i\n' % (width, name, count))
 
 
-def show_growth(limit=10, peak_stats={}, shortnames=True, file=None,
-                filter=None):
-    """Show the increase in peak object counts since last call.
+def growth(limit=10, peak_stats={}, shortnames=True, filter=None):
+    """Count the increase in peak object since last call.
+
+    Returns a list of (type_name, total_count, increase_delta),
+    descending order by increase_delta.
 
     Limits the output to ``limit`` largest deltas.  You may set ``limit`` to
     None to see all of them.
@@ -286,6 +288,40 @@ def show_growth(limit=10, peak_stats={}, shortnames=True, file=None,
     will be ignored.
 
     The caveats documented in :func:`typestats` apply.
+
+    Example:
+
+        >>> growth(2)
+        [(tuple, 12282, 10), (dict, 1922, 7)]
+
+    .. versionadded:: 3.2.1
+
+    """
+    gc.collect()
+    stats = typestats(shortnames=shortnames, filter=filter)
+    deltas = {}
+    for name, count in iteritems(stats):
+        old_count = peak_stats.get(name, 0)
+        if count > old_count:
+            deltas[name] = count - old_count
+            peak_stats[name] = count
+    deltas = sorted(deltas.items(), key=operator.itemgetter(1),
+                    reverse=True)
+    if limit:
+        deltas = deltas[:limit]
+
+    return [(name, stats[name], delta) for name, delta in deltas]
+
+
+def show_growth(limit=10, peak_stats=None, shortnames=True, file=None,
+                filter=None):
+    """Show the increase in peak object counts since last call.
+
+    if ``peak_stats`` is None, peak object counts will recorded in
+    func `growth`, and your can record the counts by yourself with set
+    ``peak_stats`` to a dictionary.
+
+    The caveats documented in :func:`growth` apply.
 
     Example:
 
@@ -307,24 +343,16 @@ def show_growth(limit=10, peak_stats={}, shortnames=True, file=None,
        New parameter: ``filter``.
 
     """
-    gc.collect()
-    stats = typestats(shortnames=shortnames, filter=filter)
-    deltas = {}
-    for name, count in iteritems(stats):
-        old_count = peak_stats.get(name, 0)
-        if count > old_count:
-            deltas[name] = count - old_count
-            peak_stats[name] = count
-    deltas = sorted(deltas.items(), key=operator.itemgetter(1),
-                    reverse=True)
-    if limit:
-        deltas = deltas[:limit]
-    if deltas:
+    if peak_stats is None:
+        result = growth(limit, shortnames=shortnames, filter=filter)
+    else:
+        result = growth(limit, peak_stats, shortnames, filter)
+    if result:
         if file is None:
             file = sys.stdout
-        width = max(len(name) for name, count in deltas)
-        for name, delta in deltas:
-            file.write('%-*s%9d %+9d\n' % (width, name, stats[name], delta))
+        width = max(len(name) for name, _, _ in result)
+        for name, count, delta in result:
+            file.write('%-*s%9d %+9d\n' % (width, name, count, delta))
 
 
 def get_leaking_objects(objects=None):
