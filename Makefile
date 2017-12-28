@@ -123,6 +123,7 @@ publish-docs:
 	@echo
 	@echo "If everything looks fine, please run"
 	@echo
-	@echo "  cd ~/www/ && git commit -m \"Released objgraph `$(PYTHON) setup.py --version`\""
+	@echo "  cd ~/www/ && git commit -m \"Released objgraph `$(PYTHON) setup.py --version`\" && git push"
+	@echo "  ssh fridge 'cd www && git pull'"
 	@echo
 
