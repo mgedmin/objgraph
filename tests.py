@@ -304,6 +304,18 @@ class TypestatsFilterArguTest(GarbageCollectedMixin, unittest.TestCase):
         self.assertEqual(1, stats['mymodule.MyClass'])
 
 
+class GrowthTest(GarbageCollectedMixin, unittest.TestCase):
+    """Tests for the growth function."""
+
+    def test_growth(self):
+        objgraph.growth(limit=None)
+        x = type('MyClass', (), {'__module__': 'mymodule'})()  # noqa
+        growth_info = objgraph.growth(limit=None)
+        cared = [record for record in growth_info if record[0] == 'MyClass']
+        self.assertEqual(1, len(cared))
+        self.assertEqual(1, cared[0][2])
+
+
 class ByTypeTest(GarbageCollectedMixin, unittest.TestCase):
     """Tests for the by_test function."""
 

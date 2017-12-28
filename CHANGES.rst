@@ -6,7 +6,7 @@ Changes
 3.2.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- New function: :func:`growth`.
 
 
 3.2.0 (2017-12-20)
