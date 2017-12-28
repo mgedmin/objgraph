@@ -3,7 +3,7 @@ Changes
 
 .. currentmodule:: objgraph
 
-3.2.1 (unreleased)
+3.3.0 (2017-12-28)
 ------------------
 
 - New function: :func:`growth`.

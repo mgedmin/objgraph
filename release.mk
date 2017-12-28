@@ -1,6 +1,7 @@
-# Makefile.rules version 1.0 (2017-12-19)
+# Makefile.rules version 1.1 (2017-12-20)
 #
 # Helpful Makefile rules for releasing Python packages.
+# https://github.com/mgedmin/python-project-skel
 
 # You might want to change these
 FILE_WITH_VERSION ?= setup.py
@@ -10,15 +11,18 @@ CHANGELOG_FORMAT ?= $(changelog_ver) ($(changelog_date))
 
 # These should be fine
 PYTHON ?= python
-PYPI_PUBLISH ?= rm -rf dist && $(PYTHON) setup.py -q sdist bdist_wheel && twine upload dist/* && $(VCS_TAG) `$(PYTHON) setup.py --version`
+PYPI_PUBLISH ?= rm -rf dist && $(PYTHON) setup.py -q sdist bdist_wheel && twine upload dist/*
 
 # These should be fine, as long as you use Git
 VCS_GET_LATEST ?= git pull
 VCS_STATUS ?= git status --porcelain
 VCS_EXPORT ?= git archive --format=tar --prefix=tmp/tree/ HEAD | tar -xf -
-VCS_TAG ?= git tag -s
+VCS_TAG ?= git tag -s $(changelog_ver) -m \"Release $(changelog_ver)\"
 VCS_COMMIT_AND_PUSH ?= git commit -av -m "Post-release version bump" && git push && git push --tags
 
+# These are internal implementation details
+changelog_ver = `$(PYTHON) setup.py --version`
+changelog_date = `LC_ALL=C date +'$(CHANGELOG_DATE_FORMAT)'`
 
 
 .PHONY: dist
@@ -81,9 +85,6 @@ check-version-number:
 check-long-description:
 	@$(PYTHON) setup.py --long-description | rst2html --exit-status=2 > /dev/null
 
-changelog_ver = `$(PYTHON) setup.py --version`
-changelog_date = `LC_ALL=C date +'$(CHANGELOG_DATE_FORMAT)'`
-
 .PHONY: check-changelog
 check-changelog:
 	@ver_and_date="$(CHANGELOG_FORMAT)" && \
@@ -106,6 +107,7 @@ define release_recipe =
 	@echo "Please run"
 	@echo
 	@echo "  $(PYPI_PUBLISH)"
+	@echo "  $(VCS_TAG)"
 	@echo
 	@echo "Please increment the version number in $(FILE_WITH_VERSION)"
 	@echo "and add a new empty entry at the top of the changelog in $(FILE_WITH_CHANGELOG), then"
