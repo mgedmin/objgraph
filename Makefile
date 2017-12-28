@@ -31,9 +31,12 @@ docs:
 clean:
 	-rm -rf $(SPHINXBUILDDIR)/* build
 
-.PHONY: test check
-test check:
+.PHONY: test
+test:
 	$(PYTHON) tests.py
+
+.PHONY:
+check: coverage
 
 .PHONY: test-all-pythons
 test-all-pythons:
@@ -57,7 +60,7 @@ preview-pypi-description:
 coverage:
 	coverage run --source=objgraph tests.py
 	python3 -m coverage run -a --source=objgraph tests.py
-	coverage report
+	coverage report -m --fail-under=100
 
 .PHONY: lint
 lint:

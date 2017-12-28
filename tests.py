@@ -315,6 +315,11 @@ class GrowthTest(GarbageCollectedMixin, unittest.TestCase):
         self.assertEqual(1, len(cared))
         self.assertEqual(1, cared[0][2])
 
+    def test_show_growth_custom_peak_stats(self):
+        ps = {}
+        objgraph.show_growth(peak_stats=ps, file=StringIO())
+        self.assertNotEqual(ps, {})
+
 
 class ByTypeTest(GarbageCollectedMixin, unittest.TestCase):
     """Tests for the by_test function."""
