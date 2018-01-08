@@ -54,8 +54,8 @@ except ImportError:
 __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008-2017 Marius Gedminas and contributors"
 __license__ = "MIT"
-__version__ = '3.3.1.dev0'
-__date__ = '2017-12-28'
+__version__ = '3.3.2.dev0'
+__date__ = '2018-01-08'
 
 
 try:
@@ -354,6 +354,87 @@ def show_growth(limit=10, peak_stats=None, shortnames=True, file=None,
         for name, count, delta in result:
             file.write('%-*s%9d %+9d\n' % (width, name, count, delta))
 
+def get_ids(skip_update=False, limit=10, sortby='deltas',
+            OLD_IDS=collections.defaultdict(set),
+            CURRENT_IDS=collections.defaultdict(set),
+            NEW_IDS=collections.defaultdict(set)):
+    """Show the increase in object counts since last call to this function
+    and returns the memory address ids for old, current, and new objects.
+
+    Returns: [OLD_IDS, CURRENT_IDS, NEW_IDS]
+
+    OLD_IDS: a dictionary which stores sets of ids under the keys of object
+    type. These are the objects that were stored the last time the function was
+    called.
+
+    CURRENT_IDS: a dictionary which stores sets of ids under the keys of object
+    type. These are the objects that are stored when the function is called now.
+
+    NEW_IDS: a dictionary which stores sets of ids under the keys of object
+    type. These are the objects that were created between the last time this
+    function was called and when it was called now.
+
+    sortby: This is the column that you want to sort by in descending order.
+    Possible values are: 'old', 'current', 'new', 'deltas'
+
+    limit: the maximum number of rows that you want to print data for
+
+    if ``skip_update`` is True, the sets of [OLD_IDS, CURRENT_IDS, NEW_IDS]
+    will be returned from when the function was last run without examining the
+    objects currently iin memory.
+
+    The caveats documented in :func:`growth` apply.
+
+    Example:
+
+        >>> get_ids()
+        ==============================================================================
+        Type                            Old_ids  Current_ids      New_ids Count_Deltas
+        ==============================================================================
+        weakref                            3807         3864          +57          +57
+        dict                               6892         6947          +73          +55
+        frame                                34           70          +53          +36
+        ...
+
+    """
+    if skip_update:
+        return [OLD_IDS, CURRENT_IDS, NEW_IDS]
+    gc.collect()
+    objects = gc.get_objects()
+    for k in OLD_IDS.keys():
+        OLD_IDS[k].clear()
+    for k, v in CURRENT_IDS.items():
+        OLD_IDS[k].update(v)
+    for k in CURRENT_IDS.keys():
+        CURRENT_IDS[k].clear()
+    for o in objects:
+        CURRENT_IDS[type(o).__name__].add(id(o))
+    for k in NEW_IDS.keys():
+        NEW_IDS[k].clear()
+    rows = []
+    for class_name in CURRENT_IDS.keys():
+        new_ids_set = CURRENT_IDS[class_name] - OLD_IDS[class_name]
+        NEW_IDS[class_name].update(new_ids_set)
+        row = [class_name,
+               len(OLD_IDS[class_name]),
+               len(CURRENT_IDS[class_name]),
+               len(NEW_IDS[class_name]),
+               len(CURRENT_IDS[class_name]) - len(OLD_IDS[class_name])]
+        rows.append(row)
+    index_by_sortby = {'old': 1, 'current': 2, 'new': 3, 'deltas': 4}
+    rows.sort(key=lambda row: row[index_by_sortby[sortby]], reverse=True)
+    if limit:
+        rows = rows[:limit]
+    width = max(len(row[0]) for row in rows)
+    print('='*(width+13*4))
+    print('%-*s%13s%13s%13s%13s' %
+          (width, 'Type', 'Old_ids', 'Current_ids', 'New_ids', 'Count_Deltas'))
+    print('='*(width+13*4))
+    for row in rows:
+        print('%-*s%13d%13d%+13d%+13d' % (width, *row))
+    print('='*(width+13*4))
+    return [OLD_IDS, CURRENT_IDS, NEW_IDS]
+
 
 def get_leaking_objects(objects=None):
     """Return objects that do not have any referents.
@@ -422,6 +503,28 @@ def at(addr):
         if id(o) == addr:
             return o
     return None
+
+
+def at_addrs(address_set):
+    """Return objects for a given set of memory addresses.
+
+    The reverse of id(obj):
+
+        >>> at(id(obj)) is obj
+        True
+
+    Note that this function does not work on objects that are not tracked by
+    the GC (e.g. ints or strings). A good use of this function is to call:
+    [old, current, new_ids] = get_ids()
+    new_lists = at_addrs(new_ids['list'])
+    for new_list in new_lists:
+        # call show chain on each new_list object
+    """
+    res = []
+    for o in gc.get_objects():
+        if id(o) in address_set:
+            res.append(o)
+    return res
 
 
 def find_ref_chain(obj, predicate, max_depth=20, extra_ignore=()):
