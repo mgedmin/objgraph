@@ -27,6 +27,7 @@ Released under the MIT licence.
 
 
 import codecs
+import collections
 import gc
 import re
 import inspect
@@ -431,7 +432,9 @@ def get_ids(skip_update=False, limit=10, sortby='deltas',
           (width, 'Type', 'Old_ids', 'Current_ids', 'New_ids', 'Count_Deltas'))
     print('='*(width+13*4))
     for row in rows:
-        print('%-*s%13d%13d%+13d%+13d' % (width, *row))
+        row_class, old, current, new, delta = row
+        print('%-*s%13d%13d%+13d%+13d' %
+              (width, row_class, old, current, new, delta))
     print('='*(width+13*4))
     return [OLD_IDS, CURRENT_IDS, NEW_IDS]
 
