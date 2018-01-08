@@ -355,6 +355,7 @@ def show_growth(limit=10, peak_stats=None, shortnames=True, file=None,
         for name, count, delta in result:
             file.write('%-*s%9d %+9d\n' % (width, name, count, delta))
 
+
 def get_ids(skip_update=False, limit=10, sortby='deltas',
             OLD_IDS=collections.defaultdict(set),
             CURRENT_IDS=collections.defaultdict(set),
@@ -369,7 +370,8 @@ def get_ids(skip_update=False, limit=10, sortby='deltas',
     called.
 
     CURRENT_IDS: a dictionary which stores sets of ids under the keys of object
-    type. These are the objects that are stored when the function is called now.
+    type. These are the objects that are stored when the function is called
+    now.
 
     NEW_IDS: a dictionary which stores sets of ids under the keys of object
     type. These are the objects that were created between the last time this
@@ -389,12 +391,12 @@ def get_ids(skip_update=False, limit=10, sortby='deltas',
     Example:
 
         >>> get_ids()
-        ==============================================================================
-        Type                            Old_ids  Current_ids      New_ids Count_Deltas
-        ==============================================================================
-        weakref                            3807         3864          +57          +57
-        dict                               6892         6947          +73          +55
-        frame                                34           70          +53          +36
+        ======================================================================
+        Type                    Old_ids  Current_ids      New_ids Count_Deltas
+        ======================================================================
+        weakref                    3807         3864          +57          +57
+        dict                       6892         6947          +73          +55
+        frame                        34           70          +53          +36
         ...
 
     """
