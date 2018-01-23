@@ -356,7 +356,7 @@ def show_growth(limit=10, peak_stats=None, shortnames=True, file=None,
             file.write('%-*s%9d %+9d\n' % (width, name, count, delta))
 
 
-def get_new_ids(skip_update=False, limit=10, sortby='deltas', _state ={}):
+def get_new_ids(skip_update=False, limit=10, sortby='deltas', _state={}):
     """Show the increase in object counts since last call to this function
     and returns the memory address ids for new objects.
 
@@ -443,7 +443,8 @@ def get_new_ids(skip_update=False, limit=10, sortby='deltas', _state ={}):
         new_ids_set = current_ids[class_name] - old_ids[class_name]
         new_ids[class_name].update(new_ids_set)
         num_new = len(new_ids_set)
-        row = [class_name, num_old, num_current, num_new, num_current - num_old]
+        num_delta = num_current - num_old
+        row = [class_name, num_old, num_current, num_new, num_delta]
         rows.append(row)
     index_by_sortby = {'old': 1, 'current': 2, 'new': 3, 'deltas': 4}
     rows.sort(key=lambda row: row[index_by_sortby[sortby]], reverse=True)
