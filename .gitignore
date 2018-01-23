@@ -13,3 +13,4 @@ __pycache__/
 *.py[co]
 .cache
 *.DS_Store
+venv/
