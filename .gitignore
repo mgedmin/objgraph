@@ -12,3 +12,4 @@ __pycache__/
 .toxbox/
 *.py[co]
 .cache
+*.DS_Store

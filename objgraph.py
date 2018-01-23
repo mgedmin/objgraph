@@ -55,8 +55,8 @@ except ImportError:
 __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008-2017 Marius Gedminas and contributors"
 __license__ = "MIT"
-__version__ = '3.3.2.dev0'
-__date__ = '2018-01-08'
+__version__ = '3.4.0.dev0'
+__date__ = '2018-01-23'
 
 
 try:
@@ -356,14 +356,14 @@ def show_growth(limit=10, peak_stats=None, shortnames=True, file=None,
             file.write('%-*s%9d %+9d\n' % (width, name, count, delta))
 
 
-def get_ids(skip_update=False, limit=10, sortby='deltas',
+def get_new_ids(skip_update=False, limit=10, sortby='deltas',
             OLD_IDS=collections.defaultdict(set),
             CURRENT_IDS=collections.defaultdict(set),
             NEW_IDS=collections.defaultdict(set)):
     """Show the increase in object counts since last call to this function
-    and returns the memory address ids for old, current, and new objects.
+    and returns the memory address ids for new objects.
 
-    Returns: [OLD_IDS, CURRENT_IDS, NEW_IDS]
+    Returns: NEW_IDS
 
     OLD_IDS: a dictionary which stores sets of ids under the keys of object
     type. These are the objects that were stored the last time the function was
@@ -382,15 +382,15 @@ def get_ids(skip_update=False, limit=10, sortby='deltas',
 
     limit: the maximum number of rows that you want to print data for
 
-    if ``skip_update`` is True, the sets of [OLD_IDS, CURRENT_IDS, NEW_IDS]
+    if ``skip_update`` is True, the dictionary NEW_IDS
     will be returned from when the function was last run without examining the
-    objects currently iin memory.
+    objects currently in memory.
 
     The caveats documented in :func:`growth` apply.
 
     Example:
 
-        >>> get_ids()
+        >>> get_new_ids()
         ======================================================================
         Type                    Old_ids  Current_ids      New_ids Count_Deltas
         ======================================================================
@@ -401,21 +401,21 @@ def get_ids(skip_update=False, limit=10, sortby='deltas',
 
     """
     if skip_update:
-        return [OLD_IDS, CURRENT_IDS, NEW_IDS]
+        return NEW_IDS
     gc.collect()
     objects = gc.get_objects()
-    for k in OLD_IDS.keys():
+    for k in OLD_IDS:
         OLD_IDS[k].clear()
     for k, v in CURRENT_IDS.items():
         OLD_IDS[k].update(v)
-    for k in CURRENT_IDS.keys():
+    for k in CURRENT_IDS:
         CURRENT_IDS[k].clear()
     for o in objects:
         CURRENT_IDS[type(o).__name__].add(id(o))
-    for k in NEW_IDS.keys():
+    for k in NEW_IDS:
         NEW_IDS[k].clear()
     rows = []
-    for class_name in CURRENT_IDS.keys():
+    for class_name in CURRENT_IDS:
         new_ids_set = CURRENT_IDS[class_name] - OLD_IDS[class_name]
         NEW_IDS[class_name].update(new_ids_set)
         row = [class_name,
@@ -438,7 +438,7 @@ def get_ids(skip_update=False, limit=10, sortby='deltas',
         print('%-*s%13d%13d%+13d%+13d' %
               (width, row_class, old, current, new, delta))
     print('='*(width+13*4))
-    return [OLD_IDS, CURRENT_IDS, NEW_IDS]
+    return NEW_IDS
 
 
 def get_leaking_objects(objects=None):
@@ -520,10 +520,12 @@ def at_addrs(address_set):
 
     Note that this function does not work on objects that are not tracked by
     the GC (e.g. ints or strings). A good use of this function is to call:
-    [old, current, new_ids] = get_ids()
-    new_lists = at_addrs(new_ids['list'])
-    for new_list in new_lists:
-        # call show chain on each new_list object
+
+        >>> [old, current, new_ids] = get_ids()
+        new_lists = at_addrs(new_ids['list'])
+        for new_list in new_lists:
+            call show_chain on each new_list object
+
     """
     res = []
     for o in gc.get_objects():
