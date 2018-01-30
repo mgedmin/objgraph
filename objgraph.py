@@ -369,7 +369,8 @@ def get_new_ids(skip_update=False, limit=10, sortby='deltas', _state={}):
     sortby: This is the column that you want to sort by in descending order.
     Possible values are: 'old', 'current', 'new', 'deltas'
 
-    limit: the maximum number of rows that you want to print data for
+    limit: the maximum number of rows that you want to print data for.
+    Value may be None or an integer greater than or equal to 0.
 
     _state: a dictionary which stores old, current, and new_ids in memory.
     Never pass in this argument, it is used by the function to store ids in
@@ -406,8 +407,8 @@ def get_new_ids(skip_update=False, limit=10, sortby='deltas', _state={}):
         >>> b in new_lists
         True
     """
-    if limit < 1:
-        raise ValueError('limit must be greater than or equal to 1')
+    if isinstance(limit, int) and limit < 0:
+        raise ValueError('limit must be greater than or equal to 0')
     if not _state:
         _state['old'] = collections.defaultdict(set)
         _state['current'] = collections.defaultdict(set)
@@ -453,8 +454,10 @@ def get_new_ids(skip_update=False, limit=10, sortby='deltas', _state={}):
         del new_ids[key]
     index_by_sortby = {'old': 1, 'current': 2, 'new': 3, 'deltas': 4}
     rows.sort(key=lambda row: row[index_by_sortby[sortby]], reverse=True)
-    if limit:
+    if isinstance(limit, int):
         rows = rows[:limit]
+    if not rows:
+        return new_ids
     width = max(len(row[0]) for row in rows)
     print('='*(width+13*4))
     print('%-*s%13s%13s%13s%13s' %
