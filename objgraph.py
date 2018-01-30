@@ -406,6 +406,8 @@ def get_new_ids(skip_update=False, limit=10, sortby='deltas', _state={}):
         >>> b in new_lists
         True
     """
+    if limit < 1:
+        raise ValueError('limit must be greater than or equal to 1')
     if not _state:
         _state['old'] = collections.defaultdict(set)
         _state['current'] = collections.defaultdict(set)
@@ -430,15 +432,14 @@ def get_new_ids(skip_update=False, limit=10, sortby='deltas', _state={}):
     for class_name in new_ids:
         new_ids[class_name].clear()
     rows = []
+    keys_to_remove = []
     for class_name in current_ids:
         num_old = len(old_ids[class_name])
         num_current = len(current_ids[class_name])
         if num_old == 0 and num_current == 0:
             # remove the key from our dicts if we don't have any old or
             # curent class_name objects
-            del old_ids[class_name]
-            del current_ids[class_name]
-            del new_ids[class_name]
+            keys_to_remove.append(class_name)
             continue
         new_ids_set = current_ids[class_name] - old_ids[class_name]
         new_ids[class_name].update(new_ids_set)
@@ -446,6 +447,10 @@ def get_new_ids(skip_update=False, limit=10, sortby='deltas', _state={}):
         num_delta = num_current - num_old
         row = [class_name, num_old, num_current, num_new, num_delta]
         rows.append(row)
+    for key in keys_to_remove:
+        del old_ids[key]
+        del current_ids[key]
+        del new_ids[key]
     index_by_sortby = {'old': 1, 'current': 2, 'new': 3, 'deltas': 4}
     rows.sort(key=lambda row: row[index_by_sortby[sortby]], reverse=True)
     if limit:
