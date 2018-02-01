@@ -258,9 +258,10 @@ class CountTest(GarbageCollectedMixin, unittest.TestCase):
         # count()
         gc.disable()
         x = type('MyClass', (), {})()
-        self.assertEqual(len(gc.get_referrers(x)), 1)
+        before = len(gc.get_referrers(x))
         objgraph.count('MyClass')
-        self.assertEqual(len(gc.get_referrers(x)), 1)
+        after = len(gc.get_referrers(x))
+        self.assertEqual(before, after)
 
 
 class TypestatsTest(GarbageCollectedMixin, unittest.TestCase):
@@ -276,9 +277,10 @@ class TypestatsTest(GarbageCollectedMixin, unittest.TestCase):
         # typestats()
         gc.disable()
         x = type('MyClass', (), {})()
-        self.assertEqual(len(gc.get_referrers(x)), 1)
+        before = len(gc.get_referrers(x))
         objgraph.typestats()
-        self.assertEqual(len(gc.get_referrers(x)), 1)
+        after = len(gc.get_referrers(x))
+        self.assertEqual(before, after)
 
 
 class TypestatsFilterArguTest(GarbageCollectedMixin, unittest.TestCase):
@@ -335,11 +337,11 @@ class ByTypeTest(GarbageCollectedMixin, unittest.TestCase):
         res = objgraph.by_type('MyClass')
         self.assertEqual(res, [x])
         # referrers we expect:
-        # 1. this stack frame
+        # 1. this stack frame (except on Python 3.7 where it's somehow missing)
         # 2. the `res` list
         # referrers we don't want:
         # the ``objects`` list in the now-dead stack frame of objgraph.by_type
-        self.assertEqual(len(gc.get_referrers(res[0])), 2)
+        self.assertLessEqual(len(gc.get_referrers(res[0])), 2)
 
 
 class StringRepresentationTest(GarbageCollectedMixin,
