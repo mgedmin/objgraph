@@ -17,9 +17,12 @@ Statistics
 
 .. autofunction:: show_most_common_types([limit=10, objects, shortnames=True, file=sys.stdout])
 
-.. autofunction:: show_growth([limit=10, peak_stats={}, shortnames=True, file=sys.stdout])
+.. autofunction:: growth([limit=10, peak_stats={}, shortnames=True, filter=None])
+
+.. autofunction:: show_growth([limit=10, peak_stats={}, shortnames=True, file=sys.stdout, filter=None])
 
 .. autofunction:: get_new_ids([skip_update=False, limit=10, sortby='deltas'])
+
 
 Locating and Filtering Objects
 ------------------------------

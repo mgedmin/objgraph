@@ -295,7 +295,7 @@ def growth(limit=10, peak_stats={}, shortnames=True, filter=None):
         >>> growth(2)
         [(tuple, 12282, 10), (dict, 1922, 7)]
 
-    .. versionadded:: 3.2.1
+    .. versionadded:: 3.3.0
 
     """
     gc.collect()
