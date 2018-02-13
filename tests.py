@@ -338,6 +338,15 @@ class ByTypeTest(GarbageCollectedMixin, unittest.TestCase):
         self.assertLessEqual(len(gc.get_referrers(res[0])), 2)
 
 
+class AtAddrsTest(unittest.TestCase):
+
+    def test_at_addrs(self):
+        a = [0, 1, 2]
+        new_ids = objgraph.get_new_ids(limit=0)
+        new_lists = objgraph.at_addrs(new_ids['list'])
+        self.assertIn(a, new_lists)
+
+
 class StringRepresentationTest(GarbageCollectedMixin,
                                CompatibilityMixin,
                                unittest.TestCase):

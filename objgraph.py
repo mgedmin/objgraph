@@ -550,13 +550,15 @@ def at(addr):
 
 
 def at_addrs(address_set):
-    """Returns a list of objects for a given set of memory addresses.
-    Objects are returned in an arbitrary order.
+    """Return a list of objects for a given set of memory addresses.
 
-    The reverse of [id(obj1), id(obj2), ...]
+    The reverse of [id(obj1), id(obj2), ...].  Note that objects are returned
+    in an arbitrary order.
 
-    Note that this function does not work on objects that are not tracked by
-    the GC (e.g. ints or strings).
+    When one gets ``new_ids`` from :func:`get_new_ids`, one can use this
+    function to get a list of those objects.  Then one can iterate over the new
+    objects, print out what they are, and call show_chain to see where they are
+    referenced.
 
         >>> a = [0, 1, 2]
         >>> new_ids = get_new_ids()
@@ -564,10 +566,10 @@ def at_addrs(address_set):
         >>> a in new_lists
         True
 
-    When one gets new_ids from get_new_ids, one can use this function to
-    get a list of those objects. Then one can iterate over the new
-    objects, print out what they are, and call show_chain to see where they
-    are referenced.
+    Note that this function does not work on objects that are not tracked
+    by the GC (e.g. ints or strings).
+
+    .. versionadded:: 3.4
     """
     res = []
     for o in gc.get_objects():
