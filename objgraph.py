@@ -356,29 +356,35 @@ def show_growth(limit=10, peak_stats=None, shortnames=True, file=None,
             file.write('%-*s%9d %+9d\n' % (width, name, count, delta))
 
 
-def get_new_ids(skip_update=False, limit=10, sortby='deltas', _state={}):
-    """Show the increase in object counts since last call to this function
-    and returns the memory address ids for new objects.
+def get_new_ids(skip_update=False, limit=10, sortby='deltas',
+                shortnames=True, _state={}):
+    """Show the increase in object counts since last call to this
+    function and returns the memory address ids for new objects.
 
     Returns: new_ids
 
-    new_ids: a dictionary which stores sets of ids under the keys of object
-    type. These are the objects that were created between the last time this
-    function was called and when it was called now.
+    new_ids (dictionary): Stores sets of ids under the keys of
+    object type. These are the objects that were created between the
+    last time this function was called and when it was called now.
 
-    sortby: This is the column that you want to sort by in descending order.
-    Possible values are: 'old', 'current', 'new', 'deltas'
+    skip_update (boolean): If True, the dictionary new_ids
+    will be returned from when the function was last run without
+    examining the objects currently in memory.
 
-    limit: the maximum number of rows that you want to print data for.
-    Value may be None or an integer greater than or equal to 0.
+    limit (integer): The maximum number of rows that you want to print
+    data for. Value may be None or an integer greater than or equal to
+    0.
 
-    _state: a dictionary which stores old, current, and new_ids in memory.
-    Never pass in this argument, it is used by the function to store ids in
-    memory.
+    sortby (string): This is the column that you want to sort by in
+    descending order. Possible values are: 'old', 'current', 'new',
+    'deltas'
 
-    if ``skip_update`` is True, the dictionary new_ids
-    will be returned from when the function was last run without examining the
-    objects currently in memory.
+    shortnames (boolean): If True, classes with the same name but
+    defined in different modules will be lumped together.
+
+    _state (dictionary): Stores old, current, and new_ids in memory.
+    Never pass in this argument, it is used by the function to store
+    ids in memory.
 
     The caveats documented in :func:`growth` apply.
 
@@ -427,7 +433,10 @@ def get_new_ids(skip_update=False, limit=10, sortby='deltas', _state={}):
     for class_name in current_ids:
         current_ids[class_name].clear()
     for o in objects:
-        class_name = type(o).__name__
+        if shortnames:
+            class_name = _short_typename(obj)
+        else:
+            class_name = _long_typename(obj)
         id_number = id(o)
         current_ids[class_name].add(id_number)
     for class_name in new_ids:
@@ -446,14 +455,15 @@ def get_new_ids(skip_update=False, limit=10, sortby='deltas', _state={}):
         new_ids[class_name].update(new_ids_set)
         num_new = len(new_ids_set)
         num_delta = num_current - num_old
-        row = [class_name, num_old, num_current, num_new, num_delta]
+        row = class_name, num_old, num_current, num_new, num_delta
         rows.append(row)
     for key in keys_to_remove:
         del old_ids[key]
         del current_ids[key]
         del new_ids[key]
     index_by_sortby = {'old': 1, 'current': 2, 'new': 3, 'deltas': 4}
-    rows.sort(key=lambda row: row[index_by_sortby[sortby]], reverse=True)
+    rows.sort(key=operator.itemgetter(index_by_sortby[sortby]),
+              reverse=True)
     if isinstance(limit, int):
         rows = rows[:limit]
     if not rows:
@@ -541,6 +551,7 @@ def at(addr):
 
 def at_addrs(address_set):
     """Returns a list of objects for a given set of memory addresses.
+    Objects are returned in an arbitrary order.
 
     The reverse of [id(obj1), id(obj2), ...]
 
