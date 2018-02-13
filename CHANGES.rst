@@ -3,7 +3,7 @@ Changes
 
 .. currentmodule:: objgraph
 
-3.4.0 (unreleased)
+3.4.0 (2018-02-13)
 ------------------
 
 - New functions: :func:`get_new_ids`, :func:`at_addrs`.

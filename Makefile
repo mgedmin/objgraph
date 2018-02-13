@@ -86,7 +86,12 @@ include release.mk
 check-date:
 	@date_line="__date__ = '`date +%Y-%m-%d`'" && \
 	    grep -q "^$$date_line$$" $(FILE_WITH_VERSION) || { \
-	        echo "$(FILE_WITH_VERSION) doesn't specify $$date_line"; exit 1; }
+	        echo "$(FILE_WITH_VERSION) doesn't specify $$date_line"; \
+	        echo "Please run make update-date"; exit 1; }
+
+.PHONY: update-date
+update-date:
+	sed -i -e "s/^__date__ = '.*'/__date__ = '`date +%Y-%m-%d`'/" $(FILE_WITH_VERSION)
 
 
 .PHONY: do-release
