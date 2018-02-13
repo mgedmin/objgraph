@@ -317,6 +317,52 @@ class GrowthTest(GarbageCollectedMixin, unittest.TestCase):
         self.assertNotEqual(ps, {})
 
 
+class GetNewIdsTest(unittest.TestCase):
+
+    maxDiff = None
+
+    def setUp(self):
+        objgraph.get_new_ids(limit=0, shortnames=True)
+
+    def test_get_new_ids(self):
+        x = type('MyClass', (), {'__module__': 'mymodule'})()  # noqa
+        new_ids = objgraph.get_new_ids(limit=0)
+        self.assertIn(id(x), new_ids['MyClass'])
+        new_ids = objgraph.get_new_ids(limit=0)
+        self.assertNotIn(id(x), new_ids['MyClass'])
+
+    def test_get_new_ids_skip_update(self):
+        x = type('MyClass', (), {'__module__': 'mymodule'})()  # noqa
+        new_ids = objgraph.get_new_ids(limit=0)
+        self.assertIn(id(x), new_ids['MyClass'])
+        new_ids = objgraph.get_new_ids(skip_update=True, limit=0)
+        self.assertIn(id(x), new_ids['MyClass'])
+
+    def test_get_new_ids_long_typename(self):
+        objgraph.get_new_ids(limit=0, shortnames=False)
+        x = type('MyClass', (), {'__module__': 'mymodule'})()  # noqa
+        new_ids = objgraph.get_new_ids(limit=0)
+        self.assertIn(id(x), new_ids['mymodule.MyClass'])
+
+
+def doctest_get_new_ids_prints():
+    """Test for get_new_ids()
+
+        >>> _ = objgraph.get_new_ids(limit=0)
+        >>> _ = objgraph.get_new_ids(limit=0)
+        >>> a = [0, 1, 2]  # noqa
+        >>> b = [3, 4, 5]  # noqa
+        >>> _ = objgraph.get_new_ids(limit=1)
+        ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
+        ========================================================
+        Type      Old_ids  Current_ids      New_ids Count_Deltas
+        ========================================================
+        list          ...          ...          ...           +2
+        ========================================================
+
+    """
+
+
 class ByTypeTest(GarbageCollectedMixin, unittest.TestCase):
     """Tests for the by_test function."""
 

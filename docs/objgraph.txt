@@ -21,7 +21,7 @@ Statistics
 
 .. autofunction:: show_growth([limit=10, peak_stats={}, shortnames=True, file=sys.stdout, filter=None])
 
-.. autofunction:: get_new_ids([skip_update=False, limit=10, sortby='deltas'])
+.. autofunction:: get_new_ids([skip_update=False, limit=10, sortby='deltas', shortnames=True, file=sys.stdout])
 
 
 Locating and Filtering Objects

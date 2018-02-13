@@ -25,6 +25,7 @@ Released under the MIT licence.
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
+from __future__ import print_function
 
 import codecs
 import collections
@@ -357,46 +358,47 @@ def show_growth(limit=10, peak_stats=None, shortnames=True, file=None,
 
 
 def get_new_ids(skip_update=False, limit=10, sortby='deltas',
-                shortnames=True, _state={}):
-    """Show the increase in object counts since last call to this
+                shortnames=None, file=None, _state={}):
+    """Find and display new objects allocated since last call.
+
+    Shows the increase in object counts since last call to this
     function and returns the memory address ids for new objects.
 
-    Returns: new_ids
+    Returns a dictionary mapping object type names to sets of object IDs
+    that have been created since the last time this function was called.
 
-    new_ids (dictionary): Stores sets of ids under the keys of
-    object type. These are the objects that were created between the
-    last time this function was called and when it was called now.
+    ``skip_update`` (bool): If True, returns the same dictionary that
+    was returned during the previous call without updating the internal
+    state or examining the objects currently in memory.
 
-    skip_update (boolean): If True, the dictionary new_ids
-    will be returned from when the function was last run without
-    examining the objects currently in memory.
+    ``limit`` (int): The maximum number of rows that you want to print
+    data for.  Use 0 to suppress the printing.  Use None to print everything.
 
-    limit (integer): The maximum number of rows that you want to print
-    data for. Value may be None or an integer greater than or equal to
-    0.
-
-    sortby (string): This is the column that you want to sort by in
-    descending order. Possible values are: 'old', 'current', 'new',
+    ``sortby`` (str): This is the column that you want to sort by in
+    descending order.  Possible values are: 'old', 'current', 'new',
     'deltas'
 
-    shortnames (boolean): If True, classes with the same name but
-    defined in different modules will be lumped together.
+    ``shortnames`` (bool): If True, classes with the same name but
+    defined in different modules will be lumped together.  If False,
+    all type names will be qualified with the module name.  If None (default),
+    ``get_new_ids`` will remember the value from previous calls, so it's
+    enough to prime this once.  By default the primed value is True.
 
-    _state (dictionary): Stores old, current, and new_ids in memory.
-    Never pass in this argument, it is used by the function to store
-    ids in memory.
+    ``_state`` (dict): Stores old, current, and new_ids in memory.
+    It is used by the function to store the internal state between calls.
+    Never pass in this argument unless you know what you're doing.
 
     The caveats documented in :func:`growth` apply.
 
-    When one gets new_ids from get_new_ids, one can use at_addrs to
-    get a list of those objects. Then one can iterate over the new
-    objects, print out what they are, and call show_chain to see where they
-    are referenced.
+    When one gets new_ids from :func:`get_new_ids`, one can use
+    :func:`at_addrs` to get a list of those objects. Then one can iterate over
+    the new objects, print out what they are, and call :func:`show_backrefs` or
+    :func:`show_chain` to see where they are referenced.
 
     Example:
 
         >>> _ = get_new_ids() # store current objects in _state
-        >>> _ = get_new_ids() # curent_ids become old_ids in _state
+        >>> _ = get_new_ids() # current_ids become old_ids in _state
         >>> a = [0, 1, 2] # list we don't know about
         >>> b = [3, 4, 5] # list we don't know about
         >>> new_ids = get_new_ids(limit=3) # we see new lists
@@ -412,18 +414,23 @@ def get_new_ids(skip_update=False, limit=10, sortby='deltas',
         True
         >>> b in new_lists
         True
+
+    .. versionadded:: 3.4
     """
-    if isinstance(limit, int) and limit < 0:
-        raise ValueError('limit must be greater than or equal to 0')
     if not _state:
         _state['old'] = collections.defaultdict(set)
         _state['current'] = collections.defaultdict(set)
         _state['new'] = collections.defaultdict(set)
+        _state['shortnames'] = True
     new_ids = _state['new']
     if skip_update:
         return new_ids
     old_ids = _state['old']
     current_ids = _state['current']
+    if shortnames is None:
+        shortnames = _state['shortnames']
+    else:
+        _state['shortnames'] = shortnames
     gc.collect()
     objects = gc.get_objects()
     for class_name in old_ids:
@@ -448,35 +455,38 @@ def get_new_ids(skip_update=False, limit=10, sortby='deltas',
         num_current = len(current_ids[class_name])
         if num_old == 0 and num_current == 0:
             # remove the key from our dicts if we don't have any old or
-            # curent class_name objects
+            # current class_name objects
             keys_to_remove.append(class_name)
             continue
         new_ids_set = current_ids[class_name] - old_ids[class_name]
         new_ids[class_name].update(new_ids_set)
         num_new = len(new_ids_set)
         num_delta = num_current - num_old
-        row = class_name, num_old, num_current, num_new, num_delta
+        row = (class_name, num_old, num_current, num_new, num_delta)
         rows.append(row)
     for key in keys_to_remove:
         del old_ids[key]
         del current_ids[key]
         del new_ids[key]
     index_by_sortby = {'old': 1, 'current': 2, 'new': 3, 'deltas': 4}
-    rows.sort(key=operator.itemgetter(index_by_sortby[sortby]),
+    rows.sort(key=operator.itemgetter(index_by_sortby[sortby], 0),
               reverse=True)
-    if isinstance(limit, int):
+    if limit is not None:
         rows = rows[:limit]
     if not rows:
         return new_ids
+    if file is None:
+        file = sys.stdout
     width = max(len(row[0]) for row in rows)
-    print('='*(width+13*4))
+    print('='*(width+13*4), file=file)
     print('%-*s%13s%13s%13s%13s' %
-          (width, 'Type', 'Old_ids', 'Current_ids', 'New_ids', 'Count_Deltas'))
-    print('='*(width+13*4))
+          (width, 'Type', 'Old_ids', 'Current_ids', 'New_ids', 'Count_Deltas'),
+          file=file)
+    print('='*(width+13*4), file=file)
     for row_class, old, current, new, delta in rows:
         print('%-*s%13d%13d%+13d%+13d' %
-              (width, row_class, old, current, new, delta))
-    print('='*(width+13*4))
+              (width, row_class, old, current, new, delta), file=file)
+    print('='*(width+13*4), file=file)
     return new_ids
 
 
@@ -557,8 +567,8 @@ def at_addrs(address_set):
 
     When one gets ``new_ids`` from :func:`get_new_ids`, one can use this
     function to get a list of those objects.  Then one can iterate over the new
-    objects, print out what they are, and call show_chain to see where they are
-    referenced.
+    objects, print out what they are, and call :func:`show_backrefs` or
+    :func:`show_chain` to see where they are referenced.
 
         >>> a = [0, 1, 2]
         >>> new_ids = get_new_ids()

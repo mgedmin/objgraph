@@ -3,10 +3,13 @@ Changes
 
 .. currentmodule:: objgraph
 
-3.3.1 (unreleased)
+3.4.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- New functions: :func:`get_new_ids`, :func:`at_addrs`.
+
+  Contributed by Justin Black in `PR 36
+  <https://github.com/mgedmin/objgraph/pull/36>`_.
 
 
 3.3.0 (2017-12-28)
