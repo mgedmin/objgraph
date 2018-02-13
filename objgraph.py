@@ -434,9 +434,9 @@ def get_new_ids(skip_update=False, limit=10, sortby='deltas',
         current_ids[class_name].clear()
     for o in objects:
         if shortnames:
-            class_name = _short_typename(obj)
+            class_name = _short_typename(o)
         else:
-            class_name = _long_typename(obj)
+            class_name = _long_typename(o)
         id_number = id(o)
         current_ids[class_name].add(id_number)
     for class_name in new_ids:
