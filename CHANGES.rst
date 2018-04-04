@@ -6,7 +6,7 @@ Changes
 3.4.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Drop support for Python 3.3.
 
 
 3.4.0 (2018-02-13)
