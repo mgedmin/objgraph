@@ -583,7 +583,7 @@ def at_addrs(address_set):
     """
     res = []
     id_to_obj = dict((id(o), o) for o in gc.get_objects())
-    
+
     for i in address_set:
         o = id_to_obj[i]
         res.append(o)
