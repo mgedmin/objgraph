@@ -585,6 +585,7 @@ def at_addrs(address_set):
     id_to_obj = dict((id(o), o) for o in gc.get_objects())
 
     for i in address_set:
+        if i not in id_to_obj: continue # ignore non-existing objects.
         o = id_to_obj[i]
         res.append(o)
 
