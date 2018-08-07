@@ -78,6 +78,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
     keywords='object graph visualization graphviz garbage collection',
     py_modules=['objgraph'],

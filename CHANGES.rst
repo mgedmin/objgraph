@@ -6,6 +6,8 @@ Changes
 3.4.1 (unreleased)
 ------------------
 
+- Add support for Python 3.7.
+
 - Drop support for Python 3.3.
 
 

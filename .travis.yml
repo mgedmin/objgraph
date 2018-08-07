@@ -5,10 +5,15 @@ python:
     - 3.4
     - 3.5
     - 3.6
+matrix:
+    include:
+        - python: 3.7
+          dist: xenial
+          sudo: true
 addons:
-  apt:
-    packages:
-      - graphviz
+    apt:
+        packages:
+            - graphviz
 install:
     - pip install coverage coveralls flake8 -e .
 before_script:
