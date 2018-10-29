@@ -409,7 +409,7 @@ class StringRepresentationTest(GarbageCollectedMixin,
 
         self.assertRegex(
             objgraph._obj_label(x, shortnames=False),
-            'mymodule\.MyClass\\\\n<mymodule\.MyClass object at .*')
+            r'mymodule\.MyClass\\n<mymodule\.MyClass object at .*')
 
     def test_long_typename_with_no_module(self):
         x = type('MyClass', (), {'__module__': None})()
@@ -494,7 +494,7 @@ class StringRepresentationTest(GarbageCollectedMixin,
 
         self.assertRegex(
             objgraph._edge_label(d, 1, shortnames=False),
-            ' [label="mymodule\.MyClass\\n<mymodule\.MyClass object at .*"]')
+            r' [label="mymodule\.MyClass\n<mymodule\.MyClass object at .*"]')
 
     def test_short_repr_lambda(self):
         f = lambda x: x  # noqa
@@ -618,7 +618,7 @@ class RandomOutputChecker(doctest.OutputChecker):
 
 
 class IgnoreNodeCountChecker(RandomOutputChecker):
-    _r = re.compile('\(\d+ nodes\)$', re.MULTILINE)
+    _r = re.compile(r'\(\d+ nodes\)$', re.MULTILINE)
 
     def check_output(self, want, got, optionflags):
         if optionflags & NODES_VARY:

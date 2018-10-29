@@ -64,8 +64,7 @@ coverage:
 
 .PHONY: lint
 lint:
-	flake8 --exclude=build,docs/conf.py --ignore=E226
-	flake8 --exclude=build,docs/conf.py --doctests --ignore=E226,F821
+	flake8
 
 # Make sure $(VCS_DIFF_IMAGES) can work
 .PHONY: config-imgdiff

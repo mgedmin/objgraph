@@ -847,8 +847,10 @@ def is_proper_module(obj):
 
     .. versionadded:: 1.8
     """
-    return (inspect.ismodule(obj) and
-            obj is sys.modules.get(getattr(obj, '__name__', None)))
+    return (
+        inspect.ismodule(obj)
+        and obj is sys.modules.get(getattr(obj, '__name__', None))
+    )
 
 
 #
@@ -1171,8 +1173,8 @@ def _gradient(start_color, end_color, depth, max_depth):
 
 
 def _edge_label(source, target, shortnames=True):
-    if (_isinstance(target, dict) and
-            target is getattr(source, '__dict__', None)):
+    if (_isinstance(target, dict)
+            and target is getattr(source, '__dict__', None)):
         return ' [label="__dict__",weight=10]'
     if _isinstance(source, types.FrameType):
         if target is source.f_locals:
