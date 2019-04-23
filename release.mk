@@ -1,4 +1,4 @@
-# release.mk version 1.3 (2018-11-03)
+# release.mk version 1.4 (2019-04-23)
 #
 # Helpful Makefile rules for releasing Python packages.
 # https://github.com/mgedmin/python-project-skel
@@ -8,11 +8,13 @@ FILE_WITH_VERSION ?= setup.py
 FILE_WITH_CHANGELOG ?= CHANGES.rst
 CHANGELOG_DATE_FORMAT ?= %Y-%m-%d
 CHANGELOG_FORMAT ?= $(changelog_ver) ($(changelog_date))
+DISTCHECK_DIFF_OPTS ?= $(DISTCHECK_DIFF_DEFAULT_OPTS)
 
 # These should be fine
 PYTHON ?= python
 PYPI_PUBLISH ?= rm -rf dist && $(PYTHON) setup.py -q sdist bdist_wheel && twine check dist/* && twine upload dist/*
 LATEST_RELEASE_MK_URL = https://raw.githubusercontent.com/mgedmin/python-project-skel/master/release.mk
+DISTCHECK_DIFF_DEFAULT_OPTS = -x PKG-INFO -x setup.cfg -x '*.egg-info' -I'^\#'
 
 # These should be fine, as long as you use Git
 VCS_GET_LATEST ?= git pull
@@ -55,7 +57,7 @@ distcheck-sdist:
 	  $(VCS_EXPORT) && \
 	  cd tmp && \
 	  tar -xzf ../dist/$$pkg_and_version.tar.gz && \
-	  diff -ur $$pkg_and_version tree -x PKG-INFO -x setup.cfg -x '*.egg-info' -I'^#' && \
+	  diff -ur $$pkg_and_version tree $(DISTCHECK_DIFF_OPTS) && \
 	  cd $$pkg_and_version && \
 	  make dist check && \
 	  cd .. && \

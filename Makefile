@@ -5,8 +5,6 @@ FILE_WITH_CHANGELOG = CHANGES.rst
 
 VCS_DIFF_IMAGES = git diff docs/*.png
 
-SUPPORTED_PYTHON_VERSIONS = 2.7 3.3 3.4 3.5 3.6
-
 SPHINXOPTS      =
 SPHINXBUILD     = sphinx-build
 SPHINXBUILDDIR  = docs/_build
@@ -40,16 +38,7 @@ check: coverage
 
 .PHONY: test-all-pythons
 test-all-pythons:
-	set -e; \
-	for ver in $(SUPPORTED_PYTHON_VERSIONS); do \
-		if which python$$ver > /dev/null; then \
-			$(MAKE) test PYTHON=python$$ver; \
-		else \
-			echo "=================================="; \
-			echo "Skipping python$$ver, not available."; \
-			echo "=================================="; \
-		fi; \
-	done
+	tox
 
 .PHONY: preview-pypi-description
 preview-pypi-description:
