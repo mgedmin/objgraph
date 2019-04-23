@@ -8,7 +8,7 @@ Changes
 
 - Add support for Python 3.7.
 
-- Drop support for Python 3.3.
+- Drop support for Python 3.3 and 3.4.
 
 
 3.4.0 (2018-02-13)
