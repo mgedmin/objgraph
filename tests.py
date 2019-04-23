@@ -12,11 +12,11 @@ import textwrap
 import types
 import unittest
 
-# distutils imports `imp`, which triggers a DeprecationWarning starting with
+# setuptools imports `imp`, which triggers a DeprecationWarning starting with
 # Python 3.4 in the middle of my pristine test suite.  But if I do the import
 # upfront, there's no warning.  I cannot explain this, I'm just happy there's
 # no warning.
-import distutils  # noqa
+import setuptools  # noqa
 
 try:
     from unittest import mock
@@ -478,8 +478,6 @@ class StringRepresentationTest(GarbageCollectedMixin,
                                             (0.2, 0.3, 0.4), 0, 0))
 
     @skipIf(sys.version_info[0] > 2, "Python 3 has no unbound methods")
-    @skipIf(sys.version_info[:2] < (2, 6),
-            "Python 2.5 and older has no __func__")
     def test_edge_label_unbound_method(self):
         class MyClass(object):
             def a_method(self):

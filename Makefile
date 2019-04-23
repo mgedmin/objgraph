@@ -58,7 +58,7 @@ preview-pypi-description:
 
 .PHONY: coverage
 coverage:
-	coverage run --source=objgraph tests.py
+	python2 -m coverage run --source=objgraph tests.py
 	python3 -m coverage run -a --source=objgraph tests.py
 	coverage report -m --fail-under=100
 
