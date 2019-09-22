@@ -10,11 +10,12 @@ addons:
         packages:
             - graphviz
 install:
-    - pip install coverage coveralls flake8 -e .
+    - pip install coverage coverage-python-version coveralls flake8 -e .
 before_script:
     - make lint
 script:
-    - coverage run --source=objgraph tests.py
+    - coverage run tests.py
+    - coverage report -m --fail-under=100
 after_success:
     - coveralls
 notifications:

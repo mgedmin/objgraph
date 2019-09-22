@@ -6,7 +6,11 @@ Changes
 3.4.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Do not require ``mock`` for the test suite on Python 3; use unittest.mock
+  instead.
+
+- 100% test coverage for each version of Python rather than combined, using
+  ``coverage-python-version``.
 
 
 3.4.1 (2019-04-23)

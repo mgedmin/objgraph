@@ -1,0 +1,4 @@
+[run]
+source = objgraph
+plugins =
+    coverage_python_version

@@ -43,12 +43,12 @@ import itertools
 try:
     # Python 2.x compatibility
     from StringIO import StringIO
-except ImportError:
+except ImportError:  # pragma: PY3
     from io import StringIO
 
 try:
     from types import InstanceType
-except ImportError:
+except ImportError:  # pragma: PY3
     # Python 3.x compatibility
     InstanceType = None
 
@@ -62,13 +62,13 @@ __date__ = '2019-04-23'
 
 try:
     basestring
-except NameError:
+except NameError:  # pragma: PY3
     # Python 3.x compatibility
     basestring = str
 
 try:
     iteritems = dict.iteritems
-except AttributeError:
+except AttributeError:  # pragma: PY3
     # Python 3.x compatibility
     iteritems = dict.items
 
@@ -915,7 +915,7 @@ def _show_graph(objs, edge_func, swap_source_target,
         fd, dot_filename = tempfile.mkstemp(prefix='objgraph-',
                                             suffix='.dot', text=True)
         f = os.fdopen(fd, "w")
-        if getattr(f, 'encoding', None):
+        if getattr(f, 'encoding', None):  # pragma: PY3
             # Python 3 will wrap the file in the user's preferred encoding
             # Re-wrap it for utf-8
             import io
@@ -1100,7 +1100,7 @@ def _quote(s):
 
 def _get_obj_type(obj):
     objtype = type(obj)
-    if type(obj) == InstanceType:
+    if type(obj) == InstanceType:  # pragma: PY2 -- no old-style classes on PY3
         objtype = obj.__class__
     return objtype
 
@@ -1146,7 +1146,7 @@ def _short_repr(obj):
         name = _name_or_repr(obj.__func__)
         if obj.__self__:
             return name + ' (bound)'
-        else:
+        else:  # pragma: PY2 -- no unbound methods on Python 3
             return name
     # NB: types.LambdaType is an alias for types.FunctionType!
     if _isinstance(obj, types.LambdaType) and obj.__name__ == '<lambda>':

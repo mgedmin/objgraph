@@ -477,6 +477,11 @@ class StringRepresentationTest(GarbageCollectedMixin,
                          objgraph._gradient((0.1, 0.2, 0.3),
                                             (0.2, 0.3, 0.4), 0, 0))
 
+    def test_edge_label_frame_locals(self):
+        frame = sys._getframe()
+        self.assertEqual(' [label="f_locals",weight=10]',
+                         objgraph._edge_label(frame, frame.f_locals))
+
     @skipIf(sys.version_info[0] > 2, "Python 3 has no unbound methods")
     def test_edge_label_unbound_method(self):
         class MyClass(object):
@@ -485,6 +490,14 @@ class StringRepresentationTest(GarbageCollectedMixin,
         self.assertEqual(' [label="__func__",weight=10]',
                          objgraph._edge_label(MyClass.a_method,
                                               MyClass.a_method.__func__))
+
+    def test_edge_label_bound_method(self):
+        class MyClass(object):
+            def a_method(self):
+                pass
+        self.assertEqual(' [label="__func__",weight=10]',
+                         objgraph._edge_label(MyClass().a_method,
+                                              MyClass().a_method.__func__))
 
     def test_edge_label_long_type_names(self):
         x = type('MyClass', (), {'__module__': 'mymodule'})()
