@@ -12,6 +12,8 @@ Changes
 - 100% test coverage for each version of Python rather than combined, using
   ``coverage-python-version``.
 
+- Add support for Python 3.8.
+
 
 3.4.1 (2019-04-23)
 ------------------
