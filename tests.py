@@ -131,6 +131,16 @@ SINGLE_ELEMENT_OUTPUT = textwrap.dedent('''\
 ''')
 
 
+SINGLE_ELEMENT_OUTPUT_WITH_ATTR = textwrap.dedent('''\
+    digraph ObjectGraph {
+      node[shape=box, style=filled, fillcolor=white];
+      ${label_a}[fontcolor=red];
+      ${label_a}[label="TestObject\\nTestObject(A)", x="y"];
+      ${label_a}[fillcolor="0,0,1"];
+    }
+''')
+
+
 TWO_ELEMENT_OUTPUT = textwrap.dedent('''\
     digraph ObjectGraph {
       node[shape=box, style=filled, fillcolor=white];
@@ -190,6 +200,18 @@ class ShowGraphTest(unittest.TestCase):
         label = objgraph._obj_node_id(obj)
         self.assertEqual(output_value,
                          format(SINGLE_ELEMENT_OUTPUT,
+                                label_a=label))
+
+    def test_with_extra_node_attrs(self):
+        obj = TestObject.get("A")
+        output = StringIO()
+        objgraph._show_graph([obj], edge_function(), False, output=output,
+                             shortnames=True,
+                             extra_node_attrs=lambda o: {'x': 'y'})
+        output_value = output.getvalue()
+        label = objgraph._obj_node_id(obj)
+        self.assertEqual(output_value,
+                         format(SINGLE_ELEMENT_OUTPUT_WITH_ATTR,
                                 label_a=label))
 
     def test_filename_and_output(self):
@@ -410,6 +432,16 @@ class StringRepresentationTest(GarbageCollectedMixin,
         self.assertRegex(
             objgraph._obj_label(x, shortnames=False),
             r'mymodule\.MyClass\\n<mymodule\.MyClass object at .*')
+
+    def test_obj_attrs(self):
+        x = object()
+
+        self.assertRegex(
+            objgraph._obj_attrs(
+                x,
+                lambda o: {'url': 'http://e.com/' + o.__class__.__name__,
+                           'shape': 'diamond'}),
+            r', shape="diamond", url="http://e.com/object"')
 
     def test_long_typename_with_no_module(self):
         x = type('MyClass', (), {'__module__': None})()

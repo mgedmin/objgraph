@@ -642,7 +642,8 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
 
 def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
                   highlight=None, filename=None, extra_info=None,
-                  refcounts=False, shortnames=True, output=None):
+                  refcounts=False, shortnames=True, output=None,
+                  extra_node_attrs=None):
     """Generate an object reference graph ending at ``objs``.
 
     The graph will show you what objects refer to ``objs``, directly and
@@ -675,6 +676,9 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     Use ``extra_info`` (a function taking one argument and returning a
     string) to report extra information for objects.
 
+    Use ``extra_node_attrs`` (a function returning a dict of strings) to add
+    extra attributes to the nodes.
+
     Specify ``refcounts=True`` if you want to see reference counts.
     These will mostly match the number of arrows pointing to an object,
     but can be different for various reasons.
@@ -691,6 +695,7 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
         >>> show_backrefs(obj, filter=lambda x: not inspect.isclass(x))
         >>> show_backrefs(obj, highlight=inspect.isclass)
         >>> show_backrefs(obj, extra_ignore=[id(locals())])
+        >>> show_refs(obj, extra_node_attrs=lambda x: dict(URL=str(id(x))))
 
     .. versionchanged:: 1.3
        New parameters: ``filename``, ``extra_info``.
@@ -704,6 +709,8 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     .. versionchanged:: 2.0
        New parameter: ``output``.
 
+    .. versionchanged:: 3.5
+       New parameter: ``extra_node_attrs``.
     """
     # For show_backrefs(), it makes sense to stop when reaching a
     # module because you'll end up in sys.modules and explode the
@@ -714,12 +721,14 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
                        edge_func=gc.get_referrers, swap_source_target=False,
                        filename=filename, output=output, extra_info=extra_info,
                        refcounts=refcounts, shortnames=shortnames,
-                       cull_func=is_proper_module)
+                       cull_func=is_proper_module,
+                       extra_node_attrs=extra_node_attrs)
 
 
 def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
               highlight=None, filename=None, extra_info=None,
-              refcounts=False, shortnames=True, output=None):
+              refcounts=False, shortnames=True, output=None,
+              extra_node_attrs=None):
     """Generate an object reference graph starting at ``objs``.
 
     The graph will show you what objects are reachable from ``objs``, directly
@@ -752,6 +761,9 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     Use ``extra_info`` (a function returning a string) to report extra
     information for objects.
 
+    Use ``extra_node_attrs`` (a function returning a dict of strings) to add
+    extra attributes to the nodes.
+
     Specify ``refcounts=True`` if you want to see reference counts.
 
     Examples:
@@ -762,6 +774,7 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
         >>> show_refs(obj, filter=lambda x: not inspect.isclass(x))
         >>> show_refs(obj, highlight=inspect.isclass)
         >>> show_refs(obj, extra_ignore=[id(locals())])
+        >>> show_refs(obj, extra_node_attrs=lambda x: dict(URL=str(id(x))))
 
     .. versionadded:: 1.1
 
@@ -777,13 +790,16 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
 
     .. versionchanged:: 2.0
        New parameter: ``output``.
+
+    .. versionchanged:: 3.5
+       New parameter: ``extra_node_attrs``.
     """
     return _show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
                        filter=filter, too_many=too_many, highlight=highlight,
                        edge_func=gc.get_referents, swap_source_target=True,
                        filename=filename, extra_info=extra_info,
                        refcounts=refcounts, shortnames=shortnames,
-                       output=output)
+                       output=output, extra_node_attrs=extra_node_attrs)
 
 
 def show_chain(*chains, **kw):
@@ -896,7 +912,7 @@ def _show_graph(objs, edge_func, swap_source_target,
                 max_depth=3, extra_ignore=(), filter=None, too_many=10,
                 highlight=None, filename=None, extra_info=None,
                 refcounts=False, shortnames=True, output=None,
-                cull_func=None):
+                cull_func=None, extra_node_attrs=None):
     if not _isinstance(objs, (list, tuple)):
         objs = [objs]
 
@@ -948,9 +964,11 @@ def _show_graph(objs, edge_func, swap_source_target,
         # traversing the reference graph backwards.
         target = queue.pop(0)
         tdepth = depth[id(target)]
-        f.write('  %s[label="%s"];\n' % (_obj_node_id(target),
-                                         _obj_label(target, extra_info,
-                                                    refcounts, shortnames)))
+        f.write('  %s[label="%s"%s];\n' % (_obj_node_id(target),
+                                           _obj_label(target, extra_info,
+                                                      refcounts, shortnames),
+                                           _obj_attrs(target,
+                                                      extra_node_attrs)))
         h, s, v = _gradient((0, 0, 1), (0, 0, .3), tdepth, max_depth)
         if inspect.ismodule(target):
             h = .3
@@ -1071,6 +1089,15 @@ def _present_graph(dot_filename, filename=None):
 
 def _obj_node_id(obj):
     return ('o%d' % id(obj)).replace('-', '_')
+
+
+def _obj_attrs(obj, extra_node_attrs):
+    if extra_node_attrs is not None:
+        attrs = extra_node_attrs(obj)
+        return ", " + ", ".join('%s="%s"' % (name, _quote(value))
+                                for name, value in sorted(iteritems(attrs)))
+    else:
+        return ""
 
 
 def _obj_label(obj, extra_info=None, refcounts=False, shortnames=True):
