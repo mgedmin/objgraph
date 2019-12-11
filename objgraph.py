@@ -676,8 +676,10 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     Use ``extra_info`` (a function taking one argument and returning a
     string) to report extra information for objects.
 
-    Use ``extra_node_attrs`` (a function returning a dict of strings) to add
-    extra attributes to the nodes.
+    Use ``extra_node_attrs`` (a function taking the current object as argument,
+    returning a dict of strings) to add extra attributes to the nodes. See
+    https://www.graphviz.org/doc/info/attrs.html for a list of possible node
+    attributes.
 
     Specify ``refcounts=True`` if you want to see reference counts.
     These will mostly match the number of arrows pointing to an object,
@@ -695,7 +697,7 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
         >>> show_backrefs(obj, filter=lambda x: not inspect.isclass(x))
         >>> show_backrefs(obj, highlight=inspect.isclass)
         >>> show_backrefs(obj, extra_ignore=[id(locals())])
-        >>> show_refs(obj, extra_node_attrs=lambda x: dict(URL=str(id(x))))
+        >>> show_backrefs(obj, extra_node_attrs=lambda x: dict(URL=str(id(x))))
 
     .. versionchanged:: 1.3
        New parameters: ``filename``, ``extra_info``.
@@ -761,8 +763,10 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     Use ``extra_info`` (a function returning a string) to report extra
     information for objects.
 
-    Use ``extra_node_attrs`` (a function returning a dict of strings) to add
-    extra attributes to the nodes.
+    Use ``extra_node_attrs`` (a function taking the current object as argument,
+    returning a dict of strings) to add extra attributes to the nodes. See
+    https://www.graphviz.org/doc/info/attrs.html for a list of possible node
+    attributes.
 
     Specify ``refcounts=True`` if you want to see reference counts.
 
@@ -1095,7 +1099,8 @@ def _obj_attrs(obj, extra_node_attrs):
     if extra_node_attrs is not None:
         attrs = extra_node_attrs(obj)
         return ", " + ", ".join('%s="%s"' % (name, _quote(value))
-                                for name, value in sorted(iteritems(attrs)))
+                                for name, value in sorted(iteritems(attrs))
+                                if value is not None)
     else:
         return ""
 

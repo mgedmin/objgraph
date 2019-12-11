@@ -3,7 +3,7 @@ Changes
 
 .. currentmodule:: objgraph
 
-3.4.2 (unreleased)
+3.5.0 (unreleased)
 ------------------
 
 - Do not require ``mock`` for the test suite on Python 3; use unittest.mock
@@ -13,6 +13,9 @@ Changes
   ``coverage-python-version``.
 
 - Add support for Python 3.8.
+
+- Add the optional ``extra_node_attrs`` parameter to ``show_backrefs`` and
+  ``show_backrefs``
 
 
 3.4.1 (2019-04-23)
@@ -119,7 +122,7 @@ Changes
 
 - Made internal helper methods private. This includes :func:`find_chain`,
   :func:`show_graph`, :func:`obj_node_id`, :func:`obj_label`, :func:`quote`,
-  :func:`long_typename`, :func:`safe_repr`, :func:`short_repr`, 
+  :func:`long_typename`, :func:`safe_repr`, :func:`short_repr`,
   :func:`gradient`, :func:`edge_label`, and :func:`_program_in_path`.
 
 - Correctly determine the name of old-style classes in :func:`count`,

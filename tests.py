@@ -435,12 +435,12 @@ class StringRepresentationTest(GarbageCollectedMixin,
 
     def test_obj_attrs(self):
         x = object()
-
-        self.assertRegex(
+        self.assertEqual(
             objgraph._obj_attrs(
                 x,
                 lambda o: {'url': 'http://e.com/' + o.__class__.__name__,
-                           'shape': 'diamond'}),
+                           'shape': 'diamond',
+                           'ignored': None}),
             r', shape="diamond", url="http://e.com/object"')
 
     def test_long_typename_with_no_module(self):
