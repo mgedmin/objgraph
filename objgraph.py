@@ -75,7 +75,11 @@ except AttributeError:  # pragma: PY3
 IS_INTERACTIVE = False
 try:  # pragma: nocover
     import graphviz
-    if get_ipython().__class__.__name__ != 'TerminalInteractiveShell':
+    if 'TerminalInteractiveShell' not in get_ipython().__class__.__name__:
+        # So far I know two shells where it's inappropriate to use inline
+        # graphics, because they're text only:
+        # - ipython uses a TerminalInteractiveShell
+        # - pycharm's console uses PyDevTerminalInteractiveShell
         IS_INTERACTIVE = True
 except (NameError, ImportError):
     pass
