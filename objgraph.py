@@ -928,7 +928,7 @@ def _show_graph(objs, edge_func, swap_source_target,
     elif filename and filename.endswith('.dot'):
         f = codecs.open(filename, 'w', encoding='utf-8')
         dot_filename = filename
-    elif IS_INTERACTIVE:
+    elif IS_INTERACTIVE and not filename:
         is_interactive = True
         f = StringIO()
     else:

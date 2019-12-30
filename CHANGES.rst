@@ -17,6 +17,11 @@ Changes
 - Add the optional ``extra_node_attrs`` parameter to ``show_backrefs`` and
   ``show_backrefs``
 
+- Fix IPython/Jupyter inline graph support code that would kick in even if you
+  explicitly passed a filename='foo.png' argument to
+  ``show_refs``/``show_backrefs``.  See `issue 47
+  <https://github.com/mgedmin/objgraph/issues/47>`_.
+
 
 3.4.1 (2019-04-23)
 ------------------
