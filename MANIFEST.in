@@ -19,3 +19,6 @@ include LICENSE
 
 # added by check_manifest.py
 include *.mk
+
+# added by check_manifest.py
+include .coveragerc
