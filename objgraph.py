@@ -1224,48 +1224,40 @@ def _gradient(start_color, end_color, depth, max_depth):
 def _edge_labels(source, target, shortnames=True):
     if (_isinstance(target, dict)
             and target is getattr(source, '__dict__', None)):
-        return [' [label="__dict__",weight=10]']
+        yield ' [label="__dict__",weight=10]'
     if _isinstance(source, types.FrameType):
         if target is source.f_locals:
-            return [' [label="f_locals",weight=10]']
+            yield ' [label="f_locals",weight=10]'
         if target is source.f_globals:
-            return [' [label="f_globals",weight=10]']
+            yield ' [label="f_globals",weight=10]'
     if _isinstance(source, types.MethodType):
         try:
             if target is source.__self__:
-                return [' [label="__self__",weight=10]']
+                yield ' [label="__self__",weight=10]'
             if target is source.__func__:
-                return [' [label="__func__",weight=10]']
+                yield ' [label="__func__",weight=10]'
         except AttributeError:  # pragma: nocover
             # Python < 2.6 compatibility
             if target is source.im_self:
-                return [' [label="im_self",weight=10]']
+                yield ' [label="im_self",weight=10]'
             if target is source.im_func:
-                return [' [label="im_func",weight=10]']
+                yield [' [label="im_func",weight=10]'
     if _isinstance(source, types.FunctionType):
-        return [
-            ' [label="%s",weight=10]' % _quote(k)
-            for k in dir(source)
+        for k in dir(source)
             if target is getattr(source, k)
-        ]
+                yield ' [label="%s",weight=10]' % _quote(k)
     if _isinstance(source, dict):
         tn = _short_typename if shortnames else _long_typename
-        return [
-            (
-                ' [label="%s",weight=2]' % _quote(k)
-                if _isinstance(k, basestring) and _is_identifier(k)
-                else (
-                    ' [label="%s"]' % _quote(tn(k) + "\n" + _safe_repr(k))
-                )
-            )
-            for k, v in iteritems(source)
-            if v is target
-        ]
-    return []
+        for k, v in iteritems(source):
+            if v is target:
+                if _isinstance(k, basestring) and _is_identifier(k):
+                    yield ' [label="%s",weight=2]' % _quote(k)
+                else:
+                    yield ' [label="%s"]' % _quote(tn(k) + "\n" + _safe_repr(k))
 
 
 def _edge_label(*args, **kwargs):
-    return next(iter(_edge_labels(*args, **kwargs)), '')
+    return next(_edge_labels(*args, **kwargs), '')
 
 
 _is_identifier = re.compile('[a-zA-Z_][a-zA-Z_0-9]*$').match
