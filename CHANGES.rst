@@ -12,8 +12,6 @@ Changes
 - 100% test coverage for each version of Python rather than combined, using
   ``coverage-python-version``.
 
-- Add support for Python 3.8.
-
 - Add the optional ``extra_node_attrs`` parameter to ``show_backrefs`` and
   ``show_backrefs``
 
@@ -21,6 +19,10 @@ Changes
   explicitly passed a filename='foo.png' argument to
   ``show_refs``/``show_backrefs``.  See `issue 47
   <https://github.com/mgedmin/objgraph/issues/47>`_.
+
+- Add support for Python 3.8.
+
+- Drop support for Python 3.5.
 
 
 3.4.1 (2019-04-23)
