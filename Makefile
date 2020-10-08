@@ -31,14 +31,10 @@ clean:
 
 .PHONY: test
 test:
-	$(PYTHON) tests.py
+	tox -p auto
 
 .PHONY:
 check: coverage
-
-.PHONY: test-all-pythons
-test-all-pythons:
-	tox
 
 .PHONY: preview-pypi-description
 preview-pypi-description:

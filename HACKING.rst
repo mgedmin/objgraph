@@ -15,7 +15,7 @@ The test suite is mostly smoke tests (i.e. crashes will be noticed, subtly
 wrong output will be missed).  I hope to improve that in the future, but don't
 hold your breath.  Most of the testing is done manually or semi-automatically,
 e.g. by running ``make images`` and eyeballing the results (`imgdiff
-<https://pypi.python.org/pypi/imgdiff>`_ is handy there).
+<https://pypi.org/project/imgdiff>`_ is handy there).
 
 
 Sending me patches
@@ -31,14 +31,11 @@ for each proposed change, be it a bug or a feature request.
 Supported Python versions
 -------------------------
 
-Python 2.4 through 2.7, as well as 3.x.
+Python 2.7 and 3.5+.
 
 You can run the test suite for all supported Python versions with ::
 
-  make test-all-pythons
-
-or with `detox <https://pypi.python.org/pypi/detox>`_ (which will be faster,
-since it runs the tests in parallel).
+  tox -p auto
 
 If a test fails, often the easiest way to debug is is to compare the output
 visually ::
@@ -49,20 +46,20 @@ visually ::
   git checkout -- docs/*.png docs/*.dot
 
 
-An easy way to get Pythons 2.4 through 2.7 (and 3.x) on Ubuntu is to use Felix
+An easy way to get multiple Pythons versions on Ubuntu is to use Felix
 Krull's "`deadsnakes <https://launchpad.net/~fkrull/+archive/deadsnakes>`_"
 PPA::
 
-  sudo add-apt-repository ppa:fkrull/deadsnakes
+  sudo add-apt-repository -y ppa:deadsnakes
   sudo apt-get update
-  sudo apt-get install python2.{4,5,6,7} python3.{1,2,3}
+  sudo apt-get install python3.{6,7,8,9}
 
 
 Test coverage
 -------------
 
 As I mentioned, the tests are mostly smoke tests, and even then they're
-incomplete.  Install `coverage <https://pypi.python.org/pypi/coverage>`_
+incomplete.  Install `coverage <https://pypi.org/project/coverage>`_
 to see how incomplete they are with ::
 
   make coverage
@@ -93,7 +90,7 @@ Please ``git checkout --`` the png files that haven't changed significantly.
 (Many of the images include things like memory addresses which tend to change
 from run to run.)
 
-`imgdiff <https://pypi.python.org/pypi/imgdiff>`_ is useful for comparing the
+`imgdiff <https://pypi.org/project/imgdiff>`_ is useful for comparing the
 images with their older versions::
 
   git config diff.imgdiff.command 'f() { imgdiff $1 $2; }; f'
@@ -138,7 +135,7 @@ this::
 
        """
 
-I find `restview <https://pypi.python.org/pypi/restview>`_ very handy for
+I find `restview <https://pypi.org/project/restview>`_ very handy for
 documentation writing: it lets me see how the text looks by pressing Ctrl-R
 in a browser window, without having to re-run any documentation building
 commands.  The downside is that ``restview`` doesn't support Sphinx extensions
@@ -184,5 +181,5 @@ to be sure this is so, but it's not necessary -- ``make release`` will do this
 every time.
 
 (I've later written a standalone tool, `check-manifest
-<https://pypi.python.org/pypi/check-manifest>`_ that can do this check for
+<https://pypi.org/project/check-manifest>`_ that can do this check for
 every Python package.)
