@@ -12,7 +12,7 @@ addons:
 install:
     - pip install coverage coverage-python-version coveralls flake8 -e .
 before_script:
-    - make lint
+    - make flake8
 script:
     - coverage run tests.py
     - coverage report -m --fail-under=100
