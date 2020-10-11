@@ -11,24 +11,39 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
+import io
+import os
+import re
+import sys
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 sys.path.append(os.path.abspath('..'))
 
+
 def relative(filename):
     here = os.path.dirname('__file__')
     return os.path.join(here, filename)
 
+
+def read(filename):
+    with io.open(relative(filename), encoding='UTF-8') as f:
+        return f.read()
+
+
 def get_version():
-    d = {}
-    exec open(relative('../objgraph.py')).read() in d
-    return d['__version__']
+    r = re.compile('''^__version__ = ["'](.+)["']$''')
+    for line in read('../objgraph.py').splitlines():
+        m = r.match(line)
+        if m:
+            return m.group(1)
+    raise AssertionError('Could not determine version number from objgraph.py')
+
 
 def get_short_version():
     return '.'.join(get_version().split('.')[:2])
+
 
 # -- General configuration -----------------------------------------------------
 

@@ -67,6 +67,7 @@ setup(
     license='MIT',
     description='Draws Python object reference graphs with graphviz',
     long_description=get_description(),
+    long_description_content_type='text/x-rst',
     classifiers=[
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',

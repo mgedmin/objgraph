@@ -3,6 +3,12 @@ Changes
 
 .. currentmodule:: objgraph
 
+3.5.1 (unreleased)
+------------------
+
+- Nothing changed yet.
+
+
 3.5.0 (2020-10-11)
 ------------------
 
