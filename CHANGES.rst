@@ -3,7 +3,7 @@ Changes
 
 .. currentmodule:: objgraph
 
-3.5.0 (unreleased)
+3.5.0 (2020-10-11)
 ------------------
 
 - Do not require ``mock`` for the test suite on Python 3; use unittest.mock

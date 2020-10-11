@@ -42,9 +42,7 @@ endef
 
 .PHONY: coverage
 coverage:                       ##: measure test coverage
-	python2 -m coverage run tests.py
-	python3 -m coverage run -a tests.py
-	coverage report -m --fail-under=100
+	tox -e coverage2,coverage3
 
 .PHONY: flake8
 flake8:                         ##: check for style problems
