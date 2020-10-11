@@ -1,4 +1,4 @@
-# release.mk version 1.4 (2019-04-23)
+# release.mk version 2.0 (2020-10-11)
 #
 # Helpful Makefile rules for releasing Python packages.
 # https://github.com/mgedmin/python-project-skel
@@ -11,10 +11,10 @@ CHANGELOG_FORMAT ?= $(changelog_ver) ($(changelog_date))
 DISTCHECK_DIFF_OPTS ?= $(DISTCHECK_DIFF_DEFAULT_OPTS)
 
 # These should be fine
-PYTHON ?= python
+PYTHON ?= python3
 PYPI_PUBLISH ?= rm -rf dist && $(PYTHON) setup.py -q sdist bdist_wheel && twine check dist/* && twine upload dist/*
 LATEST_RELEASE_MK_URL = https://raw.githubusercontent.com/mgedmin/python-project-skel/master/release.mk
-DISTCHECK_DIFF_DEFAULT_OPTS = -x PKG-INFO -x setup.cfg -x '*.egg-info' -I'^\#'
+DISTCHECK_DIFF_DEFAULT_OPTS = -x PKG-INFO -x setup.cfg -x '*.egg-info' -x .github -I'^\#'
 
 # These should be fine, as long as you use Git
 VCS_GET_LATEST ?= git pull
@@ -27,30 +27,58 @@ VCS_COMMIT_AND_PUSH ?= git commit -av -m "Post-release version bump" && git push
 changelog_ver = `$(PYTHON) setup.py --version`
 changelog_date = `LC_ALL=C date +'$(CHANGELOG_DATE_FORMAT)'`
 
+# Tweaking the look of 'make help'; most of these are awk literals and need the quotes
+HELP_INDENT = ""
+HELP_PREFIX = "make "
+HELP_WIDTH = 24
+HELP_SEPARATOR = " \# "
+HELP_SECTION_SEP = "\n"
+
+.PHONY: help
+help:
+	@grep -Eh -e '^[a-zA-Z0-9_ -]+:.*?##: .*$$' -e '^##:' $(MAKEFILE_LIST) \
+	    | awk 'BEGIN {FS = "(^|:[^#]*)##: "; section=""}; \
+	          /^##:/ {printf "%s%s\n%s", section, $$2, $(HELP_SECTION_SEP); section=$(HELP_SECTION_SEP)} \
+	          /^[^#]/ {printf "%s\033[36m%-$(HELP_WIDTH)s\033[0m%s%s\n", \
+	                   $(HELP_INDENT), $(HELP_PREFIX) $$1, $(HELP_SEPARATOR), $$2}'
 
 .PHONY: dist
 dist:
 	$(PYTHON) setup.py -q sdist bdist_wheel
+
+# Provide a default 'make check' to be the same as 'make test', since that's
+# what 80% of my projects use, but make it possible to override.  Now
+# overriding Make rules is painful, so instead of a regular rule definition
+# you'll have to override the check_recipe macro.
+.PHONY: check
+check:
+	$(check_recipe)
+
+ifndef check_recipe
+define check_recipe =
+	@$(MAKE) test
+endef
+endif
 
 .PHONY: distcheck
 distcheck: distcheck-vcs distcheck-sdist
 
 .PHONY: distcheck-vcs
 distcheck-vcs:
+ifndef FORCE
 	# Bit of a chicken-and-egg here, but if the tree is unclean, make
 	# distcheck-sdist will fail.
-ifndef FORCE
 	@test -z "`$(VCS_STATUS) 2>&1`" || { echo; echo "Your working tree is not clean:" 1>&2; $(VCS_STATUS) 1>&2; exit 1; }
 endif
 
-# NB: do not use $(MAKE) because then make -n distcheck will actually run
-# it instead of just printing what it does
+# NB: do not use $(MAKE) in rules with multiple shell commands joined by &&
+# because then make -n distcheck will actually run those instead of just
+# printing what it does
 
 # TBH this could (and probably should) be replaced by check-manifest
 
 .PHONY: distcheck-sdist
-distcheck-sdist:
-	make dist
+distcheck-sdist: dist
 	pkg_and_version=`$(PYTHON) setup.py --name`-`$(PYTHON) setup.py --version` && \
 	  rm -rf tmp && \
 	  mkdir tmp && \
@@ -97,20 +125,24 @@ check-changelog:
 	    grep -q "^$$ver_and_date$$" $(FILE_WITH_CHANGELOG) || { \
 	        echo "$(FILE_WITH_CHANGELOG) has no entry for $$ver_and_date"; exit 1; }
 
-# NB: do not use $(MAKE) because then make -n releasechecklist will
-# actually run the distcheck instead of just printing what it does
+
+# NB: the Makefile that includes release.mk may want to add additional
+# dependencies to the releasechecklist target, but I want 'make distcheck' to
+# happen last, so that's why I put it into the recipe and not at the end of the
+# list of dependencies.
 
 .PHONY: releasechecklist
 releasechecklist: check-latest-rules check-latest-version check-version-number check-long-description check-changelog
-	make distcheck
+	$(MAKE) distcheck
 
 .PHONY: release
-release: releasechecklist do-release
+release: releasechecklist do-release    ##: prepare a new PyPI release
 
 .PHONY: do-release
 do-release:
 	$(release_recipe)
 
+ifndef release_recipe
 define release_recipe =
 	# I'm chicken so I won't actually do these things yet
 	@echo "Please run"
@@ -124,3 +156,4 @@ define release_recipe =
 	@echo '  $(VCS_COMMIT_AND_PUSH)'
 	@echo
 endef
+endif
