@@ -6,7 +6,7 @@ Changes
 3.5.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add support for Python 3.9.
 
 
 3.5.0 (2020-10-11)
