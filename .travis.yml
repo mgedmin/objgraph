@@ -1,23 +1,31 @@
 language: python
-dist: xenial
+cache: pip
 python:
-    - 2.7
-    - 3.6
-    - 3.7
-    - 3.8
-    - 3.9
+  - 2.7
+  - 3.6
+  - 3.7
+  - 3.8
+  - 3.9
 addons:
-    apt:
-        packages:
-            - graphviz
+  apt:
+    packages:
+      - graphviz
 install:
-    - pip install coverage coverage-python-version coveralls flake8 -e .
+  - pip install coverage coverage-python-version coveralls flake8 -e .
 before_script:
-    - make flake8
+  - make flake8
 script:
-    - coverage run tests.py
-    - coverage report -m --fail-under=100
+  - coverage run tests.py
+  - coverage report -m --fail-under=100
 after_success:
-    - coveralls
+  - coveralls
+
 notifications:
-    email: false
+  irc:
+    channels:
+      - "chat.freenode.net##mgedmin"
+    on_success: change
+    on_failure: always
+    template:
+      # ping my nick so I get a pushbullet notification on my phone
+      - "mgedmin: %{repository_name} (%{branch}) build %{result}: %{build_url}"
