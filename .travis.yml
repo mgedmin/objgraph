@@ -11,7 +11,7 @@ addons:
     packages:
       - graphviz
 install:
-  - pip install coverage coverage-python-version coveralls flake8 -e .
+  - pip install coverage coverage-python-version coveralls flake8 -e .[test]
 before_script:
   - make flake8
 script:

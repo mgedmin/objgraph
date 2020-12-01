@@ -1,8 +1,8 @@
 Python Object Graphs
 ====================
 
-.. image:: https://travis-ci.com/mgedmin/objgraph.svg?branch=master
-   :target: https://travis-ci.com/mgedmin/objgraph
+.. image:: https://github.com/mgedmin/objgraph/workflows/build/badge.svg?branch=master
+    :target: https://github.com/mgedmin/objgraph/actions
    :alt: Build Status
 
 .. image:: https://ci.appveyor.com/api/projects/status/github/mgedmin/objgraph?branch=master&svg=true

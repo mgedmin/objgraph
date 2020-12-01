@@ -46,7 +46,7 @@ coverage:                       ##: measure test coverage
 
 .PHONY: flake8
 flake8:                         ##: check for style problems
-	flake8
+	tox -e flake8
 
 # Make sure $(VCS_DIFF_IMAGES) can work
 .PHONY: config-imgdiff
