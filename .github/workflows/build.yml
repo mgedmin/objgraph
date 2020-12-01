@@ -1,0 +1,114 @@
+# NB: this name is used in the status badge
+name: build
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+  schedule:
+    - cron: "0 5 * * 6"  # 5:00 UTC every Saturday
+
+jobs:
+  build:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version:
+          - "2.7"
+          - "3.6"
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "pypy2"
+          - "pypy3"
+
+    steps:
+      - name: Git clone
+        uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: "${{ matrix.python-version }}"
+
+      - name: Pip cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('setup.py') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -U pip
+          python -m pip install -U setuptools wheel
+          python -m pip install -U coverage coverage-python-version coveralls
+          python -m pip install -e .
+
+      - name: Run tests
+        run: coverage run tests.py
+
+      - name: Check test coverage
+        run: coverage report -m --fail-under=100
+
+      - name: Report to coveralls
+        run: coveralls
+        if: "matrix.python-version != '2.7' && matrix.python-version != 'pypy2'"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_PARALLEL: true
+
+  finish:
+    name: Tell Coveralls that we're finished running all parallel jobs
+    needs: build
+    runs-on: ubuntu-latest
+    container: python:3-slim
+    steps:
+      - run: pip3 install -U coveralls
+      - run: coveralls --finish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  lint:
+    name: ${{ matrix.toxenv }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        toxenv:
+          - flake8
+
+    steps:
+      - name: Git clone
+        uses: actions/checkout@v2
+
+      - name: Set up Python ${{ env.default_python || '3.9' }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: "${{ env.default_python || '3.9' }}"
+
+      - name: Pip cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.toxenv }}-${{ hashFiles('tox.ini') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.toxenv }}-
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -U pip
+          python -m pip install -U setuptools wheel
+          python -m pip install -U tox
+
+      - name: Run ${{ matrix.toxenv }}
+        run: python -m tox -e ${{ matrix.toxenv }}
