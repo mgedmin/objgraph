@@ -24,8 +24,7 @@ install:
   - python --version
   - pip install -U virtualenv  # upgrade pip in tox's virtualenvs
   - pip install tox
-  - choco install graphviz
-  - "set PATH=c:\\Program Files (x86)\\graphviz2.38\\bin;%PATH%"
+  - winget install graphviz
   - dot -V
 
 build: off
