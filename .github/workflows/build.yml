@@ -54,7 +54,7 @@ jobs:
           python -m pip install -U pip
           python -m pip install -U setuptools wheel
           python -m pip install -U coverage coverage-python-version coveralls
-          python -m pip install -e .
+          python -m pip install -e .[test]
 
       - name: Run tests
         run: coverage run tests.py

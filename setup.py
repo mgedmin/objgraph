@@ -84,6 +84,11 @@ setup(
     install_requires=[
         'graphviz',  # just for ipython support currently
     ],
+    extras_require={
+        'test': [
+            'mock;python_version=="2.7"',
+        ],
+    },
     tests_require=['mock;python_version=="2.7"'],
     test_suite='tests.test_suite',
     zip_safe=True,
