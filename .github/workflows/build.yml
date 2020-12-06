@@ -65,18 +65,6 @@ jobs:
         if: "matrix.python-version != '2.7' && matrix.python-version != 'pypy2'"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COVERALLS_PARALLEL: true
-
-  finish:
-    name: Tell Coveralls that we're finished running all parallel jobs
-    needs: build
-    runs-on: ubuntu-latest
-    container: python:3-slim
-    steps:
-      - run: pip3 install -U coveralls
-      - run: coveralls --finish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   lint:
     name: ${{ matrix.toxenv }}
