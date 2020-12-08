@@ -30,15 +30,15 @@ from __future__ import print_function
 import codecs
 import collections
 import gc
-import re
 import inspect
-import types
+import itertools
 import operator
 import os
+import re
 import subprocess
-import tempfile
 import sys
-import itertools
+import tempfile
+import types
 
 try:
     # Python 2.x compatibility
