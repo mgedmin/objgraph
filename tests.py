@@ -292,7 +292,7 @@ class TypestatsTest(GarbageCollectedMixin, unittest.TestCase):
     def test_long_type_names(self):
         x = type('MyClass', (), {'__module__': 'mymodule'})()  # noqa
         stats = objgraph.typestats(shortnames=False)
-        self.assertEqual(1, stats['mymodule.MyClass'])
+        self.assertEqual(1, stats['mymodule.MyClass'][0])
 
     def test_no_new_reference_cycles(self):
         # Similar to https://github.com/mgedmin/objgraph/pull/22 but for
@@ -315,7 +315,7 @@ class TypestatsFilterArguTest(GarbageCollectedMixin, unittest.TestCase):
         x.magic_attr = True
         y.magic_attr = False
         stats = objgraph.typestats(shortnames=False)
-        self.assertEqual(2, stats['mymodule.MyClass'])
+        self.assertEqual(2, stats['mymodule.MyClass'][0])
 
     def test_with_filter(self):
         MyClass = type('MyClass', (), {'__module__': 'mymodule'})  # noqa
@@ -325,7 +325,7 @@ class TypestatsFilterArguTest(GarbageCollectedMixin, unittest.TestCase):
         stats = objgraph.typestats(
             shortnames=False,
             filter=lambda e: isinstance(e, MyClass) and e.magic_attr)
-        self.assertEqual(1, stats['mymodule.MyClass'])
+        self.assertEqual(1, stats['mymodule.MyClass'][0])
 
 
 class GrowthTest(GarbageCollectedMixin, unittest.TestCase):
