@@ -184,7 +184,8 @@ def typestats(objects=None, shortnames=True, filter=None):
             if filter and not filter(o):
                 continue
             n = typename(o)
-            stats[n] = stats.get(n, 0) + 1
+            val = stats.get(n, (0, sys.getsizeof(o)))
+            stats[n] = (val[0] + 1, sys.getsizeof(o))
         return stats
     finally:
         del objects  # clear cyclic references to frame
@@ -273,7 +274,7 @@ def show_most_common_types(
                               filter=filter)
     width = max(len(name) for name, count in stats)
     for name, count in stats:
-        file.write('%-*s %i\n' % (width, name, count))
+        file.write('%-*s - %i - %i - %i\n' % (width, name, count[0], count[1], count[0]*count[1]))
 
 
 def growth(limit=10, peak_stats={}, shortnames=True, filter=None):
