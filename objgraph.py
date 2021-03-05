@@ -275,7 +275,7 @@ def show_most_common_types(
     width = max(len(name) for name, count in stats)
     for name, count in stats:
         file.write('%-*s - %i - %i - %i\n' %
-                    (width, name, count[0], count[1], count[0]*count[1]))
+                  (width, name, count[0], count[1], count[0]*count[1]))
 
 
 def growth(limit=10, peak_stats={}, shortnames=True, filter=None):
