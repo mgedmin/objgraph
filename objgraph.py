@@ -359,7 +359,7 @@ def show_growth(limit=10, peak_stats=None, shortnames=True, file=None,
             file = sys.stdout
         width = max(len(name) for name, _, _ in result)
         for name, count, delta in result:
-            file.write('%-*s%9d %+9d\n' % (width, name, count, delta))
+            file.write('%-*s%9d %+9d\n' % (width, name, count[0], delta))
 
 
 def get_new_ids(skip_update=False, limit=10, sortby='deltas',
