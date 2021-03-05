@@ -309,9 +309,9 @@ def growth(limit=10, peak_stats={}, shortnames=True, filter=None):
     deltas = {}
     for name, count in iteritems(stats):
         old_count = peak_stats.get(name, 0)
-        if count > old_count:
-            deltas[name] = count - old_count
-            peak_stats[name] = count
+        if count[0] > old_count:
+            deltas[name] = count[0] - old_count
+            peak_stats[name] = count[0]
     deltas = sorted(deltas.items(), key=operator.itemgetter(1),
                     reverse=True)
     if limit:
