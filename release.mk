@@ -1,4 +1,4 @@
-# release.mk version 2.0 (2020-10-11)
+# release.mk version 2.1 (2021-04-19)
 #
 # Helpful Makefile rules for releasing Python packages.
 # https://github.com/mgedmin/python-project-skel
@@ -142,18 +142,24 @@ release: releasechecklist do-release    ##: prepare a new PyPI release
 do-release:
 	$(release_recipe)
 
-ifndef release_recipe
-define release_recipe =
+define default_release_recipe_publish_and_tag =
 	# I'm chicken so I won't actually do these things yet
 	@echo "Please run"
 	@echo
 	@echo "  $(PYPI_PUBLISH)"
 	@echo "  $(VCS_TAG)"
 	@echo
+endef
+define default_release_recipe_increment_and_push =
 	@echo "Please increment the version number in $(FILE_WITH_VERSION)"
 	@echo "and add a new empty entry at the top of the changelog in $(FILE_WITH_CHANGELOG), then"
 	@echo
 	@echo '  $(VCS_COMMIT_AND_PUSH)'
 	@echo
+endef
+ifndef release_recipe
+define release_recipe =
+$(default_release_recipe_publish_and_tag)
+$(default_release_recipe_increment_and_push)
 endef
 endif
