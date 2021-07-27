@@ -276,7 +276,8 @@ def show_most_common_types(
         file.write('%-*s %i\n' % (width, name, count))
 
 
-def growth(limit=10, peak_stats={}, shortnames=True, filter=None):
+def growth(limit=10, peak_stats={}, shortnames=True, filter=None,
+           gc_collect_gen=2):
     """Count the increase in peak object since last call.
 
     Returns a list of (type_name, total_count, increase_delta),
@@ -293,6 +294,9 @@ def growth(limit=10, peak_stats={}, shortnames=True, filter=None):
     returning a boolean. Objects for which ``filter(obj)`` returns ``False``
     will be ignored.
 
+    gc.collect() is called with ``gc_collect_gen``. The default is ``2``, thus
+    running a full collection.
+
     The caveats documented in :func:`typestats` apply.
 
     Example:
@@ -303,7 +307,7 @@ def growth(limit=10, peak_stats={}, shortnames=True, filter=None):
     .. versionadded:: 3.3.0
 
     """
-    gc.collect()
+    gc.collect(gc_collect_gen)
     stats = typestats(shortnames=shortnames, filter=filter)
     deltas = {}
     for name, count in iteritems(stats):
@@ -320,7 +324,7 @@ def growth(limit=10, peak_stats={}, shortnames=True, filter=None):
 
 
 def show_growth(limit=10, peak_stats=None, shortnames=True, file=None,
-                filter=None):
+                filter=None, gc_collect_gen=2):
     """Show the increase in peak object counts since last call.
 
     if ``peak_stats`` is None, peak object counts will recorded in
@@ -348,11 +352,15 @@ def show_growth(limit=10, peak_stats=None, shortnames=True, file=None,
     .. versionchanged:: 3.1.3
        New parameter: ``filter``.
 
+    .. versionchanged:: 3.6
+       New parameter: ``gc_collect_gen``.
+
     """
     if peak_stats is None:
-        result = growth(limit, shortnames=shortnames, filter=filter)
+        result = growth(limit, shortnames=shortnames, filter=filter,
+                        gc_collect_gen=gc_collect_gen)
     else:
-        result = growth(limit, peak_stats, shortnames, filter)
+        result = growth(limit, peak_stats, shortnames, filter, gc_collect_gen)
     if result:
         if file is None:
             file = sys.stdout
@@ -362,7 +370,7 @@ def show_growth(limit=10, peak_stats=None, shortnames=True, file=None,
 
 
 def get_new_ids(skip_update=False, limit=10, sortby='deltas',
-                shortnames=None, file=None, _state={}):
+                shortnames=None, file=None, _state={}, gc_collect_gen=2):
     """Find and display new objects allocated since last call.
 
     Shows the increase in object counts since last call to this
@@ -391,6 +399,9 @@ def get_new_ids(skip_update=False, limit=10, sortby='deltas',
     ``_state`` (dict): Stores old, current, and new_ids in memory.
     It is used by the function to store the internal state between calls.
     Never pass in this argument unless you know what you're doing.
+
+    ``gc_collect_gen`` (int from 0 to 2): used in the call to gc.collect() to
+    limit the collection to given generation and lower.
 
     The caveats documented in :func:`growth` apply.
 
@@ -435,7 +446,7 @@ def get_new_ids(skip_update=False, limit=10, sortby='deltas',
         shortnames = _state['shortnames']
     else:
         _state['shortnames'] = shortnames
-    gc.collect()
+    gc.collect(gc_collect_gen)
     objects = gc.get_objects()
     for class_name in old_ids:
         old_ids[class_name].clear()
@@ -494,7 +505,7 @@ def get_new_ids(skip_update=False, limit=10, sortby='deltas',
     return new_ids
 
 
-def get_leaking_objects(objects=None):
+def get_leaking_objects(objects=None, gc_collect_gen=2):
     """Return objects that do not have any referents.
 
     These could indicate reference-counting bugs in C code.  Or they could
@@ -505,7 +516,7 @@ def get_leaking_objects(objects=None):
     .. versionadded:: 1.7
     """
     if objects is None:
-        gc.collect()
+        gc.collect(gc_collect_gen)
         objects = gc.get_objects()
     try:
         ids = set(id(i) for i in objects)
@@ -592,7 +603,8 @@ def at_addrs(address_set):
     return res
 
 
-def find_ref_chain(obj, predicate, max_depth=20, extra_ignore=()):
+def find_ref_chain(obj, predicate, max_depth=20, extra_ignore=(),
+                   gc_collect_gen=2):
     """Find a shortest chain of references leading from obj.
 
     The end of the chain will be some object that matches your predicate.
@@ -604,6 +616,9 @@ def find_ref_chain(obj, predicate, max_depth=20, extra_ignore=()):
     ``extra_ignore`` can be a list of object IDs to exclude those objects from
     your search.
 
+    ``gc_collect_gen`` specifies the generation to be collected in the call to
+    gc.collect(). The default is to run a full collection.
+
     Example:
 
         >>> find_ref_chain(obj, lambda x: isinstance(x, MyClass))
@@ -614,10 +629,12 @@ def find_ref_chain(obj, predicate, max_depth=20, extra_ignore=()):
     .. versionadded:: 1.7
     """
     return _find_chain(obj, predicate, gc.get_referents,
-                       max_depth=max_depth, extra_ignore=extra_ignore)[::-1]
+                       max_depth=max_depth, extra_ignore=extra_ignore,
+                       gc_collect_gen=gc_collect_gen)[::-1]
 
 
-def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
+def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=(),
+                       gc_collect_gen=2):
     """Find a shortest chain of references leading to obj.
 
     The start of the chain will be some object that matches your predicate.
@@ -628,6 +645,9 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
 
     ``extra_ignore`` can be a list of object IDs to exclude those objects from
     your search.
+
+    ``gc_collect_gen`` specifies the generation to be collected in the call to
+    gc.collect(). The default is to run a full collection.
 
     Example:
 
@@ -641,13 +661,14 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
 
     """
     return _find_chain(obj, predicate, gc.get_referrers,
-                       max_depth=max_depth, extra_ignore=extra_ignore)
+                       max_depth=max_depth, extra_ignore=extra_ignore,
+                       gc_collect_gen=gc_collect_gen)
 
 
 def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
                   highlight=None, filename=None, extra_info=None,
                   refcounts=False, shortnames=True, output=None,
-                  extra_node_attrs=None):
+                  extra_node_attrs=None, gc_collect_gen=2):
     """Generate an object reference graph ending at ``objs``.
 
     The graph will show you what objects refer to ``objs``, directly and
@@ -693,6 +714,9 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     names ('package.module.ClassName').  By default you get to see only the
     class name part.
 
+    ``gc_collect_gen`` specifies the generation to be collected in the call to
+    gc.collect(). The default is to run a full collection.
+
     Examples:
 
         >>> show_backrefs(obj)
@@ -717,6 +741,9 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
 
     .. versionchanged:: 3.5
        New parameter: ``extra_node_attrs``.
+
+    .. versionchanged:: 3.6
+       New parameter: ``gc_collect_gen``.
     """
     # For show_backrefs(), it makes sense to stop when reaching a
     # module because you'll end up in sys.modules and explode the
@@ -728,13 +755,14 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
                        filename=filename, output=output, extra_info=extra_info,
                        refcounts=refcounts, shortnames=shortnames,
                        cull_func=is_proper_module,
-                       extra_node_attrs=extra_node_attrs)
+                       extra_node_attrs=extra_node_attrs,
+                       gc_collect_gen=gc_collect_gen)
 
 
 def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
               highlight=None, filename=None, extra_info=None,
               refcounts=False, shortnames=True, output=None,
-              extra_node_attrs=None):
+              extra_node_attrs=None, gc_collect_gen=2):
     """Generate an object reference graph starting at ``objs``.
 
     The graph will show you what objects are reachable from ``objs``, directly
@@ -774,6 +802,9 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
 
     Specify ``refcounts=True`` if you want to see reference counts.
 
+    ``gc_collect_gen`` specifies the generation to be collected in the call to
+    gc.collect(). The default is to run a full collection.
+
     Examples:
 
         >>> show_refs(obj)
@@ -801,13 +832,17 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
 
     .. versionchanged:: 3.5
        New parameter: ``extra_node_attrs``.
+
+    .. versionchanged:: 3.6
+       New parameter: ``gc_collect_gen``.
     """
     return _show_graph(objs, max_depth=max_depth, extra_ignore=extra_ignore,
                        filter=filter, too_many=too_many, highlight=highlight,
                        edge_func=gc.get_referents, swap_source_target=True,
                        filename=filename, extra_info=extra_info,
                        refcounts=refcounts, shortnames=shortnames,
-                       output=output, extra_node_attrs=extra_node_attrs)
+                       output=output, extra_node_attrs=extra_node_attrs,
+                       gc_collect_gen=gc_collect_gen)
 
 
 def show_chain(*chains, **kw):
@@ -881,7 +916,8 @@ def is_proper_module(obj):
 # Internal helpers
 #
 
-def _find_chain(obj, predicate, edge_func, max_depth=20, extra_ignore=()):
+def _find_chain(obj, predicate, edge_func, max_depth=20, extra_ignore=(),
+                gc_collect_gen=2):
     queue = [obj]
     depth = {id(obj): 0}
     parent = {id(obj): None}
@@ -893,7 +929,7 @@ def _find_chain(obj, predicate, edge_func, max_depth=20, extra_ignore=()):
     ignore.add(id(ignore))
     ignore.add(id(sys._getframe()))   # this function
     ignore.add(id(sys._getframe(1)))  # find_chain/find_backref_chain
-    gc.collect()
+    gc.collect(gc_collect_gen)
     while queue:
         target = queue.pop(0)
         if predicate(target):
@@ -920,7 +956,8 @@ def _show_graph(objs, edge_func, swap_source_target,
                 max_depth=3, extra_ignore=(), filter=None, too_many=10,
                 highlight=None, filename=None, extra_info=None,
                 refcounts=False, shortnames=True, output=None,
-                cull_func=None, extra_node_attrs=None):
+                cull_func=None, extra_node_attrs=None,
+                gc_collect_gen=2):
     if not _isinstance(objs, (list, tuple)):
         objs = [objs]
 
@@ -963,7 +1000,7 @@ def _show_graph(objs, edge_func, swap_source_target,
         depth[id(obj)] = 0
         queue.append(obj)
         del obj
-    gc.collect()
+    gc.collect(gc_collect_gen)
     nodes = 0
     while queue:
         nodes += 1
