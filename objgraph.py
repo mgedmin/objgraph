@@ -95,6 +95,19 @@ def _isinstance(object, classinfo):
     return issubclass(type(object), classinfo)
 
 
+def _get_output_fn(file=None):
+    """Return function which will be used for writing data to output.
+
+    If `file` is none, output will be printed to stdout.
+    """
+    if file is None:
+        def show(inp):
+            print(inp)
+        return show
+
+    return file.write
+
+
 def count(typename, objects=None):
     """Count objects tracked by the garbage collector with a given class name.
 
@@ -267,13 +280,12 @@ def show_most_common_types(
        New parameter: ``filter``.
 
     """
-    if file is None:
-        file = sys.stdout
+    output_fn = _get_output_fn(file)
     stats = most_common_types(limit, objects, shortnames=shortnames,
                               filter=filter)
     width = max(len(name) for name, count in stats)
     for name, count in stats:
-        file.write('%-*s %i\n' % (width, name, count))
+        output_fn('%-*s %i\n' % (width, name, count))
 
 
 def growth(limit=10, peak_stats={}, shortnames=True, filter=None):
@@ -354,11 +366,10 @@ def show_growth(limit=10, peak_stats=None, shortnames=True, file=None,
     else:
         result = growth(limit, peak_stats, shortnames, filter)
     if result:
-        if file is None:
-            file = sys.stdout
+        output_fn = _get_output_fn(file)
         width = max(len(name) for name, _, _ in result)
         for name, count, delta in result:
-            file.write('%-*s%9d %+9d\n' % (width, name, count, delta))
+            output_fn('%-*s%9d %+9d\n' % (width, name, count, delta))
 
 
 def get_new_ids(skip_update=False, limit=10, sortby='deltas',
@@ -479,18 +490,17 @@ def get_new_ids(skip_update=False, limit=10, sortby='deltas',
         rows = rows[:limit]
     if not rows:
         return new_ids
-    if file is None:
-        file = sys.stdout
     width = max(len(row[0]) for row in rows)
-    print('='*(width+13*4), file=file)
-    print('%-*s%13s%13s%13s%13s' %
-          (width, 'Type', 'Old_ids', 'Current_ids', 'New_ids', 'Count_Deltas'),
-          file=file)
-    print('='*(width+13*4), file=file)
+    output_fn = _get_output_fn(file)
+    output_fn('='*(width+13*4))
+    output_fn('%-*s%13s%13s%13s%13s' %
+              (width, 'Type', 'Old_ids', 'Current_ids',
+               'New_ids', 'Count_Deltas'))
+    output_fn('='*(width+13*4))
     for row_class, old, current, new, delta in rows:
-        print('%-*s%13d%13d%+13d%+13d' %
-              (width, row_class, old, current, new, delta), file=file)
-    print('='*(width+13*4), file=file)
+        output_fn('%-*s%13d%13d%+13d%+13d' %
+                  (width, row_class, old, current, new, delta))
+    output_fn('='*(width+13*4))
     return new_ids
 
 
@@ -944,8 +954,10 @@ def _show_graph(objs, edge_func, swap_source_target,
             # Re-wrap it for utf-8
             import io
             f = io.TextIOWrapper(f.detach(), 'utf-8')
-    f.write('digraph ObjectGraph {\n'
-            '  node[shape=box, style=filled, fillcolor=white];\n')
+
+    output_fn = _get_output_fn(f)
+    output_fn('digraph ObjectGraph {\n'
+              '  node[shape=box, style=filled, fillcolor=white];\n')
     queue = []
     depth = {}
     ignore = set(extra_ignore)
@@ -959,7 +971,7 @@ def _show_graph(objs, edge_func, swap_source_target,
     ignore.add(id(sys._getframe(1)))  # show_refs/show_backrefs
     ignore.add(id(sys._getframe(1).f_locals))
     for obj in objs:
-        f.write('  %s[fontcolor=red];\n' % (_obj_node_id(obj)))
+        output_fn('  %s[fontcolor=red];\n' % (_obj_node_id(obj)))
         depth[id(obj)] = 0
         queue.append(obj)
         del obj
@@ -972,11 +984,11 @@ def _show_graph(objs, edge_func, swap_source_target,
         # traversing the reference graph backwards.
         target = queue.pop(0)
         tdepth = depth[id(target)]
-        f.write('  %s[label="%s"%s];\n' % (_obj_node_id(target),
-                                           _obj_label(target, extra_info,
-                                                      refcounts, shortnames),
-                                           _obj_attrs(target,
-                                                      extra_node_attrs)))
+        output_fn('  %s[label="%s"%s];\n' % (_obj_node_id(target),
+                                             _obj_label(target, extra_info,
+                                                        refcounts, shortnames),
+                                             _obj_attrs(target,
+                                                        extra_node_attrs)))
         h, s, v = _gradient((0, 0, 1), (0, 0, .3), tdepth, max_depth)
         if inspect.ismodule(target):
             h = .3
@@ -985,17 +997,17 @@ def _show_graph(objs, edge_func, swap_source_target,
             h = .6
             s = .6
             v = 0.5 + v * 0.5
-        f.write('  %s[fillcolor="%g,%g,%g"];\n'
-                % (_obj_node_id(target), h, s, v))
+        output_fn('  %s[fillcolor="%g,%g,%g"];\n'
+                  % (_obj_node_id(target), h, s, v))
         if v < 0.5:
-            f.write('  %s[fontcolor=white];\n' % (_obj_node_id(target)))
+            output_fn('  %s[fontcolor=white];\n' % (_obj_node_id(target)))
         if hasattr(getattr(target, '__class__', None), '__del__'):
-            f.write('  %s->%s_has_a_del[color=red,style=dotted,'
-                    'len=0.25,weight=10];\n' % (_obj_node_id(target),
-                                                _obj_node_id(target)))
-            f.write('  %s_has_a_del[label="__del__",shape=doublecircle,'
-                    'height=0.25,color=red,fillcolor="0,.5,1",fontsize=6];\n'
-                    % (_obj_node_id(target)))
+            output_fn('  %s->%s_has_a_del[color=red,style=dotted,'
+                      'len=0.25,weight=10];\n' % (_obj_node_id(target),
+                                                  _obj_node_id(target)))
+            output_fn('  %s_has_a_del[label="__del__",shape=doublecircle,'
+                      'height=0.25,color=red,fillcolor="0,.5,1",fontsize=6];\n'
+                      % (_obj_node_id(target)))
         if tdepth >= max_depth:
             continue
         if cull_func is not None and cull_func(target):
@@ -1017,8 +1029,8 @@ def _show_graph(objs, edge_func, swap_source_target,
             else:
                 srcnode, tgtnode = source, target
             elabel = _edge_label(srcnode, tgtnode, shortnames)
-            f.write('  %s -> %s%s;\n' % (_obj_node_id(srcnode),
-                                         _obj_node_id(tgtnode), elabel))
+            output_fn('  %s -> %s%s;\n' % (_obj_node_id(srcnode),
+                                           _obj_node_id(tgtnode), elabel))
             if id(source) not in depth:
                 depth[id(source)] = tdepth + 1
                 queue.append(source)
@@ -1035,14 +1047,14 @@ def _show_graph(objs, edge_func, swap_source_target,
                 label = "%d more backreferences" % skipped
                 edge = "too_many_%s->%s" % (_obj_node_id(target),
                                             _obj_node_id(target))
-            f.write('  %s[color=red,style=dotted,len=0.25,weight=10];\n'
-                    % edge)
-            f.write('  too_many_%s[label="%s",shape=box,height=0.25,'
-                    'color=red,fillcolor="%g,%g,%g",fontsize=6];\n'
-                    % (_obj_node_id(target), label, h, s, v))
-            f.write('  too_many_%s[fontcolor=white];\n'
-                    % (_obj_node_id(target)))
-    f.write("}\n")
+            output_fn('  %s[color=red,style=dotted,len=0.25,weight=10];\n'
+                      % edge)
+            output_fn('  too_many_%s[label="%s",shape=box,height=0.25,'
+                      'color=red,fillcolor="%g,%g,%g",fontsize=6];\n'
+                      % (_obj_node_id(target), label, h, s, v))
+            output_fn('  too_many_%s[fontcolor=white];\n'
+                      % (_obj_node_id(target)))
+    output_fn("}\n")
 
     if output:
         return
