@@ -342,7 +342,8 @@ class GrowthTest(GarbageCollectedMixin, unittest.TestCase):
     def test_growth_override_gc_collect_gen(self):
 
         """
-        Inspiration taken from https://bugs.python.org/issue39061, attachment late_gc.py
+        Inspiration taken from https://bugs.python.org/issue39061, attachment
+        late_gc.py
         """
         class ApparentlyLeakingObj:
             """Object keeping references to itself"""
@@ -352,29 +353,32 @@ class GrowthTest(GarbageCollectedMixin, unittest.TestCase):
         def trigger_memory_leak_look_alike():
             for i in range(1000):
                 apparently_leaking = ApparentlyLeakingObj()
-                # Instantiate n objects to free via garbage collection while "working" on that heavy object
+                # Instantiate n objects to free via garbage collection while
+                # "working" on that heavy object
                 for i in range(90):
                     light_cyclical_object = list()
                     light_cyclical_object.append(light_cyclical_object)
                 del apparently_leaking
 
-        # First, make sure that when using the default garbage collection generation
-        # parameter, there is no memory leak look alike: there should not be any
-        # ApparentlyLeakingObj in the growth info
+        # First, make sure that when using the default garbage collection
+        # generation parameter, there is no memory leak look alike: there
+        # should not be any ApparentlyLeakingObj in the growth info
         objgraph.growth(limit=None)
         trigger_memory_leak_look_alike()
         growth_info = objgraph.growth(limit=None)
 
-        assert not any(record[0] == 'ApparentlyLeakingObj' for record in growth_info)
+        assert not any(record[0] == 'ApparentlyLeakingObj'
+                       for record in growth_info)
 
-        # Now, only collect up to generation 1, keeping the objects in generation 2
-        # intact. There should be at least one ApparentlyLeakingObj in the growth
-        # info
+        # Now, only collect up to generation 1, keeping the objects in
+        # generation 2 intact. There should be at least one
+        # ApparentlyLeakingObj in the growth info
         objgraph.growth(limit=None, gc_collect_gen=1)
         trigger_memory_leak_look_alike()
         growth_info = objgraph.growth(limit=None, gc_collect_gen=1)
 
-        assert any(record[0] == 'ApparentlyLeakingObj' for record in growth_info)
+        assert any(record[0] == 'ApparentlyLeakingObj'
+                   for record in growth_info)
 
     def test_show_growth_custom_peak_stats(self):
         ps = {}
