@@ -638,6 +638,10 @@ def find_ref_chain(obj, predicate, max_depth=20, extra_ignore=(),
     Returns ``[obj]`` if such a chain could not be found.
 
     .. versionadded:: 1.7
+
+    .. versionchanged:: 3.6
+       New parameter: ``gc_collect_gen``.
+
     """
     return _find_chain(obj, predicate, gc.get_referents,
                        max_depth=max_depth, extra_ignore=extra_ignore,
@@ -669,6 +673,9 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=(),
 
     .. versionchanged:: 1.5
        Returns ``obj`` instead of ``None`` when a chain could not be found.
+
+    .. versionchanged:: 3.6
+       New parameter: ``gc_collect_gen``.
 
     """
     return _find_chain(obj, predicate, gc.get_referrers,
