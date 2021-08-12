@@ -306,6 +306,9 @@ def growth(limit=10, peak_stats={}, shortnames=True, filter=None,
 
     .. versionadded:: 3.3.0
 
+    .. versionchanged:: 3.6
+       New parameter: ``gc_collect_gen``.
+
     """
     gc.collect(gc_collect_gen)
     stats = typestats(shortnames=shortnames, filter=filter)
@@ -431,6 +434,10 @@ def get_new_ids(skip_update=False, limit=10, sortby='deltas',
         True
 
     .. versionadded:: 3.4
+
+    .. versionchanged:: 3.6
+       New parameter: ``gc_collect_gen``.
+
     """
     if not _state:
         _state['old'] = collections.defaultdict(set)
@@ -514,6 +521,10 @@ def get_leaking_objects(objects=None, gc_collect_gen=2):
     Note that the GC does not track simple objects like int or str.
 
     .. versionadded:: 1.7
+
+    .. versionchanged:: 3.6
+       New parameter: ``gc_collect_gen``.
+
     """
     if objects is None:
         gc.collect(gc_collect_gen)
