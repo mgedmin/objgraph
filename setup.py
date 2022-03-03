@@ -64,6 +64,9 @@ setup(
     author='Marius Gedminas',
     author_email='marius@gedmin.as',
     url='https://mg.pov.lt/objgraph/',
+    project_urls={
+        'Source': 'https://github.com/mgedmin/objgraph',
+    },
     license='MIT',
     description='Draws Python object reference graphs with graphviz',
     long_description=get_description(),
