@@ -247,10 +247,6 @@ class ShowGraphTest(unittest.TestCase):
                                 label_a=label_a,
                                 label_b=label_b))
 
-    @skipIf(
-        sys.version_info < (3, 6),
-        "Python < 3.6 dicts have random iteration order",
-    )
     def test_dict(self):
         d = dict.fromkeys("abcdefg")
         output = StringIO()

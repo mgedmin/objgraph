@@ -72,12 +72,6 @@ except AttributeError:  # pragma: PY3
     # Python 3.x compatibility
     iteritems = dict.items
 
-try:
-    zip_longest = itertools.izip_longest
-except AttributeError:  # pragma: PY3
-    # Python 3.x compatibility
-    zip_longest = itertools.zip_longest
-
 IS_INTERACTIVE = False
 try:  # pragma: nocover
     import graphviz
@@ -1007,6 +1001,7 @@ def _show_graph(objs, edge_func, swap_source_target,
         if cull_func is not None and cull_func(target):
             continue
         edges = edge_func(target)
+        # `neighbours` is `edges` without duplicates, and `counts` is the count of duplicates
         counts = collections.Counter(id(v) for v in edges)
         neighbours = list({id(v): v for v in edges}.values())
         del edges
@@ -1025,7 +1020,7 @@ def _show_graph(objs, edge_func, swap_source_target,
                 srcnode, tgtnode = target, source
             else:
                 srcnode, tgtnode = source, target
-            for elabel, _ in zip_longest(
+            for elabel, _ in itertools.zip_longest(
                 _edge_labels(srcnode, tgtnode, shortnames),
                 range(counts[id(source)]),
                 fillvalue='',
@@ -1243,8 +1238,8 @@ def _edge_labels(source, target, shortnames=True):
             if target is source.im_func:
                 yield [' [label="im_func",weight=10]'
     if _isinstance(source, types.FunctionType):
-        for k in dir(source)
-            if target is getattr(source, k)
+        for k in dir(source):
+            if target is getattr(source, k):
                 yield ' [label="%s",weight=10]' % _quote(k)
     if _isinstance(source, dict):
         tn = _short_typename if shortnames else _long_typename
