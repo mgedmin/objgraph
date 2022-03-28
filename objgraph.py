@@ -1236,7 +1236,7 @@ def _edge_labels(source, target, shortnames=True):
             if target is source.im_self:
                 yield ' [label="im_self",weight=10]'
             if target is source.im_func:
-                yield [' [label="im_func",weight=10]'
+                yield ' [label="im_func",weight=10]'
     if _isinstance(source, types.FunctionType):
         for k in dir(source):
             if target is getattr(source, k):
