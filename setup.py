@@ -84,10 +84,10 @@ setup(
     ],
     keywords='object graph visualization graphviz garbage collection',
     py_modules=['objgraph'],
-    install_requires=[
-        'graphviz',  # just for ipython support currently
-    ],
     extras_require={
+        'ipython': [
+            'graphviz',  # just for ipython support currently
+        ],
         'test': [
             'mock;python_version=="2.7"',
         ],
