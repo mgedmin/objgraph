@@ -3,7 +3,7 @@ Tools for drawing Python object reference graphs with graphviz.
 
 You can find documentation online at https://mg.pov.lt/objgraph/
 
-Copyright (c) 2008-2017 Marius Gedminas <marius@pov.lt> and contributors
+Copyright (c) 2008-2022 Marius Gedminas <marius@pov.lt> and contributors
 
 Released under the MIT licence.
 """

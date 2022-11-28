@@ -378,14 +378,13 @@ def doctest_get_new_ids_prints():
 
         >>> _ = objgraph.get_new_ids(limit=0)
         >>> _ = objgraph.get_new_ids(limit=0)
-        >>> a = [0, 1, 2]  # noqa
-        >>> b = [3, 4, 5]  # noqa
+        >>> a = [[] for n in range(10)]  # noqa
         >>> _ = objgraph.get_new_ids(limit=1)
         ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
         ========================================================
         Type      Old_ids  Current_ids      New_ids Count_Deltas
         ========================================================
-        list          ...          ...          ...           +2
+        list          ...          ...          ...          +11
         ========================================================
 
     """
@@ -504,6 +503,17 @@ class StringRepresentationTest(GarbageCollectedMixin,
 
         self.assertEqual('a_method', objgraph._short_repr(MyClass.a_method))
 
+    def test_short_repr_frame(self):
+        frame = sys._getframe()
+        # we're calling _short_repr() 6 lines down from here
+        lineno = frame.f_lineno + 6
+        # Python >= 3.9 uses absolute filenames
+        expected = {
+            'tests.py:%d' % lineno,
+            '%s:%d' % (os.path.abspath('tests.py'), lineno),
+        }
+        self.assertIn(objgraph._short_repr(frame), expected)
+
     def test_gradient_empty(self):
         self.assertEqual((0.1, 0.2, 0.3),
                          objgraph._gradient((0.1, 0.2, 0.3),
@@ -513,6 +523,11 @@ class StringRepresentationTest(GarbageCollectedMixin,
         frame = sys._getframe()
         self.assertEqual(' [label="f_locals",weight=10]',
                          objgraph._edge_label(frame, frame.f_locals))
+
+    def test_edge_label_frame_globals(self):
+        frame = sys._getframe()
+        self.assertEqual(' [label="f_globals",weight=10]',
+                         objgraph._edge_label(frame, frame.f_globals))
 
     @skipIf(sys.version_info[0] > 2, "Python 3 has no unbound methods")
     def test_edge_label_unbound_method(self):

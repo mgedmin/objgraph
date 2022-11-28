@@ -16,7 +16,7 @@ You can highlight some graph nodes.
     >>> objgraph.show_backrefs(a, max_depth=15,
     ...     extra_ignore=[id(locals())],
     ...     highlight=lambda x: isinstance(x, Node),
-    ...     filename='highlight.png')
+    ...     filename='highlight.png') # doctest: +NODES_VARY
     Graph written to ....dot (12 nodes)
     Image generated as highlight.png
 

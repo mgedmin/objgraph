@@ -111,7 +111,7 @@ you've any examples where that isn't true, I'd love to hear about them
     ...     objgraph.find_backref_chain(
     ...         random.choice(objgraph.by_type('MyBigFatObject')),
     ...         objgraph.is_proper_module),
-    ...     filename='chain.png')
+    ...     filename='chain.png') # doctest: +NODES_VARY
     Graph written to ...dot (13 nodes)
     Image generated as chain.png
 
