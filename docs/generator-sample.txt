@@ -43,7 +43,7 @@ Or we can examine just one of the reference chains leading straight to a module.
     >>> objgraph.show_chain(
     ...     objgraph.find_backref_chain(objgraph.by_type('Canary')[0],
     ...                                 objgraph.is_proper_module),
-    ...     filename='canary-chain.png')
+    ...     filename='canary-chain.png') # doctest: +NODES_VARY
     Graph written to ....dot (11 nodes)
     Image generated as canary-chain.png
 
