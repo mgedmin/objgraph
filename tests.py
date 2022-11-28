@@ -378,14 +378,13 @@ def doctest_get_new_ids_prints():
 
         >>> _ = objgraph.get_new_ids(limit=0)
         >>> _ = objgraph.get_new_ids(limit=0)
-        >>> a = [0, 1, 2]  # noqa
-        >>> b = [3, 4, 5]  # noqa
+        >>> a = [[] for n in range(10)]  # noqa
         >>> _ = objgraph.get_new_ids(limit=1)
         ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
         ========================================================
         Type      Old_ids  Current_ids      New_ids Count_Deltas
         ========================================================
-        list          ...          ...          ...           +2
+        list          ...          ...          ...          +11
         ========================================================
 
     """
