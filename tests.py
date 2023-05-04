@@ -247,6 +247,36 @@ class ShowGraphTest(unittest.TestCase):
                                 label_a=label_a,
                                 label_b=label_b))
 
+    def test_dict(self):
+        d = dict.fromkeys("abcdefg")
+        output = StringIO()
+        objgraph.show_refs(d, output=output)
+        self.assertEqual(
+            output.getvalue(),
+            textwrap.dedent(
+                """\
+                digraph ObjectGraph {{
+                  node[shape=box, style=filled, fillcolor=white];
+                  {d_id}[fontcolor=red];
+                  {d_id}[label="dict\\n7 items"];
+                  {d_id}[fillcolor="0,0,1"];
+                  {d_id} -> {none_id} [label="a",weight=2];
+                  {d_id} -> {none_id} [label="b",weight=2];
+                  {d_id} -> {none_id} [label="c",weight=2];
+                  {d_id} -> {none_id} [label="d",weight=2];
+                  {d_id} -> {none_id} [label="e",weight=2];
+                  {d_id} -> {none_id} [label="f",weight=2];
+                  {d_id} -> {none_id} [label="g",weight=2];
+                  {none_id}[label="NoneType\\nNone"];
+                  {none_id}[fillcolor="0,0,0.766667"];
+                }}
+                """
+            ).format(
+                d_id=objgraph._obj_node_id(d),
+                none_id=objgraph._obj_node_id(None),
+            ),
+        )
+
     @mock.patch('objgraph.IS_INTERACTIVE', True)
     @mock.patch('objgraph.graphviz', create=True)
     def test_ipython(self, mock_graphviz):
