@@ -22,3 +22,6 @@ include *.mk
 
 # added by check_manifest.py
 include .coveragerc
+
+# added by check-manifest
+include *.yaml
