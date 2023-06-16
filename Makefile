@@ -5,7 +5,7 @@ FILE_WITH_CHANGELOG = CHANGES.rst
 
 VCS_DIFF_IMAGES = git diff docs/*.png
 
-SPHINXOPTS      =
+SPHINXOPTS      = -n
 SPHINXBUILD     = sphinx-build
 SPHINXBUILDDIR  = docs/_build
 ALLSPHINXOPTS   = -d $(SPHINXBUILDDIR)/doctrees $(SPHINXOPTS) docs/
