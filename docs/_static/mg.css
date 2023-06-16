@@ -5,6 +5,10 @@ pre {
     overflow: hidden;
 }
 
+div.document {
+    display: block;
+}
+
 div.body h1,
 div.body h2,
 div.body h3,
