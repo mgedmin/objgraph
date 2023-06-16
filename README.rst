@@ -2,7 +2,7 @@ Python Object Graphs
 ====================
 
 .. image:: https://github.com/mgedmin/objgraph/workflows/build/badge.svg?branch=master
-    :target: https://github.com/mgedmin/objgraph/actions
+   :target: https://github.com/mgedmin/objgraph/actions
    :alt: Build Status
 
 .. image:: https://ci.appveyor.com/api/projects/status/github/mgedmin/objgraph?branch=master&svg=true
