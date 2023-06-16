@@ -3,7 +3,7 @@ Tools for drawing Python object reference graphs with graphviz.
 
 You can find documentation online at https://mg.pov.lt/objgraph/
 
-Copyright (c) 2008-2022 Marius Gedminas <marius@pov.lt> and contributors
+Copyright (c) 2008-2023 Marius Gedminas <marius@pov.lt> and contributors
 
 Released under the MIT licence.
 """
@@ -25,8 +25,6 @@ Released under the MIT licence.
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-from __future__ import print_function
-
 import codecs
 import collections
 import gc
@@ -39,38 +37,14 @@ import subprocess
 import sys
 import tempfile
 import types
-
-try:
-    # Python 2.x compatibility
-    from StringIO import StringIO
-except ImportError:  # pragma: PY3
-    from io import StringIO
-
-try:
-    from types import InstanceType
-except ImportError:  # pragma: PY3
-    # Python 3.x compatibility
-    InstanceType = None
-
+from io import StringIO
 
 __author__ = "Marius Gedminas (marius@gedmin.as)"
-__copyright__ = "Copyright (c) 2008-2017 Marius Gedminas and contributors"
+__copyright__ = "Copyright (c) 2008-2023 Marius Gedminas and contributors"
 __license__ = "MIT"
-__version__ = '3.5.1.dev0'
-__date__ = '2020-10-11'
+__version__ = '3.6.0.dev0'
+__date__ = '2023-06-16'
 
-
-try:
-    basestring
-except NameError:  # pragma: PY3
-    # Python 3.x compatibility
-    basestring = str
-
-try:
-    iteritems = dict.iteritems
-except AttributeError:  # pragma: PY3
-    # Python 3.x compatibility
-    iteritems = dict.items
 
 IS_INTERACTIVE = False
 try:  # pragma: nocover
@@ -306,7 +280,7 @@ def growth(limit=10, peak_stats={}, shortnames=True, filter=None):
     gc.collect()
     stats = typestats(shortnames=shortnames, filter=filter)
     deltas = {}
-    for name, count in iteritems(stats):
+    for name, count in stats.items():
         old_count = peak_stats.get(name, 0)
         if count > old_count:
             deltas[name] = count - old_count
@@ -1103,7 +1077,7 @@ def _obj_attrs(obj, extra_node_attrs):
     if extra_node_attrs is not None:
         attrs = extra_node_attrs(obj)
         return ", " + ", ".join('%s="%s"' % (name, _quote(value))
-                                for name, value in sorted(iteritems(attrs))
+                                for name, value in sorted(attrs.items())
                                 if value is not None)
     else:
         return ""
@@ -1136,8 +1110,6 @@ def _quote(s):
 
 def _get_obj_type(obj):
     objtype = type(obj)
-    if type(obj) == InstanceType:  # pragma: PY2 -- no old-style classes on PY3
-        objtype = obj.__class__
     return objtype
 
 
@@ -1168,7 +1140,7 @@ def _name_or_repr(value):
     except AttributeError:
         result = repr(value)[:40]
 
-    if _isinstance(result, basestring):
+    if _isinstance(result, str):
         return result
     else:
         return repr(value)[:40]
@@ -1234,9 +1206,9 @@ def _edge_label(source, target, shortnames=True):
             if target is getattr(source, k):
                 return ' [label="%s",weight=10]' % _quote(k)
     if _isinstance(source, dict):
-        for k, v in iteritems(source):
+        for k, v in source.items():
             if v is target:
-                if _isinstance(k, basestring) and _is_identifier(k):
+                if _isinstance(k, str) and _is_identifier(k):
                     return ' [label="%s",weight=2]' % _quote(k)
                 else:
                     if shortnames:
