@@ -11,6 +11,8 @@ import tempfile
 import textwrap
 import types
 import unittest
+from io import StringIO
+from unittest import mock, skipIf
 
 # setuptools imports `imp`, which triggers a DeprecationWarning starting with
 # Python 3.4 in the middle of my pristine test suite.  But if I do the import
@@ -18,32 +20,7 @@ import unittest
 # no warning.
 import setuptools  # noqa
 
-try:
-    from unittest import mock
-except ImportError:
-    import mock
-
 import objgraph
-
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from io import StringIO
-
-
-try:
-    from unittest import skipIf
-except ImportError:
-    def skipIf(condition, reason):
-        def wrapper(fn):
-            if condition:
-                def empty_test(case):
-                    pass
-                empty_test.__doc__ = '%s skipped because %s' % (
-                    fn.__name__, reason)
-                return empty_test
-            return fn
-        return wrapper
 
 
 def format(text, **kwargs):
@@ -51,39 +28,15 @@ def format(text, **kwargs):
     return template.substitute(kwargs)
 
 
-class CompatibilityMixin(object):
-
-    # Python 2.7 .. 3.1 has assertRegexpMatches but not assertRegex
-    # Python <= 2.6 has neither
-    # Python >= 3.2 has both and emits deprecation warnings if you use
-    # assertRegexpMatches.
-
-    if not hasattr(unittest.TestCase, 'assertRegex'):
-        if hasattr(unittest.TestCase, 'assertRegexpMatches'):
-            # This is needed for Python 3.1: let's reuse the existing
-            # function because our replacement doesn't work on Python 3
-            assertRegex = unittest.TestCase.assertRegexpMatches
-        else:
-            def assertRegex(self, text, expected_regexp, msg=None):
-                if isinstance(expected_regexp, basestring):  # noqa
-                    expected_regexp = re.compile(expected_regexp)
-                if not expected_regexp.search(text):
-                    msg = msg or "Regexp didn't match"
-                    msg = '%s: %r not found in %r' % (msg,
-                                                      expected_regexp.pattern,
-                                                      text)
-                    raise self.failureException(msg)
-
-
 class GarbageCollectedMixin(object):
     """A mixin for test cases that garbage collects before running."""
 
     def setUp(self):
-        super(GarbageCollectedMixin, self).setUp()
+        super().setUp()
         gc.collect()
 
     def tearDown(self):
-        super(GarbageCollectedMixin, self).tearDown()
+        super().tearDown()
         gc.enable()
 
 
@@ -421,7 +374,6 @@ class AtAddrsTest(unittest.TestCase):
 
 
 class StringRepresentationTest(GarbageCollectedMixin,
-                               CompatibilityMixin,
                                unittest.TestCase):
     """Tests for the string representation of objects and edges."""
 

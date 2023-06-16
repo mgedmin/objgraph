@@ -42,7 +42,7 @@ endef
 
 .PHONY: coverage
 coverage:                       ##: measure test coverage
-	tox -e coverage2,coverage3
+	tox -e coverage
 
 .PHONY: flake8
 flake8:                         ##: check for style problems

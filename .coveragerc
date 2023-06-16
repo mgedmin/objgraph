@@ -1,4 +1,10 @@
 [run]
 source = objgraph
-plugins =
-    coverage_python_version
+
+[report]
+exclude_lines =
+    pragma: PY2
+    pragma: nocover
+    except ImportError:
+    except NameError:
+    if __name__ == .__main__.:
