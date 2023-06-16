@@ -135,10 +135,10 @@ Changes
 - :func:`show_refs` and :func:`show_backrefs` now accept a file-like object
   (via the new ``output`` argument) as an alternative to a filename.
 
-- Made internal helper methods private. This includes :func:`find_chain`,
-  :func:`show_graph`, :func:`obj_node_id`, :func:`obj_label`, :func:`quote`,
-  :func:`long_typename`, :func:`safe_repr`, :func:`short_repr`,
-  :func:`gradient`, :func:`edge_label`, and :func:`_program_in_path`.
+- Made internal helper methods private. This includes ``find_chain``,
+  ``show_graph``, ``obj_node_id``, ``obj_label``, ``quote``,
+  ``long_typename``, ``safe_repr``, ``short_repr``,
+  ``gradient``, ``edge_label``, and ``_program_in_path``.
 
 - Correctly determine the name of old-style classes in :func:`count`,
   :func:`by_type`, and graph drawing functions.

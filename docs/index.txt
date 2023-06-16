@@ -97,7 +97,7 @@ and see what changes after we call it
     MyBigFatObject        2        +2
     dict                797        +1
 
-It's easy to see :class:`MyBigFatObject` instances that appeared and were
+It's easy to see ``MyBigFatObject`` instances that appeared and were
 not freed.  I can pick one of them at random and trace the reference chain
 back to one of the garbage collector's roots.
 
@@ -121,7 +121,7 @@ you've any examples where that isn't true, I'd love to hear about them
 
 It is perhaps surprising to find :mod:`linecache` at the end of that chain
 (apparently :mod:`doctest` monkey-patches it), but the important things --
-:func:`computate_something` and its cache dictionary -- are in there.
+``computate_something`` and its cache dictionary -- are in there.
 
 There are other tools, perhaps better suited for memory leak hunting:
 `heapy <https://pypi.python.org/pypi/guppy>`_,
