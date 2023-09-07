@@ -14,12 +14,6 @@ import unittest
 from io import StringIO
 from unittest import mock, skipIf
 
-# setuptools imports `imp`, which triggers a DeprecationWarning starting with
-# Python 3.4 in the middle of my pristine test suite.  But if I do the import
-# upfront, there's no warning.  I cannot explain this, I'm just happy there's
-# no warning.
-import setuptools  # noqa
-
 import objgraph
 
 
