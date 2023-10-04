@@ -9,6 +9,7 @@ environment:
     - PYTHON: "C:\\Python39"
     - PYTHON: "C:\\Python310"
     - PYTHON: "C:\\Python311"
+    - PYTHON: "C:\\Python312"
 
 init:
   - "echo %PYTHON%"

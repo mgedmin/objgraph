@@ -25,21 +25,22 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
+          - "3.12"
 
     steps:
       - name: Install OS dependencies
         run: sudo apt-get update && sudo apt-get install -y graphviz
 
       - name: Git clone
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "${{ matrix.python-version }}"
 
       - name: Pip cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('setup.py') }}
@@ -51,22 +52,21 @@ jobs:
         run: |
           python -m pip install -U pip
           python -m pip install -U setuptools wheel
-          python -m pip install -U coverage coveralls
+          python -m pip install -U coverage
           python -m pip install -e .[test]
 
       - name: Run tests
         run: coverage run tests.py
 
       - name: Check test coverage
-        run: coverage report -m --fail-under=100
+        run: |
+          coverage report -m --fail-under=100
+          coverage xml
 
       - name: Report to coveralls
-        run: coveralls
-        continue-on-error: true
-        if: "matrix.python-version != '2.7' && matrix.python-version != 'pypy2'"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COVERALLS_SERVICE_NAME: github
+        uses: coverallsapp/github-action@v2
+        with:
+          file: coverage.xml
 
   lint:
     name: ${{ matrix.toxenv }}
@@ -82,15 +82,15 @@ jobs:
 
     steps:
       - name: Git clone
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Python ${{ env.default_python || '3.9' }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "${{ env.default_python || '3.9' }}"
 
       - name: Pip cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ matrix.toxenv }}-${{ hashFiles('tox.ini') }}
