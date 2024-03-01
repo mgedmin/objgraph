@@ -3,7 +3,7 @@
 Hacking on objgraph
 ===================
 
-Start by geting the latest source with ::
+Start by getting the latest source with ::
 
   git clone https://github.com/mgedmin/objgraph
 
@@ -65,7 +65,7 @@ to see how incomplete they are with ::
   make coverage
 
 I use a `vim plugin <https://github.com/mgedmin/coverage-highlight.vim/>`_
-to higlight lines not covered by tests while I edit ::
+to highlight lines not covered by tests while I edit ::
 
   make coverage
   vim objgraph.py
