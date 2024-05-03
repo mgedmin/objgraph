@@ -35,12 +35,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "${{ matrix.python-version }}"
 
       - name: Pip cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('setup.py') }}
@@ -84,13 +84,13 @@ jobs:
       - name: Git clone
         uses: actions/checkout@v4
 
-      - name: Set up Python ${{ env.default_python || '3.9' }}
-        uses: actions/setup-python@v4
+      - name: Set up Python ${{ env.default_python || '3.12' }}
+        uses: actions/setup-python@v5
         with:
-          python-version: "${{ env.default_python || '3.9' }}"
+          python-version: "${{ env.default_python || '3.12' }}"
 
       - name: Pip cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ matrix.toxenv }}-${{ hashFiles('tox.ini') }}
