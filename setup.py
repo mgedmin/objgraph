@@ -92,6 +92,5 @@ setup(
         ],
         'test': [],
     },
-    test_suite='tests.test_suite',
     zip_safe=True,
 )
