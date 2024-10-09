@@ -1,4 +1,4 @@
-# release.mk version 2.1 (2021-04-19)
+# release.mk version 2.2.2 (2024-10-09)
 #
 # Helpful Makefile rules for releasing Python packages.
 # https://github.com/mgedmin/python-project-skel
@@ -12,7 +12,7 @@ DISTCHECK_DIFF_OPTS ?= $(DISTCHECK_DIFF_DEFAULT_OPTS)
 
 # These should be fine
 PYTHON ?= python3
-PYPI_PUBLISH ?= rm -rf dist && $(PYTHON) setup.py -q sdist bdist_wheel && twine check dist/* && twine upload dist/*
+PYPI_PUBLISH ?= rm -rf dist && $(PYTHON) -m build && twine check dist/* && twine upload dist/*
 LATEST_RELEASE_MK_URL = https://raw.githubusercontent.com/mgedmin/python-project-skel/master/release.mk
 DISTCHECK_DIFF_DEFAULT_OPTS = -x PKG-INFO -x setup.cfg -x '*.egg-info' -x .github -I'^\#'
 
@@ -44,7 +44,7 @@ help:
 
 .PHONY: dist
 dist:
-	$(PYTHON) setup.py -q sdist bdist_wheel
+	$(PYTHON) -m build
 
 # Provide a default 'make check' to be the same as 'make test', since that's
 # what 80% of my projects use, but make it possible to override.  Now
@@ -79,7 +79,7 @@ endif
 
 .PHONY: distcheck-sdist
 distcheck-sdist: dist
-	pkg_and_version=`$(PYTHON) setup.py --name`-`$(PYTHON) setup.py --version` && \
+	pkg_and_version=`$(PYTHON) setup.py --name|tr .- _`-`$(PYTHON) setup.py --version` && \
 	  rm -rf tmp && \
 	  mkdir tmp && \
 	  $(VCS_EXPORT) && \
