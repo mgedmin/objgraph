@@ -95,14 +95,14 @@ define release_recipe =
 	@echo "  $(VCS_TAG)"
 	@echo "  make publish-docs"
 	@echo
-	@echo "then create a GitHub release with"
-	@echo
-	@echo "  gh release create"
-	@echo
 	@echo "Please increment the version number in $(FILE_WITH_VERSION)"
 	@echo "and add a new empty entry at the top of the changelog in $(FILE_WITH_CHANGELOG), then"
 	@echo
 	@echo '  $(VCS_COMMIT_AND_PUSH)'
+	@echo
+	@echo "then create a GitHub release with"
+	@echo
+	@echo "  gh release create"
 	@echo
 endef
 
