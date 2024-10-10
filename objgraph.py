@@ -42,8 +42,8 @@ from io import StringIO
 __author__ = "Marius Gedminas (marius@gedmin.as)"
 __copyright__ = "Copyright (c) 2008-2023 Marius Gedminas and contributors"
 __license__ = "MIT"
-__version__ = '3.6.2.dev0'
-__date__ = '2024-02-26'
+__version__ = '3.6.2'
+__date__ = '2024-10-10'
 
 
 IS_INTERACTIVE = False
