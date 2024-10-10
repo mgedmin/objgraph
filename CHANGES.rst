@@ -6,7 +6,7 @@ Changes
 3.6.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add support for Python 3.13.
 
 
 3.6.1 (2024-02-26)
