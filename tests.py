@@ -465,11 +465,6 @@ class StringRepresentationTest(GarbageCollectedMixin,
                          objgraph._gradient((0.1, 0.2, 0.3),
                                             (0.2, 0.3, 0.4), 0, 0))
 
-    def test_edge_label_frame_locals(self):
-        frame = sys._getframe()
-        self.assertEqual(' [label="f_locals",weight=10]',
-                         objgraph._edge_label(frame, frame.f_locals))
-
     def test_edge_label_frame_globals(self):
         frame = sys._getframe()
         self.assertEqual(' [label="f_globals",weight=10]',

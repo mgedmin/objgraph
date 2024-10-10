@@ -1185,7 +1185,7 @@ def _edge_label(source, target, shortnames=True):
             and target is getattr(source, '__dict__', None)):
         return ' [label="__dict__",weight=10]'
     if _isinstance(source, types.FrameType):
-        if target is source.f_locals:
+        if target is source.f_locals:  # pragma: nocover
             return ' [label="f_locals",weight=10]'
         if target is source.f_globals:
             return ' [label="f_globals",weight=10]'

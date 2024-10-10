@@ -10,6 +10,7 @@ environment:
     - PYTHON: "C:\\Python310"
     - PYTHON: "C:\\Python311"
     - PYTHON: "C:\\Python312"
+    - PYTHON: "C:\\Python313"
 
 init:
   - "echo %PYTHON%"
