@@ -1,4 +1,4 @@
-# release.mk version 2.2.2 (2024-10-09)
+# release.mk version 2.2.3 (2024-10-10)
 #
 # Helpful Makefile rules for releasing Python packages.
 # https://github.com/mgedmin/python-project-skel
@@ -79,7 +79,7 @@ endif
 
 .PHONY: distcheck-sdist
 distcheck-sdist: dist
-	pkg_and_version=`$(PYTHON) setup.py --name|tr .- _`-`$(PYTHON) setup.py --version` && \
+	pkg_and_version=`$(PYTHON) setup.py --name|tr A-Z.- a-z__`-`$(PYTHON) setup.py --version` && \
 	  rm -rf tmp && \
 	  mkdir tmp && \
 	  $(VCS_EXPORT) && \
