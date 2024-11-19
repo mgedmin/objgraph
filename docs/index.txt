@@ -123,6 +123,20 @@ It is perhaps surprising to find :mod:`linecache` at the end of that chain
 (apparently :mod:`doctest` monkey-patches it), but the important things --
 ``computate_something`` and its cache dictionary -- are in there.
 
+In some cases, something might look like a memory leak but actually isn't.
+The case I'm interested in here is a manifestation of `python issue 39061
+ <https://bugs.python.org/issue39061>`_. Objects that do get in the garbage
+collector generation 2 are only rarely collected and might end up using more
+and more memory.
+
+Using `objgraph` in such a scenario actually hides the issue as a full garbage
+collection is being run to cut the noise as much as possible.
+
+To avoid a full collection being run and hiding that memory leak look alike,
+an option has been added to most of the API functions to only collect up to
+a specific generation. The option is `gc_collect_gen` and is set to 2 by
+default, which results in the default gc behavior.
+
 There are other tools, perhaps better suited for memory leak hunting:
 `heapy <https://pypi.python.org/pypi/guppy>`_,
 `Dozer <https://pypi.python.org/pypi/Dozer>`_.
