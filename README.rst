@@ -1,7 +1,7 @@
 Python Object Graphs
 ====================
 
-.. image:: https://github.com/mgedmin/objgraph/workflows/build/badge.svg?branch=master
+.. image:: https://github.com/mgedmin/objgraph/actions/workflows/build.yml/badge.svg?branch=master
    :target: https://github.com/mgedmin/objgraph/actions
    :alt: Build Status
 
