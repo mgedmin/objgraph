@@ -474,17 +474,29 @@ def get_leaking_objects(objects=None):
     These could indicate reference-counting bugs in C code.  Or they could
     be legitimate.
 
+    If you pass in a list of ``objects``, this function will return
+    a subset of them that have no referents, otherwise it will look among
+    all the objects tracked by the garbage collector.
+
     Note that the GC does not track simple objects like int or str.
+
+    Example:
+
+       >>> get_leaking_objects(by_type('MyClass'))
+       ...
 
     .. versionadded:: 1.7
     """
+    i = None  # prevent UnboundLocalError in finally: when objects is []
+    gc.collect()
+    all_objects = gc.get_objects()
     if objects is None:
-        gc.collect()
-        objects = gc.get_objects()
+        objects = all_objects
     try:
         ids = set(id(i) for i in objects)
-        for i in objects:
-            ids.difference_update(id(j) for j in gc.get_referents(i))
+        for i in all_objects:
+            if i is not objects:
+                ids.difference_update(id(j) for j in gc.get_referents(i))
         # this then is our set of objects without referrers
         return [i for i in objects if id(i) in ids]
     finally:

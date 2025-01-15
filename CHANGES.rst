@@ -6,7 +6,10 @@ Changes
 3.6.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix :func:`get_leaking_objects` with an ``objects`` argument to not ignore
+  references from other sources.  Closes `issue 82
+  <https://github.com/mgedmin/objgraph/issues/82>`_.
+  Also fix ``get_leaking_objects([])`` causing an UnboudLocalError.
 
 
 3.6.2 (2024-10-10)
