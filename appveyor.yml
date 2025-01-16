@@ -4,7 +4,6 @@ environment:
   matrix:
     # https://www.appveyor.com/docs/installed-software#python lists available
     # versions
-    - PYTHON: "C:\\Python37"
     - PYTHON: "C:\\Python38"
     - PYTHON: "C:\\Python39"
     - PYTHON: "C:\\Python310"
