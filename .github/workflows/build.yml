@@ -14,8 +14,8 @@ on:
 
 jobs:
   build:
-    name: Python ${{ matrix.python-version }}
-    runs-on: ubuntu-latest
+    name: Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
@@ -25,10 +25,18 @@ jobs:
           - "3.12"
           - "3.13"
           - "3.14"
+        os:
+          - ubuntu-latest
+          - windows-latest
 
     steps:
-      - name: Install OS dependencies
+      - name: Install OS dependencies (Linux)
+        if: runner.os == "Linux"
         run: sudo apt-get update && sudo apt-get install -y graphviz
+
+      - name: Install OS dependencies (Windows)
+        if: runner.os == "Windows"
+        run: choco install graphviz --version=2.38.0.20190211
 
       - name: Git clone
         uses: actions/checkout@v4
@@ -37,22 +45,17 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "${{ matrix.python-version }}"
+          cache: pip
+          cache-dependency-path: |
+            setup.py
 
-      - name: Pip cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('setup.py') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-${{ matrix.python-version }}-
-            ${{ runner.os }}-pip-
 
       - name: Install Python dependencies
         run: |
           python -m pip install -U pip
           python -m pip install -U setuptools wheel
           python -m pip install -U coverage
-          python -m pip install -e .[test]
+          python -m pip install -e '.[test]'
 
       - name: Run tests
         run: coverage run tests.py
