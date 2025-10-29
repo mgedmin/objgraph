@@ -31,11 +31,11 @@ jobs:
 
     steps:
       - name: Install OS dependencies (Linux)
-        if: runner.os == "Linux"
+        if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y graphviz
 
       - name: Install OS dependencies (Windows)
-        if: runner.os == "Windows"
+        if: runner.os == 'Windows'
         run: choco install graphviz --version=2.38.0.20190211
 
       - name: Git clone
