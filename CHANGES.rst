@@ -9,9 +9,11 @@ Changes
 - Fix :func:`get_leaking_objects` with an ``objects`` argument to not ignore
   references from other sources.  Closes `issue 82
   <https://github.com/mgedmin/objgraph/issues/82>`_.
-  Also fix ``get_leaking_objects([])`` causing an UnboudLocalError.
+  Also fix ``get_leaking_objects([])`` causing an UnboundLocalError.
 
-- Drop support for Python 3.7.
+- Add support for Python 3.14.
+
+- Drop support for Python 3.7, 3.8, and 3.9.
 
 
 3.6.2 (2024-10-10)
