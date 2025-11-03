@@ -158,7 +158,8 @@ def typestats(objects=None, shortnames=True, filter=None):
             if filter and not filter(o):
                 continue
             n = typename(o)
-            stats[n] = stats.get(n, 0) + 1
+            val = stats.get(n, (0, sys.getsizeof(o)))
+            stats[n] = (val[0] + 1, sys.getsizeof(o))
         return stats
     finally:
         del objects  # clear cyclic references to frame
@@ -247,7 +248,8 @@ def show_most_common_types(
                               filter=filter)
     width = max(len(name) for name, count in stats)
     for name, count in stats:
-        file.write('%-*s %i\n' % (width, name, count))
+        file.write('%-*s - %i - %i - %i\n' %
+                   (width, name, count[0], count[1], count[0]*count[1]))
 
 
 def growth(limit=10, peak_stats={}, shortnames=True, filter=None):
@@ -282,9 +284,9 @@ def growth(limit=10, peak_stats={}, shortnames=True, filter=None):
     deltas = {}
     for name, count in stats.items():
         old_count = peak_stats.get(name, 0)
-        if count > old_count:
-            deltas[name] = count - old_count
-            peak_stats[name] = count
+        if count[0] > old_count:
+            deltas[name] = count[0] - old_count
+            peak_stats[name] = count[0]
     deltas = sorted(deltas.items(), key=operator.itemgetter(1),
                     reverse=True)
     if limit:
@@ -332,7 +334,7 @@ def show_growth(limit=10, peak_stats=None, shortnames=True, file=None,
             file = sys.stdout
         width = max(len(name) for name, _, _ in result)
         for name, count, delta in result:
-            file.write('%-*s%9d %+9d\n' % (width, name, count, delta))
+            file.write('%-*s%9d %+9d\n' % (width, name, count[0], delta))
 
 
 def get_new_ids(skip_update=False, limit=10, sortby='deltas',
