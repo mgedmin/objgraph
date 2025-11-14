@@ -5,10 +5,6 @@ Python Object Graphs
    :target: https://github.com/mgedmin/objgraph/actions
    :alt: Build Status
 
-.. image:: https://ci.appveyor.com/api/projects/status/github/mgedmin/objgraph?branch=master&svg=true
-   :target: https://ci.appveyor.com/project/mgedmin/objgraph
-   :alt: Build Status (Windows)
-
 .. image:: https://coveralls.io/repos/mgedmin/objgraph/badge.svg?branch=master
    :target: https://coveralls.io/r/mgedmin/objgraph?branch=master
    :alt: Test Coverage
