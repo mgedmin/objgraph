@@ -39,7 +39,7 @@ jobs:
         run: choco install graphviz --version=2.38.0.20190211
 
       - name: Git clone
-        uses: actions/chekout@v6
+        uses: actions/checkout@v6
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v6
@@ -84,7 +84,7 @@ jobs:
 
     steps:
       - name: Git clone
-        uses: actions/chekout@v6
+        uses: actions/checkout@v6
 
       - name: Set up Python ${{ env.default_python || '3.12' }}
         uses: actions/setup-python@v6
