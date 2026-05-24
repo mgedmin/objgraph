@@ -42,7 +42,7 @@ jobs:
         uses: actions/chekout@v6
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "${{ matrix.python-version }}"
           cache: pip
@@ -87,7 +87,7 @@ jobs:
         uses: actions/chekout@v6
 
       - name: Set up Python ${{ env.default_python || '3.12' }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "${{ env.default_python || '3.12' }}"
 
