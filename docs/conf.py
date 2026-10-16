@@ -63,7 +63,7 @@ intersphinx_mapping = {
 templates_path = ['_templates']
 
 # The suffix of source filenames.
-source_suffix = '.txt'
+source_suffix = {'.txt': 'restructuredtext'}
 
 # The encoding of source files.
 #source_encoding = 'utf-8'
@@ -73,7 +73,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'objgraph'
-copyright = u'2015, Marius Gedminas and contributors'
+copyright = u'2015-2026, Marius Gedminas and contributors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
