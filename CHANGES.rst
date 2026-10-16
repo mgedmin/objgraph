@@ -3,6 +3,12 @@ Changes
 
 .. currentmodule:: objgraph
 
+3.7.1 (unreleased)
+------------------
+
+- Nothing changed yet.
+
+
 3.7.0 (2026-10-16)
 ------------------
 
