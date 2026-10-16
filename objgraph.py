@@ -3,7 +3,7 @@ Tools for drawing Python object reference graphs with graphviz.
 
 You can find documentation online at https://mg.pov.lt/objgraph/
 
-Copyright (c) 2008-2023 Marius Gedminas <marius@pov.lt> and contributors
+Copyright (c) 2008-2026 Marius Gedminas <marius@gedmin.as> and contributors
 
 Released under the MIT licence.
 """
@@ -25,7 +25,6 @@ Released under the MIT licence.
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 
-import codecs
 import collections
 import gc
 import inspect
@@ -40,7 +39,7 @@ import types
 from io import StringIO
 
 __author__ = "Marius Gedminas (marius@gedmin.as)"
-__copyright__ = "Copyright (c) 2008-2023 Marius Gedminas and contributors"
+__copyright__ = "Copyright (c) 2008-2026 Marius Gedminas and contributors"
 __license__ = "MIT"
 __version__ = '3.7.1.dev0'
 __date__ = '2026-10-16'
@@ -916,7 +915,7 @@ def _show_graph(objs, edge_func, swap_source_target,
     elif output:
         f = output
     elif filename and filename.endswith('.dot'):
-        f = codecs.open(filename, 'w', encoding='utf-8')
+        f = open(filename, 'w', encoding='utf-8')
         dot_filename = filename
     elif IS_INTERACTIVE and not filename:
         is_interactive = True
