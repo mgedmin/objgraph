@@ -11,7 +11,7 @@ Changes
   <https://github.com/mgedmin/objgraph/issues/82>`_.
   Also fix ``get_leaking_objects([])`` causing an UnboundLocalError.
 
-- Add support for Python 3.14.
+- Add support for Python 3.14 and 3.15.
 
 - Drop support for Python 3.7, 3.8, and 3.9.
 
