@@ -3,7 +3,7 @@ Changes
 
 .. currentmodule:: objgraph
 
-3.7.0 (unreleased)
+3.7.0 (2026-10-16)
 ------------------
 
 - Fix :func:`get_leaking_objects` with an ``objects`` argument to not ignore

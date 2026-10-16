@@ -73,7 +73,6 @@ setup(
     long_description_content_type='text/x-rst',
     classifiers=[
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3.10',
