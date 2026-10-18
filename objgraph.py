@@ -660,7 +660,9 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     Use ``filter`` (a predicate) and ``extra_ignore`` (a list of object IDs) to
     remove undesired objects from the graph.
 
-    Use ``highlight`` (a predicate) to highlight certain graph nodes in blue.
+    Nodes for the original objects passed in ``objs`` have red text, so they
+    are easier to find in the graph.  Use ``highlight`` (a predicate) to give
+    selected nodes a blue background.
 
     Use ``extra_info`` (a function taking one argument and returning a
     string) to report extra information for objects.
@@ -747,7 +749,9 @@ def show_refs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
     Use ``filter`` (a predicate) and ``extra_ignore`` (a list of object IDs) to
     remove undesired objects from the graph.
 
-    Use ``highlight`` (a predicate) to highlight certain graph nodes in blue.
+    Nodes for the original objects passed in ``objs`` have red text, so they
+    are easier to find in the graph.  Use ``highlight`` (a predicate) to give
+    selected nodes a blue background.
 
     Use ``extra_info`` (a function returning a string) to report extra
     information for objects.
