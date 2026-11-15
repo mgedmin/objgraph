@@ -6,7 +6,9 @@ Changes
 3.7.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix :func:`show_most_common_types` raising ``ValueError`` when there are no
+  objects to display (e.g. ``objects=[]`` or a ``filter`` that rejects
+  everything).
 
 
 3.7.0 (2026-10-16)
