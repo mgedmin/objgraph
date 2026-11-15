@@ -275,6 +275,21 @@ class TypestatsFilterArguTest(GarbageCollectedMixin, unittest.TestCase):
         self.assertEqual(1, stats['mymodule.MyClass'])
 
 
+class ShowMostCommonTypesTest(GarbageCollectedMixin, unittest.TestCase):
+    """Tests for the show_most_common_types function."""
+
+    def test_empty_objects(self):
+        output = StringIO()
+        objgraph.show_most_common_types(objects=[], file=output)
+        self.assertEqual('', output.getvalue())
+
+    def test_filter_rejects_all(self):
+        output = StringIO()
+        objgraph.show_most_common_types(
+            objects=[1, 'a', 2.0], filter=lambda obj: False, file=output)
+        self.assertEqual('', output.getvalue())
+
+
 class GrowthTest(GarbageCollectedMixin, unittest.TestCase):
     """Tests for the growth function."""
 

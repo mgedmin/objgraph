@@ -244,7 +244,7 @@ def show_most_common_types(
         file = sys.stdout
     stats = most_common_types(limit, objects, shortnames=shortnames,
                               filter=filter)
-    width = max(len(name) for name, count in stats)
+    width = max((len(name) for name, count in stats), default=0)
     for name, count in stats:
         file.write('%-*s %i\n' % (width, name, count))
 
