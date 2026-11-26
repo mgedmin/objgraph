@@ -35,6 +35,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import threading
 import types
 from io import StringIO
 
@@ -616,7 +617,7 @@ def find_backref_chain(obj, predicate, max_depth=20, extra_ignore=()):
 
     Example:
 
-        >>> find_backref_chain(obj, is_proper_module)
+        >>> find_backref_chain(obj, is_gc_root)
         [<module ...>, ..., obj]
 
     Returns ``[obj]`` if such a chain could not be found.
@@ -712,7 +713,7 @@ def show_backrefs(objs, max_depth=3, extra_ignore=(), filter=None, too_many=10,
                        edge_func=gc.get_referrers, swap_source_target=False,
                        filename=filename, output=output, extra_info=extra_info,
                        refcounts=refcounts, shortnames=shortnames,
-                       cull_func=is_proper_module,
+                       cull_func=is_gc_root,
                        extra_node_attrs=extra_node_attrs)
 
 
@@ -801,12 +802,12 @@ def show_chain(*chains, **kw):
     Useful in combination with :func:`find_ref_chain` or
     :func:`find_backref_chain`, e.g.
 
-        >>> show_chain(find_backref_chain(obj, is_proper_module))
+        >>> show_chain(find_backref_chain(obj, is_gc_root))
 
     You can specify if you want that chain traced backwards or forwards
     by passing a ``backrefs`` keyword argument, e.g.
 
-        >>> show_chain(find_ref_chain(obj, is_proper_module),
+        >>> show_chain(find_ref_chain(obj, is_gc_root),
         ...            backrefs=False)
 
     Ideally this shouldn't matter, but for some objects
@@ -860,6 +861,28 @@ def is_proper_module(obj):
         inspect.ismodule(obj)
         and obj is sys.modules.get(getattr(obj, '__name__', None))
     )
+
+
+def is_gc_root(obj):
+    """
+    Returns ``True`` if ``obj`` can be treated like a garbage collector root.
+
+    That is, if ``obj`` is a module that is in ``sys.modules``, or a
+    thread-local object.
+
+    Thread-local objects can hold references that the garbage collector does
+    not follow, so reference chains tend to end there instead of reaching a
+    module.
+
+    >>> import threading
+    >>> is_gc_root(threading.local())
+    True
+    >>> is_gc_root([])
+    False
+
+    .. versionadded:: 3.7.1
+    """
+    return is_proper_module(obj) or isinstance(obj, threading.local)
 
 
 #
@@ -963,7 +986,7 @@ def _show_graph(objs, edge_func, swap_source_target,
                                            _obj_attrs(target,
                                                       extra_node_attrs)))
         h, s, v = _gradient((0, 0, 1), (0, 0, .3), tdepth, max_depth)
-        if inspect.ismodule(target):
+        if is_gc_root(target):
             h = .3
             s = 1
         if highlight and highlight(target):

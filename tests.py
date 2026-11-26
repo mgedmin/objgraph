@@ -9,6 +9,7 @@ import string
 import sys
 import tempfile
 import textwrap
+import threading
 import types
 import unittest
 from io import StringIO
@@ -211,6 +212,22 @@ class FindChainTest(GarbageCollectedMixin, unittest.TestCase):
         self.assertEqual(
             [a],
             objgraph._find_chain(a, lambda x: False, gc.get_referrers))
+
+
+class IsGcRootTest(unittest.TestCase):
+    """Tests for the is_gc_root function."""
+
+    def test_modules_are_gc_roots(self):
+        self.assertTrue(objgraph.is_gc_root(types))
+
+    def test_other_modules_are_not_gc_roots(self):
+        self.assertFalse(objgraph.is_gc_root(types.ModuleType('foo')))
+
+    def test_thread_locals_are_gc_roots(self):
+        self.assertTrue(objgraph.is_gc_root(threading.local()))
+
+    def test_other_objects_are_not_gc_roots(self):
+        self.assertFalse(objgraph.is_gc_root([]))
 
 
 class CountTest(GarbageCollectedMixin, unittest.TestCase):
